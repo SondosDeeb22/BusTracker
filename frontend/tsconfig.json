@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    // File Layout
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // Environment & Module Resolution
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["esnext", "dom"],
+    "esModuleInterop": true,
+
+    // Outputs
+    "sourceMap": true,
+
+    // Strictness & Safety
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules", "dist"]
+}

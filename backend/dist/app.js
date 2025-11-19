@@ -14,13 +14,14 @@ const cors_1 = __importDefault(require("cors"));
 //? Import Middlewares & Libraries(modules) we will use
 //===========================================================================================
 const cookie_parser_1 = __importDefault(require("cookie-parser")); //middleware for parsing cookies in Express requests
+// import AuthService from './services/authService';
 app.use((0, cookie_parser_1.default)());
 //===========================================================================================
 //? Enable CORS middleware
 //===========================================================================================
 // app.use(cors());
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:3000',
     credentials: true,
 }));
 //===========================================================================================
@@ -29,18 +30,20 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json()); // parse(analyse) incoming requestes with json type
 app.use(express_1.default.urlencoded({ extended: true })); // parse(analyse) incoming body requests
 app.use((0, cookie_parser_1.default)()); // allow reading cookies
+app.set("view engine", "ejs"); // set the view engine to ejs
 //===========================================================================================
 //? Import the Routes
 //===========================================================================================
 const authRoute_1 = __importDefault(require("./apiRoutes/authRoute"));
 const adminRoute_1 = __importDefault(require("./apiRoutes/adminRoute"));
 const userRoute_1 = __importDefault(require("./apiRoutes/userRoute"));
+const trackingRoute_1 = __importDefault(require("./viewRoutes/trackingRoute"));
 //===========================================================================================
 //? set up routes handler for the API endpoints
 //===========================================================================================
 app.use('/api/auth', authRoute_1.default);
 app.use('/api/admin', adminRoute_1.default);
 app.use('/api/user', userRoute_1.default);
-//===========================================================================================
+app.use('/api/live-location', trackingRoute_1.default);
 exports.default = app;
 //# sourceMappingURL=app.js.map
