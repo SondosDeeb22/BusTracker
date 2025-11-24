@@ -7,13 +7,14 @@ const socket = io('http://localhost:3000');
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition((position) => {
         const { latitude, longitude } = position.coords;
+        console.log('New position at', new Date(position.timestamp), latitude, longitude);
         socket.emit("send-location", { latitude, longitude });
     }, (error) => {
         console.error(error);
     }, {
         enableHighAccuracy: true,
         timeout: 10000, // give the device more time to get a fix
-        maximumAge: 0, // no cache // no saved data to get new data
+        maximumAge: 10000, // no cache // no saved data to get new data
     });
 }
 //---------------------------------------------------------------------------------

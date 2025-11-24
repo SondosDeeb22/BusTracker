@@ -5,10 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"tsc -w -p backend/tsconfig.json\" \"nodemon backend/dist/server.js\"",
+    "dev": "concurrently \"tsc -w -p backend/tsconfig.json\" \"tsc -w -p frontend/tsconfig.json\" \"nodemon backend/dist/server.js\"",
     
-    "build:backend": "tsc -w backend/tsconfig.json",
-    "build:frontend": "tsc -w frontend/tsconfig.json",
+    "build:backend": "tsc -p backend/tsconfig.json",
+    "build:frontend": "tsc -p frontend/tsconfig.json",
     "build": "npm run build:backend && npm run build:frontend",
 
     "start": "npm run build && npm run dev"
