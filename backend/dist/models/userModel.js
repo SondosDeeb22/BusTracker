@@ -63,11 +63,13 @@ UserModel.init({
     },
     language: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.language)),
-        allowNull: false
+        allowNull: false,
+        defaultValue: userEnum_1.language.turkish
     },
     appearance: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.appearance)),
-        allowNull: false
+        allowNull: false,
+        defaultValue: userEnum_1.appearance.light
     }
 }, {
     sequelize: database_1.sequelize, // to attach the User model to the database connection i've defined in databaseConnection.ts

@@ -24,10 +24,9 @@ RouteModel.init({
     title: { type: sequelize_1.DataTypes.STRING(30),
         allowNull: false
     },
-    // stopStations: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false
-    // },
+    color: { type: sequelize_1.DataTypes.STRING(30),
+        allowNull: false
+    },
     totalStops: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false
@@ -36,10 +35,6 @@ RouteModel.init({
         type: sequelize_1.DataTypes.ENUM(...Object.values(routeEnum_1.status)),
         allowNull: false
     },
-    // assignedBuses: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false
-    // },
 }, {
     sequelize: database_1.sequelize, // to attach the User model to the database connection i've defined in databaseConnection.ts
     tableName: 'routes',

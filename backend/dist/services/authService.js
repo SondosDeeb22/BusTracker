@@ -27,6 +27,25 @@ const sendEmail_1 = require("../helpers/sendEmail");
 //==========================================================================================================
 class AuthService {
     //==========================================================================================================
+    //? Get Current User 
+    //==========================================================================================================
+    async getCurrentUser(req, res) {
+        try {
+            // Use the secure extractJWTData function to get user data
+            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+            if (typeof userData === "string") {
+                (0, messageTemplate_1.sendResponse)(res, 401, userData);
+                return;
+            }
+            (0, messageTemplate_1.sendResponse)(res, 200, "User data retrieved successfully", userData);
+            return;
+        }
+        catch (error) {
+            (0, messageTemplate_1.sendResponse)(res, 500, `Error retrieving user data. ${error}`);
+            return;
+        }
+    }
+    //==========================================================================================================
     //? Login 
     //==========================================================================================================
     async login(req, res) {
@@ -142,7 +161,7 @@ class AuthService {
             // If you would like to proceed in this operation, please click on the button below 
             // Please note that this Reset Link will expire in 10 minutes`;
             // ---------------------------------------------------------------------
-            const resetLink = "https://www.google.com/"; // temporary url,  waiting for the real url
+            const resetLink = "http://localhost:3000/reset-password";
             const htmlContent = `
             <p>A request has been received to reset the password for your account in NEU Bus Tracker</p>
             <p>If you would like to proceed in this operation, please click on the button below</p>
@@ -184,7 +203,7 @@ class AuthService {
             }
             // extract email from the token ---------------------------------------
             const userData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.resetPasswordToken);
-            if (typeof userData === "string") { // when no userData is string (so it's not object that contains users data ). then, we stop the function 
+            if (typeof userData === "string") { // when no userData is string (so it's not object that contains users data ) we stop the function 
                 console.log(userData);
                 (0, messageTemplate_1.sendResponse)(res, 500, userData);
                 return;

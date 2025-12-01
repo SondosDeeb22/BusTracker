@@ -6,12 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //===========================================================================================================
 //? Import Required Modules and Set Port:
 //===========================================================================================================
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config(); // Load environment variables from .env file
+require('dotenv').config({ path: __dirname + '/./../../.env' });
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const app_1 = __importDefault(require("./app"));
 // import displayMessage from '../frontend/src/script'; // Removed: backend shouldn't import frontend code directly
 //const io = require('socket.io')(http);
-const port = Number(process.env.SERVER_PORT) || 3000;
+const port = Number(process.env.BACKEND_SERVER_PORT) || 3001;
 const constructDatabase_1 = require("./database/constructDatabase");
 //===========================================================================================================
 //? Create HTTP Server and Initialize Express App:

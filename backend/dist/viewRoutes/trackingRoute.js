@@ -12,12 +12,7 @@ const path_1 = __importDefault(require("path"));
 // Router
 //===========================================================================================================================
 const router = express_1.default.Router();
-router.use("/dist", express_1.default.static(path_1.default.join(__dirname, '../../../frontend/dist')));
-// console.log(path.join(__dirname, "../../../frontend/src/views/index.ejs") + "-----------------------------------------")
-router.get('/', function (req, res) {
-    res.setHeader('Content-Type', 'text/html');
-    res.render(path_1.default.join(__dirname, "../../../frontend/src/views/index.ejs"));
-});
+router.use("/dist", express_1.default.static(path_1.default.join(__dirname, '../../../frontend0/dist'))); // used frontend0 instead of frontend
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=trackingRoute.js.map

@@ -62,6 +62,29 @@ class DriverService {
             successMessage: 'Driver was updated',
         });
     }
+    //===================================================================================================
+    //? function to Fetch All Drivers
+    //===================================================================================================
+    async fetchAllDrivers(req, res) {
+        try {
+            const drivers = await userModel_1.default.findAll({
+                where: { role: userEnum_1.role.driver },
+                attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
+            });
+            res.status(200).json({
+                success: true,
+                message: 'Drivers fetched successfully',
+                data: drivers
+            });
+        }
+        catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching drivers',
+                error: error
+            });
+        }
+    }
 }
 exports.DriverService = DriverService;
 //# sourceMappingURL=driverService.js.map

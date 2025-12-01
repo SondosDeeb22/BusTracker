@@ -1,1 +1,1 @@
-{"version":3,"file":"trackingRoute.d.ts","sourceRoot":"","sources":["../../src/viewRoutes/trackingRoute.ts"],"names":[],"mappings":"AAIA,OAAgB,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAO1C,QAAA,MAAM,MAAM,EAAE,MAAyB,CAAC;AAWxC,eAAe,MAAM,CAAC"}
+{"version":3,"file":"trackingRoute.d.ts","sourceRoot":"","sources":["../../src/viewRoutes/trackingRoute.ts"],"names":[],"mappings":"AAIA,OAAgB,EAAE,MAAM,EAAY,MAAM,SAAS,CAAC;AAOpD,QAAA,MAAM,MAAM,EAAE,MAAyB,CAAC;AAKxC,eAAe,MAAM,CAAC"}

@@ -6,11 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"tsc -w -p backend/tsconfig.json\" \"tsc -w -p frontend/tsconfig.json\" \"nodemon backend/dist/server.js\"",
-    
     "build:backend": "tsc -p backend/tsconfig.json",
     "build:frontend": "tsc -p frontend/tsconfig.json",
     "build": "npm run build:backend && npm run build:frontend",
-
     "start": "npm run build && npm run dev"
   },
   "keywords": [],
@@ -18,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
@@ -34,6 +33,9 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.9.1",
     "@types/nodemailer": "^7.0.3",
     "@types/socket.io-client": "^1.4.36",

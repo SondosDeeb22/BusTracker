@@ -21,6 +21,7 @@ class RouteModel extends Model< InferAttributes<RouteModel>, InferCreationAttrib
 
     declare id: string;
     declare title: string;
+    declare color: string;
     // declare stopStations: string[];
     declare totalStops: number;
     declare status: keyof typeof status;
@@ -39,10 +40,9 @@ RouteModel.init( {
     title: { type: DataTypes.STRING(30),
       allowNull: false
     },
-    // stopStations: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false
-    // },
+    color: { type: DataTypes.STRING(30),
+      allowNull: false
+    },
     totalStops: { 
       type: DataTypes.INTEGER,
       allowNull: false
@@ -51,10 +51,6 @@ RouteModel.init( {
       type: DataTypes.ENUM(...Object.values(status) as string[]),
       allowNull: false
     },
-    // assignedBuses: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false
-    // },
 
 
   },

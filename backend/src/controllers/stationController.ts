@@ -30,4 +30,11 @@ export class StationController{
         return stationService.updateStation(req, res);
     }
 
+    // =================================================================================================================================
+    //? Fetch All Stations
+    // =================================================================================================================================
+    async fetchAllStations(req:Request, res:Response){
+        return stationService.fetchAllStations(req, res);
+    }
+
 }

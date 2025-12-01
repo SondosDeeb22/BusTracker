@@ -80,6 +80,31 @@ export class DriverService{
         );
     }
 
+    //===================================================================================================
+    //? function to Fetch All Drivers
+    //===================================================================================================
+
+    async fetchAllDrivers(req: Request, res: Response){
+        try {
+            const drivers = await UserModel.findAll({
+                where: { role: role.driver },
+                attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
+            });
+
+            res.status(200).json({
+                success: true,
+                message: 'Drivers fetched successfully',
+                data: drivers
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching drivers',
+                error: error
+            });
+        }
+    }
+
 
 
 }

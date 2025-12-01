@@ -29,5 +29,12 @@ export class DriverController{
     async updateDriver(req:Request, res:Response){
         return driverService.updateDriver(req, res);
     }
+
+    // =================================================================================================================================
+    //? Fetch All Drivers
+    // =================================================================================================================================
+    async fetchAllDrivers(req:Request, res:Response){
+        return driverService.fetchAllDrivers(req, res);
+    }
     
 }

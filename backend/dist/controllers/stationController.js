@@ -21,6 +21,12 @@ class StationController {
     async updateStation(req, res) {
         return stationService.updateStation(req, res);
     }
+    // =================================================================================================================================
+    //? Fetch All Stations
+    // =================================================================================================================================
+    async fetchAllStations(req, res) {
+        return stationService.fetchAllStations(req, res);
+    }
 }
 exports.StationController = StationController;
 //# sourceMappingURL=stationController.js.map

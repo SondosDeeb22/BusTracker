@@ -27,11 +27,11 @@ const users = [
         birthDate: "1991-01-01",
         gender: "female",
         phone: "0500000000",
-        email: "admin2@example.com",
+        email: "sondos.deeb37@gmail.com",
         licenseNumber: "LIC0000002",
         licenseExpiryDate: "2027-05-01",
         status: "active",
-        hashedPassword: "$2b$10$examplehash2a",
+        hashedPassword: "$2b$08$aOc.CwK/vqj/R/QHoaWxJ.KkIry58pOShrI8T6vaKX0wqhQOG.V/C",
         language: "english",
         appearance: "light"
     },

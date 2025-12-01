@@ -4,6 +4,7 @@ import { status } from '../enums/routeEnum';
 declare class RouteModel extends Model<InferAttributes<RouteModel>, InferCreationAttributes<RouteModel>> implements RouteAttributes {
     id: string;
     title: string;
+    color: string;
     totalStops: number;
     status: keyof typeof status;
 }

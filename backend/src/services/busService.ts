@@ -56,5 +56,29 @@ export class BusService{
             }
         );
     }
+
+    //===================================================================================================
+    //? function to Fetch All Buses
+    //===================================================================================================
+
+    async fetchAllBuses(req: Request, res: Response){
+        try {
+            const buses = await BusModel.findAll({
+                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver']
+            });
+
+            res.status(200).json({
+                success: true,
+                message: 'Buses fetched successfully',
+                data: buses
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching buses',
+                error: error
+            });
+        }
+    }
     
 }

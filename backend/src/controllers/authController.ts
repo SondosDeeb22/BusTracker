@@ -18,6 +18,12 @@ export class AuthController{
     }
 
     //=================================================================================================================================
+    // Get current user data
+    async getCurrentUser(req: Request, res: Response){
+        return authService.getCurrentUser(req, res);
+    }
+
+    //=================================================================================================================================
     // Logout function
     async logout(req: Request, res: Response){
         return authService.logout(req, res);

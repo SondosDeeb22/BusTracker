@@ -2,7 +2,7 @@
 // setup Express route
 //===========================================================================================================================
 
-import express, { Router } from "express";
+import express, { Router, Response } from "express";
 import path from "path";
 
 
@@ -11,13 +11,7 @@ import path from "path";
 //===========================================================================================================================
 const router: Router = express.Router();
 
-router.use("/dist", express.static(path.join(__dirname, '../../../frontend/dist')));
-
-// console.log(path.join(__dirname, "../../../frontend/src/views/index.ejs") + "-----------------------------------------")
-router.get('/', function(req, res){
-  res.setHeader('Content-Type', 'text/html');
-  res.render(path.join(__dirname, "../../../frontend/src/views/index.ejs"));
-});
+router.use("/dist", express.static(path.join(__dirname, '../../../frontend0/dist'))); // used frontend0 instead of frontend
 
 //===========================================================================================================================
 export default router;

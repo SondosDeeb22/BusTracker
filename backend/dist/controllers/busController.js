@@ -23,6 +23,12 @@ class BusController {
     async updateBus(req, res) {
         return busService.updateBus(req, res);
     }
+    // =================================================================================================================================
+    //? Fetch All Buses
+    // =================================================================================================================================
+    async fetchAllBuses(req, res) {
+        return busService.fetchAllBuses(req, res);
+    }
 }
 exports.BusController = BusController;
 //# sourceMappingURL=busController.js.map

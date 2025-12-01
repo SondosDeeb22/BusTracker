@@ -72,6 +72,13 @@ router.patch('/route/update',  accessRequireToken(tokenNames.loginToken), author
 
 router.patch('/station/update',  accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), stationController.updateStation);
 
+// fetch all drivers
+router.get('/drivers/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), driverController.fetchAllDrivers);
 
+// fetch all buses
+router.get('/buses/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), busController.fetchAllBuses);
+
+// fetch all stations
+router.get('/stations/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), stationController.fetchAllStations);
 //===========================================================================================================================
 export default router;

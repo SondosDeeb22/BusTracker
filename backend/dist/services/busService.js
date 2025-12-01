@@ -40,6 +40,28 @@ class BusService {
             successMessage: 'Bus was updated',
         });
     }
+    //===================================================================================================
+    //? function to Fetch All Buses
+    //===================================================================================================
+    async fetchAllBuses(req, res) {
+        try {
+            const buses = await busModel_1.default.findAll({
+                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver']
+            });
+            res.status(200).json({
+                success: true,
+                message: 'Buses fetched successfully',
+                data: buses
+            });
+        }
+        catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching buses',
+                error: error
+            });
+        }
+    }
 }
 exports.BusService = BusService;
 //# sourceMappingURL=busService.js.map

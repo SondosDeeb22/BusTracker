@@ -68,4 +68,28 @@ export class StationService{
         );
     }
 
+    //===================================================================================================
+    //? function to Fetch All Stations
+    //===================================================================================================
+
+    async fetchAllStations(req: Request, res: Response){
+        try {
+            const stations = await stationModel.findAll({
+                attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
+            });
+
+            res.status(200).json({
+                success: true,
+                message: 'Stations fetched successfully',
+                data: stations
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Error fetching stations',
+                error: error
+            });
+        }
+    }
+
 }

@@ -15,7 +15,6 @@ import cors from 'cors';
 
 import cookieParser from 'cookie-parser';//middleware for parsing cookies in Express requests
 // import AuthService from './services/authService';
-app.use(cookieParser());
 
 //===========================================================================================
 //? Enable CORS middleware
@@ -23,10 +22,12 @@ app.use(cookieParser());
 
 // app.use(cors());
 
-app.use(cors({
+app.use(cors(
+  {
   origin: 'http://localhost:3000',
   credentials: true,
-}));
+}
+));
 
 //===========================================================================================
 //? set up for the middleware( handle json reqestes & url & cookies)
@@ -49,7 +50,7 @@ import adminRoute from './apiRoutes/adminRoute';
 
 import userRoute from './apiRoutes/userRoute';
 
-import trackingRoute from './viewRoutes/trackingRoute';
+// import trackingRoute from './viewRoutes/trackingRoute';
 //===========================================================================================
 //? set up routes handler for the API endpoints
 //===========================================================================================
@@ -63,6 +64,6 @@ app.use('/api/admin', adminRoute);
 
 app.use('/api/user', userRoute);
 
-app.use('/api/live-location', trackingRoute);
+// app.use('/api/live-location', trackingRoute);
 
 export default app;

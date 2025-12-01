@@ -98,11 +98,13 @@ UserModel.init( {
     }, 
     language: {
       type: DataTypes.ENUM(...Object.values(language) as string[]),
-      allowNull: false
+      allowNull: false,
+      defaultValue: language.turkish
     },
     appearance: {
       type: DataTypes.ENUM(...Object.values(appearance) as string[]),
-      allowNull: false
+      allowNull: false,
+      defaultValue: appearance.light
     }
   },
   {

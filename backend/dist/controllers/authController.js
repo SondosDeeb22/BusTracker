@@ -17,6 +17,11 @@ class AuthController {
         return authService.login(req, res);
     }
     //=================================================================================================================================
+    // Get current user data
+    async getCurrentUser(req, res) {
+        return authService.getCurrentUser(req, res);
+    }
+    //=================================================================================================================================
     // Logout function
     async logout(req, res) {
         return authService.logout(req, res);

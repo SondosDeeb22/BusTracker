@@ -21,6 +21,12 @@ class DriverController {
     async updateDriver(req, res) {
         return driverService.updateDriver(req, res);
     }
+    // =================================================================================================================================
+    //? Fetch All Drivers
+    // =================================================================================================================================
+    async fetchAllDrivers(req, res) {
+        return driverService.fetchAllDrivers(req, res);
+    }
 }
 exports.DriverController = DriverController;
 //# sourceMappingURL=driverController.js.map

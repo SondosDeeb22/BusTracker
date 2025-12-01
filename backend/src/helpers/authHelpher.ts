@@ -23,6 +23,8 @@ import { tokenNames } from "../enums/tokenNameEnum";
 // import interfaces ------------------------------------------------------------------------
 import { JWTdata } from "../interfaces/helper&middlewareInterface";
 
+
+import path from "path";
 //===========================================================================================================================
 class AuthHelper{
 
@@ -45,9 +47,8 @@ class AuthHelper{
         res.cookie(tokenName, token, {
             httpOnly: true,
             maxAge: maximumAge,
-            secure: true, // only for HTTPS
-            sameSite: 'none', // use lowercase
-            
+            secure: process.env.NODE_ENV === 'production', // only for HTTPS in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'lax' for development
         });
     }
 

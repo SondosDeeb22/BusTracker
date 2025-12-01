@@ -44,6 +44,12 @@ router.patch('/driver/update', (0, tokenRequired_1.accessRequireToken)(tokenName
 router.patch('/bus/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.updateBus);
 router.patch('/route/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.updateRoute);
 router.patch('/station/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.updateStation);
+// fetch all drivers
+router.get('/drivers/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.fetchAllDrivers);
+// fetch all buses
+router.get('/buses/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchAllBuses);
+// fetch all stations
+router.get('/stations/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.fetchAllStations);
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=adminRoute.js.map

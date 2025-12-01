@@ -100,7 +100,7 @@ export class RouteService{
                         where: {
                             id: routeId[i]?.assignedRoute
                         },
-                        attributes: ['title']
+                        attributes: ['title', 'color']
                     });
                     routes.push(route);
 

@@ -46,6 +46,29 @@ class AuthService{
 
 
     //==========================================================================================================
+    //? Get Current User 
+    //==========================================================================================================
+    async getCurrentUser(req: Request, res: Response): Promise<void>{
+        try {
+            // Use the secure extractJWTData function to get user data
+            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, tokenNames.loginToken);
+
+            if(typeof userData === "string"){
+                sendResponse(res, 401, userData);
+                return;
+            }
+
+            sendResponse(res, 200, "User data retrieved successfully", userData);
+            return;
+            
+        } catch (error) {
+            sendResponse(res, 500, `Error retrieving user data. ${error}`);
+            return;
+        }
+
+    }
+
+    //==========================================================================================================
     //? Login 
     //==========================================================================================================
     async login(req: Request, res: Response): Promise<void>{
@@ -192,7 +215,7 @@ class AuthService{
             // Please note that this Reset Link will expire in 10 minutes`;
 
             // ---------------------------------------------------------------------
-            const resetLink = "https://www.google.com/" // temporary url,  waiting for the real url
+            const resetLink = "http://localhost:3000/reset-password" 
             const htmlContent = `
             <p>A request has been received to reset the password for your account in NEU Bus Tracker</p>
             <p>If you would like to proceed in this operation, please click on the button below</p>
@@ -244,7 +267,7 @@ class AuthService{
             // extract email from the token ---------------------------------------
             const userData= authHelper.extractJWTData<resetPassword>(req, tokenNames.resetPasswordToken);
 
-            if(typeof userData === "string"){ // when no userData is string (so it's not object that contains users data ). then, we stop the function 
+            if(typeof userData === "string"){ // when no userData is string (so it's not object that contains users data ) we stop the function 
                 console.log(userData);
                 sendResponse(res, 500, userData);
                 return;

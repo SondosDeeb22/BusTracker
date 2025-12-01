@@ -1,6 +1,10 @@
 //===========================================================================================================
 //? Import Required Modules and Set Port:
 //===========================================================================================================
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables from .env file
+require('dotenv').config({path:__dirname+'/./../../.env'})
+
 import http from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import app from './app';
@@ -8,8 +12,7 @@ import app from './app';
 import path from 'path';
 // import displayMessage from '../frontend/src/script'; // Removed: backend shouldn't import frontend code directly
 //const io = require('socket.io')(http);
-const port: number = Number(process.env.SERVER_PORT)|| 3000;
-
+const port: number = Number(process.env.BACKEND_SERVER_PORT)|| 3001;
 import {initDB} from './database/constructDatabase';
 //===========================================================================================================
 //? Create HTTP Server and Initialize Express App:

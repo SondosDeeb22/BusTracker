@@ -34,4 +34,11 @@ export class BusController{
         return busService.updateBus(req, res);
     }
 
+    // =================================================================================================================================
+    //? Fetch All Buses
+    // =================================================================================================================================
+    async fetchAllBuses(req:Request, res:Response){
+        return busService.fetchAllBuses(req, res);
+    }
+
 }
