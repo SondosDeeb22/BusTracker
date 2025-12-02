@@ -3,5 +3,6 @@
 
 export enum tokenNames {
     loginToken= "loginToken",
-    resetPasswordToken = "resetPasswordToken"
+    resetPasswordToken = "resetPasswordToken",
+    setPasswordToken = "setPasswordToken"
 }

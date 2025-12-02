@@ -27,6 +27,7 @@ router.get('/me', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenN
 // Reset Password process
 router.post('/forgot-password', authController.sendEmailToResetPassword);
 router.patch('/reset-password', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.resetPasswordToken), authController.resetPassword); /// reset-password-token is the name of required token
+router.patch('/set-password', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.setPasswordToken), authController.setPassword);
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=authRoute.js.map

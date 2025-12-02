@@ -58,7 +58,8 @@ UserModel.init( {
     },
     gender: {
       type: DataTypes.ENUM(...Object.values(gender) as string[]),
-      allowNull: false
+      allowNull: false,
+      defaultValue: gender.male
     },
     birthDate: { 
       type: DataTypes.DATEONLY,
@@ -90,11 +91,13 @@ UserModel.init( {
 
     status: {
       type: DataTypes.ENUM(...Object.values(status) as string[]),
-      allowNull: false
+      allowNull: false,
+      defaultValue: status.passive
     },
     hashedPassword: { 
       type: DataTypes.STRING(150),
-      allowNull: false
+      allowNull: true,
+      defaultValue: null
     }, 
     language: {
       type: DataTypes.ENUM(...Object.values(language) as string[]),

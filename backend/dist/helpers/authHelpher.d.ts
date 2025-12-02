@@ -3,7 +3,7 @@ import { userIPaddressAndLocation } from "../interfaces/helper&middlewareInterfa
 declare class AuthHelper {
     createJWTtoken(res: Response, tokenName: string, components: {
         [key: string]: number | string | boolean;
-    }, maximumAge: number): void;
+    }, maximumAge: number, storeCookie: boolean): string;
     removeCookieToken(res: Response, tokenName: string): null;
     extractJWTData: <tokentInterface>(req: Request, tokenName: string) => tokentInterface | string;
     getIPaddressAndUserLocation: (req: Request) => Promise<userIPaddressAndLocation | string>;

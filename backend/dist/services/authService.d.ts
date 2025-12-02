@@ -5,6 +5,8 @@ declare class AuthService {
     logout(req: Request, res: Response): Promise<void>;
     sendPasswordResetEmail(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
+    sendValidateEmail(req: Request, res: Response, email: string): Promise<Response<any, Record<string, any>> | undefined>;
+    setPassword(req: Request, res: Response, tokenTitle: string): Promise<void>;
 }
 export default AuthService;
 //# sourceMappingURL=authService.d.ts.map

@@ -32,10 +32,10 @@ class AuthHelper{
     // Function to Create JWT
     //===========================================================================================================================================
 
-    createJWTtoken(res: Response, tokenName: string,  components: { [key: string]: number | string | boolean}, maximumAge: number): void{
+    createJWTtoken(res: Response, tokenName: string,  components: { [key: string]: number | string | boolean}, maximumAge: number, storeCookie: boolean): string{
         //create token ------------------------------------------------------------------------------------
         const JWTkey = process.env.JWT_KEY;
-        console.log("-----------------JWT key: ", JWTkey);
+        console.log("JWT key: ", JWTkey);
         if(!JWTkey){
             throw new Error("Error in fetching JWT secret key");
         }
@@ -44,12 +44,17 @@ class AuthHelper{
         // generate cookie and store the token inside it------------------------------------------------------------------------------------
         // res.cookie(tokenName ,token, {httpOnly: true, maxAge: maximumAge});
 
-        res.cookie(tokenName, token, {
+        // Only set cookie if explicitly requested
+        if(storeCookie){
+            res.cookie(tokenName, token, {
             httpOnly: true,
             maxAge: maximumAge,
             secure: process.env.NODE_ENV === 'production', // only for HTTPS in production
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'lax' for development
         });
+        } 
+        
+        return token; // Return the JWT token
     }
 
     //===========================================================================================================================================

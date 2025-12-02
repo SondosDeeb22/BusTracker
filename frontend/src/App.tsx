@@ -6,6 +6,7 @@ import HomepageLayout from "./layouts/homepageLayout";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ForgotPassword from "./pages/ForgotPasswordPage";
 import ResetPassword from "./pages/resetPasswordPage";
+import SetPassword from "./pages/setPassword";
 
 
 const router = createBrowserRouter([
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/reset-password",
     element: <ResetPassword />
+  },
+  {
+    path:"/set-password",
+    element: <SetPassword />
   },
   {
     path: "/",

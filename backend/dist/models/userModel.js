@@ -31,7 +31,8 @@ UserModel.init({
     },
     gender: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.gender)),
-        allowNull: false
+        allowNull: false,
+        defaultValue: userEnum_1.gender.male
     },
     birthDate: {
         type: sequelize_1.DataTypes.DATEONLY,
@@ -55,11 +56,13 @@ UserModel.init({
     },
     status: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.status)),
-        allowNull: false
+        allowNull: false,
+        defaultValue: userEnum_1.status.passive
     },
     hashedPassword: {
         type: sequelize_1.DataTypes.STRING(150),
-        allowNull: false
+        allowNull: true,
+        defaultValue: null
     },
     language: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.language)),

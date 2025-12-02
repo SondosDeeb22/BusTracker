@@ -8,6 +8,8 @@ exports.AuthController = void 0;
 //?importing 
 //============================================================================================================================================================
 const authService_1 = __importDefault(require("../services/authService"));
+//import Enums ------------------------------------------------------------------------------
+const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const authService = new authService_1.default();
 //============================================================================================================================================================
 class AuthController {
@@ -35,6 +37,16 @@ class AuthController {
     // function to rest the password
     async resetPassword(req, res) {
         return authService.resetPassword(req, res);
+    }
+    //==================================================================================================================================
+    // function to send validate email to set password (for fresh user, like just added dirver)
+    async sendValidateEmail(req, res, email) {
+        return authService.sendValidateEmail(req, res, email);
+    }
+    //================================================================================================================================
+    //function to set password (if it's new user, e.x: new driver )
+    async setPassword(req, res) {
+        return authService.setPassword(req, res, tokenNameEnum_1.tokenNames.setPasswordToken);
     }
 }
 exports.AuthController = AuthController;

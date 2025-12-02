@@ -111,7 +111,10 @@ class UserHelper {
             const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData);
             const success = `${dataName} was Added successfully`;
-            (0, messageTemplate_1.sendResponse)(res, 200, success);
+            if (!options?.skipResponse) {
+                (0, messageTemplate_1.sendResponse)(res, 200, success);
+            }
+            console.log(success);
             return;
             //---------------------------------------------------------------------------------------------------------------------------------------
         }

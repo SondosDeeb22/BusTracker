@@ -9,6 +9,7 @@ export declare class UserHelper {
             optional?: boolean;
         }>;
         transform?: (data: any) => Promise<any> | any;
+        skipResponse?: boolean;
     }): Promise<void>;
     remove(req: Request, res: Response, model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: string): Promise<void>;
     update(req: Request, res: Response, model: ModelStatic<Model<any, any>>, values: Record<string, any>, options?: {

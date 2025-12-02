@@ -11,6 +11,17 @@ import {role, gender, status} from '../enums/userEnum';
 import { UserHelper } from "../helpers/userHelper";
 import bcrypt from 'bcrypt';
 
+// import exceptions --------------------------------------------------------------------
+import { sendResponse } from "../exceptions/messageTemplate";
+
+import { sendEmail } from "../helpers/sendEmail";
+import  AuthHelper  from '../helpers/authHelpher';
+const authHelper = new AuthHelper();
+
+import { tokenNames } from '../enums/tokenNameEnum';
+import AuthService from './authService';
+const authService = new AuthService();
+
 const helper = new UserHelper();
 
 
@@ -26,33 +37,48 @@ export class DriverService{
     //===================================================================================================
 
     async addDriver(req: Request, res: Response){
-        await helper.add(req, res, UserModel, req.body, {
+        try{
+            await helper.add(req, res, UserModel, req.body, {
 
-            nonDuplicateFields: ['email'],  
-            //-----------------------------------------------------------
-            enumFields: [
-                { field: "status", enumObj: status },
-                { field: "role", enumObj: role },
-                { field: "gender", enumObj: gender }
-            ],             
-            //-----------------------------------------------------------
+                nonDuplicateFields: ['email'],  
+                //-----------------------------------------------------------
+                enumFields: [
+                    { field: "status", enumObj: status },
+                    { field: "role", enumObj: role },
+                    { field: "gender", enumObj: gender }
+                ],             
+                //-----------------------------------------------------------
 
-            transform: async (data) => {
-            const out = { ...data };
+                transform: async (data) => {
+                const out = { ...data };
 
-            // normalize email
-            if (out.email) out.email = out.email.toLowerCase().trim();
+                // normalize email
+                if (out.email) out.email = out.email.toLowerCase().trim();
 
-            // hash password if present
-            if (out.hashedPassword) {
-                const saltRounds = 10;
-                out.hashedPassword = await bcrypt.hash(out.hashedPassword, saltRounds);
+
+                return out;
+                },
+                skipResponse: true // Don't send response here, we'll send it after email
             }
+            );
 
-            return out;
-            },
+            // Send validation email after user is successfully added -------------------------------------------------------
+            try{
+                await authService.sendValidateEmail(req, res, req.body.email);
+                sendResponse(res, 200, "Driver added successfully. Validation email sent.");
+            }catch(error){
+                console.log("Error occured wuile sending validation email ", error);
+                return error;
+            }
+            //---------------------------------------------------------------------------------------------------------
+            
+            console.log("Driver added successfully. Validation email sent.");
+            // return sendResponse(res, 200, "Driver added successfully. Validation email sent.");
+            
+        }catch(error){
+            sendResponse(res, 500, `Error occured while adding driver from driverService.ts . ${error}`);
+            return;
         }
-        );
     }
 
 

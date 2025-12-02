@@ -1,26 +1,38 @@
+//====================================================================================================================================
+//? Importing
+//====================================================================================================================================
 import React, { useState } from 'react';
 import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-interface DriverData {
-  name: string;
-  gender: 'male' | 'female' | '';
-  role: 'driver';
-  phone: string;
-  email: string;
-  birthDate: string;
-  licenseNumber: string;
-  licenseExpiryDate: string;
-  status: 'active' | 'passive';
-}
+import {role, gender, status} from '../../../../backend/src/enums/userEnum';
 
+
+//====================================================================================================================================
 interface AddDriverProps {
   onClose: () => void;
   onSuccess: () => void;
 }
 
+interface DriverData{
+  name: string,
+  gender: keyof typeof gender | '';
+  role: keyof typeof role | '';
+  phone: string;
+  email: string;
+  birthDate: string;
+  licenseNumber: string;
+  licenseExpiryDate: string;
+  status: keyof typeof status | '';
+
+  
+}
+//====================================================================================================================================
+//? AddDriver
+//=======================================================================================
+
 const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
-  const [formData, setFormData] = useState<DriverData>({
+  const [driverData, setDriverData] = useState<DriverData>({
     name: '',
     gender: '',
     role: 'driver',
@@ -29,41 +41,60 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
     birthDate: '',
     licenseNumber: '',
     licenseExpiryDate: '',
-    status: 'active'
+    status: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+  
+  //-----------------------------------------------------------------------------------------------------
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = event.target; // the name and value of filed that was changed
+    // prev hold current formd data (driverData), we update data by coping all fields and update only one filed, which is [name]: value, the one got updated)
+    setDriverData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  //-----------------------------------------------------------------------------------------------------
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); //stops page from refreshing on form submit
     setLoading(true);
-    setError('');
+    setError('');//clears any previous error messages
+
+
+  // // Get setPassword cookie so we only send it --------------------------------------------------------------------------------------------------
+  // const getCookie = (name: string): string | undefined => {
+  //   const value = `; ${document.cookie}`;
+  //   const parts = value.split(`; ${name}=`);
+  //   if (parts.length === 2) return parts.pop()?.split(';').shift();
+  // };
+
+  //===================================================================================================
 
     try {
-      await axios.post('http://localhost:3000/api/admin/driver/add', formData, {
+      console.log(document.cookie)
+      await axios.post('http://localhost:3001/api/admin/driver/add', driverData, {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         withCredentials: true
       });
       
-      onSuccess();
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add driver');
+      onSuccess(); // refresh table and trigger success message
+      onClose(); //close the model
+      //-----------------------------------------------
+    } catch (error) {
+      console.log('Error occured while adding driver ***-- ', error);
+      setError(`Failed to add driver ${error}`);
     } finally {
       setLoading(false);
     }
   };
 
+  //===================================================================================================
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
@@ -91,7 +122,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={driverData.name}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -104,7 +135,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             </label>
             <select
               name="gender"
-              value={formData.gender}
+              value={driverData.gender}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -122,7 +153,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="text"
               name="role"
-              value={formData.role}
+              value={driverData.role}
               disabled
               className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600"
             />
@@ -136,7 +167,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
+              value={driverData.phone}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -150,7 +181,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="email"
               name="email"
-              value={formData.email}
+              value={driverData.email}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -164,7 +195,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="date"
               name="birthDate"
-              value={formData.birthDate}
+              value={driverData.birthDate}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -178,7 +209,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="text"
               name="licenseNumber"
-              value={formData.licenseNumber}
+              value={driverData.licenseNumber}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -192,7 +223,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <input
               type="date"
               name="licenseExpiryDate"
-              value={formData.licenseExpiryDate}
+              value={driverData.licenseExpiryDate}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -205,7 +236,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             </label>
             <select
               name="status"
-              value={formData.status}
+              value={driverData.status}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -237,4 +268,6 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
   );
 };
 
+
+//=========================================================================================================
 export default AddDriver;

@@ -37,6 +37,7 @@ export class UserHelper{
             nonDuplicateFields?: string[],
             enumFields?: Array<{ field: string; enumObj: object; optional?: boolean }>;
             transform?: (data: any) => Promise<any> | any;
+            skipResponse?: boolean; // Add option to skip sending response
         }
     ): Promise<void>{ ///=====================================================================
 
@@ -164,7 +165,10 @@ export class UserHelper{
             await model.create(finalData as any);
 
             const success = `${dataName} was Added successfully`;
-            sendResponse(res, 200, success);
+            if (!options?.skipResponse) {
+                sendResponse(res, 200, success);
+            }
+            console.log(success);
             return;
 
         //---------------------------------------------------------------------------------------------------------------------------------------

@@ -4,6 +4,10 @@
 import  AuthService  from '../services/authService';
 import { Request, Response } from 'express';
 
+//import Enums ------------------------------------------------------------------------------
+import { tokenNames } from "../enums/tokenNameEnum";
+
+
 const authService = new AuthService();
 
 
@@ -39,5 +43,16 @@ export class AuthController{
     // function to rest the password
     async resetPassword(req: Request, res: Response): Promise<void>{
         return authService.resetPassword(req, res);
+    }
+    //==================================================================================================================================
+    // function to send validate email to set password (for fresh user, like just added dirver)
+    async sendValidateEmail(req: Request, res: Response, email: string){
+        return authService.sendValidateEmail(req, res, email);
+    }
+
+    //================================================================================================================================
+    //function to set password (if it's new user, e.x: new driver )
+    async setPassword(req: Request , res: Response):Promise<void>{
+        return authService.setPassword(req, res, tokenNames.setPasswordToken);
     }
 }
