@@ -19,16 +19,29 @@ class UserHelper {
     //==========================================================================================================
     async add(req, res, model, payload, options) {
         const modelClassName = model.name;
-        const dataName = (modelClassName?.replace(/Model$/, '') || '').toLowerCase(); // remove the word 'Model' from the name 
+        const dataName = (modelClassName?.replace(/Model$/, '') || '').toLowerCase();
+        // small helper to either send a response or throw when skipResponse is set
+        const fail = (status, message) => {
+            if (options?.skipResponse) {
+                // Throw an Error object that the caller can catch.
+                // Keep message and status in the Error text so caller can inspect/log it if needed.
+                const err = new Error(message);
+                // Attach status for richer handling (optional)
+                err.status = status;
+                throw err;
+            }
+            else {
+                (0, messageTemplate_1.sendResponse)(res, status, message);
+                return;
+            }
+        };
         try {
             const body = (payload ?? req.body);
             // get required/unique from model metadata when not provided
             const attrs = model.getAttributes();
             const requiredFromModel = [];
-            // Organize model attributes( attrs ) to required/ unique fields -----------------------------------------------
-            // destruct each entry in attrs to {name: attr} pairs
+            // collect required fields
             for (const [name, attr] of Object.entries(attrs)) {
-                //* take required columns: not nullable, no default, no auto increment, no primary key
                 const allowNull = attr.allowNull === true;
                 const hasDefault = attr.defaultValue !== undefined;
                 const autoInc = attr.autoIncrement === true;
@@ -37,33 +50,30 @@ class UserHelper {
                     requiredFromModel.push(name);
                 }
             }
-            //---------------------------------------------------------------------------------  
             const requiredFields = requiredFromModel;
-            // take the provided inputs and ensure all fields provided ==========================================================
             for (const field of requiredFields) {
                 if (body[field] === undefined || body[field] === null || body[field] === "") {
-                    (0, messageTemplate_1.sendResponse)(res, 500, `Fill all Fields please: missing ${field}`);
-                    return;
+                    // use fail instead of sendResponse directly
+                    fail(500, `Fill all Fields please: missing ${field}`);
+                    return; // unreachable if fail throws, but keeps TS happy
                 }
             }
-            // =============================================================================================================
             // Enum validation
             if (options?.enumFields && options.enumFields.length > 0) {
                 for (const rule of options.enumFields) {
                     const value = body[rule.field];
                     if (value === undefined || value === null || value === "") {
                         if (!rule.optional) {
-                            (0, messageTemplate_1.sendResponse)(res, 500, `Invalid ${rule.field}!`);
+                            fail(500, `Invalid ${rule.field}!`);
                             return;
                         }
                     }
                     else if (!(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
-                        (0, messageTemplate_1.sendResponse)(res, 500, `Invalid ${rule.field}!`);
+                        fail(500, `Invalid ${rule.field}!`);
                         return;
                     }
                 }
             }
-            // =============================================================================================================
             // Primary Key settings
             const pkEntry = Object.entries(attrs).find(([_, a]) => a.primaryKey === true);
             if (pkEntry) {
@@ -71,43 +81,33 @@ class UserHelper {
                 const hasPk = body[pkName] !== undefined && body[pkName] !== null && body[pkName] !== "";
                 const autoInc = pkAttr.autoIncrement === true;
                 const hasDefault = pkAttr.defaultValue !== undefined;
-                // Auto-generate primary key if needed
                 if (!hasPk && !autoInc && !hasDefault) {
                     const modelName = model.name.toLocaleUpperCase()[0];
                     let id;
                     let unique;
                     do {
-                        id = Math.floor(100 + Math.random() * 900); // generate  id
-                        // check that id is not used before
+                        id = Math.floor(100 + Math.random() * 900);
                         unique = await model.findAll({
-                            where: {
-                                id: id
-                            }
+                            where: { id: id }
                         });
                     } while (unique.length !== 0);
                     const finalId = `${modelName}${id}`;
                     body[pkName] = finalId;
                 }
             }
-            // =============================================================================================================
-            // check if the special value already exists 
-            //special key is a normal key in model (not PK) that must be unique (can't be duplicated)
+            // non-duplicate checks
             if (options?.nonDuplicateFields && options.nonDuplicateFields.length > 0) {
                 for (const field of options.nonDuplicateFields) {
-                    const dubplicated = await model.findOne({
-                        where: {
-                            [field]: body[field]
-                        }
+                    const duplicated = await model.findOne({
+                        where: { [field]: body[field] }
                     });
-                    // Check that field value is not used in the database before 
-                    if (dubplicated) {
-                        (0, messageTemplate_1.sendResponse)(res, 500, `a ${dataName} was not Added, because a ${dataName} with the same ${field} already exists!`);
+                    if (duplicated) {
+                        fail(500, `a ${dataName} was not Added, because a ${dataName} with the same ${field} already exists!`);
                         return;
                     }
                 }
             }
-            // =============================================================================================================
-            // Optional transform (used for hash password, or to normalize data)
+            // transform and create
             const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData);
             const success = `${dataName} was Added successfully`;
@@ -116,11 +116,17 @@ class UserHelper {
             }
             console.log(success);
             return;
-            //---------------------------------------------------------------------------------------------------------------------------------------
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating ${dataName}. ${error}`);
-            return;
+            // if skipResponse we should rethrow so caller can handle and send response exactly once
+            if (options?.skipResponse) {
+                // If error already came from fail() it will be thrown and caught here; rethrow it to be handled by caller
+                throw error;
+            }
+            else {
+                (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating ${dataName}. ${error}`);
+                return;
+            }
         }
     }
     //?==========================================================================================================

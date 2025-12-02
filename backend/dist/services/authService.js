@@ -247,7 +247,7 @@ class AuthService {
             }
             catch (error) {
                 console.log('Error occured while creating token:', error);
-                return res.status(500).json({ message: 'Error creating token' });
+                return;
             }
             // ==============================================================================================================================
             const mailSubject = "Set your Password";
@@ -267,7 +267,7 @@ class AuthService {
                 text-decoration:none;
                 border-radious: 4px;
                 cursor: pointer;
-                padding: 12px 24px;">Reset Password</a>
+                padding: 12px 24px;">Set Password</a>
             <br><br>
 
             <p>For security reasons, this link will expire in 24 hours. If the link expires, you can request a new activation link from the login page.</p>
@@ -280,12 +280,10 @@ class AuthService {
             <p>Please note that this Link will expire in 24 hours</p>`;
             const sendEmailSResponse = await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
             console.log('this is sendEmailSResponse from sendValidation Email function authServices --------', sendEmailSResponse);
-            return;
             //=========================================================================================
         }
         catch (error) {
             console.log('Error occured while sending validation email. ', error);
-            return;
         }
     }
     //===================================================================================================================================

@@ -24,42 +24,63 @@ class DriverService {
     //===================================================================================================
     //? function to Add Driver
     //===================================================================================================
+    // async addDriver(req: Request, res: Response){
+    //     try{
+    //         await helper.add(req, res, UserModel, req.body, {
+    //             nonDuplicateFields: ['email'],  
+    //             //-----------------------------------------------------------
+    //             enumFields: [
+    //                 { field: "status", enumObj: status },
+    //                 { field: "role", enumObj: role },
+    //                 { field: "gender", enumObj: gender }
+    //             ],             
+    //             //-----------------------------------------------------------
+    //             transform: async (data) => {
+    //             const out = { ...data };
+    //             // normalize email
+    //             if (out.email) out.email = out.email.toLowerCase().trim();
+    //             return out;
+    //             },
+    //             skipResponse: true // Don't send response here, we'll send it after email
+    //         }
+    //         );
+    //         // Send validation email after user is successfully added -------------------------------------------------------
+    //         try{
+    //             await authService.sendValidateEmail(req, res, req.body.email);
+    //         }catch(error){
+    //             console.log("Error occured while sending validation email ", error);
+    //         }
+    //         console.log("Driver added successfully. Validation email sent.");
+    //         sendResponse(res, 200, "Driver added successfully. Validation email sent.");
+    //     }catch(error){
+    //         sendResponse(res, 500, `Error occured while adding driver from driverService.ts . ${error}`);
+    //     }
+    // }
     async addDriver(req, res) {
         try {
-            await helper.add(req, res, userModel_1.default, req.body, {
+            const driver = await helper.add(req, res, userModel_1.default, req.body, {
                 nonDuplicateFields: ['email'],
-                //-----------------------------------------------------------
                 enumFields: [
                     { field: "status", enumObj: userEnum_1.status },
                     { field: "role", enumObj: userEnum_1.role },
                     { field: "gender", enumObj: userEnum_1.gender }
                 ],
-                //-----------------------------------------------------------
                 transform: async (data) => {
                     const out = { ...data };
-                    // normalize email
                     if (out.email)
                         out.email = out.email.toLowerCase().trim();
+                    if (!out.status)
+                        out.status = userEnum_1.status.active;
                     return out;
                 },
-                skipResponse: true // Don't send response here, we'll send it after email
+                skipResponse: true
             });
-            // Send validation email after user is successfully added -------------------------------------------------------
-            try {
-                await authService.sendValidateEmail(req, res, req.body.email);
-                (0, messageTemplate_1.sendResponse)(res, 200, "Driver added successfully. Validation email sent.");
-            }
-            catch (error) {
-                console.log("Error occured wuile sending validation email ", error);
-                return error;
-            }
-            //---------------------------------------------------------------------------------------------------------
-            console.log("Driver added successfully. Validation email sent.");
-            // return sendResponse(res, 200, "Driver added successfully. Validation email sent.");
+            // Send validation email
+            await authService.sendValidateEmail(req, res, req.body.email);
+            return (0, messageTemplate_1.sendResponse)(res, 200, "Driver added successfully. Validation email sent.");
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while adding driver from driverService.ts . ${error}`);
-            return;
+            return (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while adding driver: ${error}`);
         }
     }
     //===================================================================================================
