@@ -34,7 +34,7 @@ router.get('/me', accessRequireToken(tokenNames.loginToken), authController.getC
 router.post('/forgot-password', authController.sendEmailToResetPassword);
 router.patch('/reset-password', accessRequireToken(tokenNames.resetPasswordToken), authController.resetPassword); /// reset-password-token is the name of required token
 
-router.patch('/set-password', accessRequireToken(tokenNames.setPasswordToken), authController.setPassword); 
+router.patch('/set-password/:token', authController.setPassword); 
 
 //===========================================================================================================================
 export default router;

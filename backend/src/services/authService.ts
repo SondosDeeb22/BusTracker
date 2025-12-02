@@ -368,16 +368,15 @@ class AuthService{
     //===================================================================================================================================
     //? set password 
     //===================================================================================================================================
-    async setPassword(req: Request, res: Response, tokenTitle: string){
+    async setPassword(req: Request, res: Response, tokenTitle: string): Promise<string | void>{
         try{ 
             // Extract token from URL parameters (/set-password/:token) -----------------
 
             const token = String(req.params.token || req.query.token);
-            console.log('***********************************************')
             
             if(!token){
-                sendResponse(res, 400, "SetPassword Token is required to processed with this operation");
-                return;
+                sendResponse(res, 400, "Error occured, No token were found");
+                return  "Error occured, No token were found";
             }
 
             // get the passwords from the user input ------------------------------------------
@@ -390,25 +389,19 @@ class AuthService{
 
             if(!newPassword || !confirmPassword){
                 sendResponse(res, 500, "Please provide a password to proceed with the Password Setting operation");
-                return;
+                return "Please provide a password to proceed with the Password Setting operation";
             }
 
             //ensure the user entered identical passwords
             if(newPassword !== confirmPassword){
                 sendResponse(res, 500, "Make sure both passwords are identical");
-                return;
+                return "Make sure both passwords are identical";
             }
 
             // check if user is authorized to commit this action (user has valid setPasswordToken )-----------
 
             // extract email from the token ---------------------------------------
-            // const userData= authHelper.extractJWTData<resetPassword>(req, tokenTitle);
 
-            // if(typeof userData === "string"){ // when no userData is string (so it's not object that contains users data ) we stop the function 
-            //     console.log(userData);
-            //     sendResponse(res, 500, userData);   
-            //     return;
-            // }
             const JWT_key = process.env.JWT_KEY;
             if(!JWT_key){
                 sendResponse(res, 500, "Internal Error! missing token key in environment file");
@@ -418,11 +411,8 @@ class AuthService{
             const userData = jwt.verify(token, JWT_key) ;
             if(!userData || typeof userData !== "object"){
                 sendResponse(res, 500, "Invalid JWT token");
-                return ;
+                return "Invalid JWT token";
             }
-            console.log('here we reaches authSerivece.ts, about to hash the password and store it ---------------------------------------------')
-            console.log(userData);
-            // return user_data;
         
             // set password in the db ----------------------------------------------------------------------------------------
 
@@ -437,8 +427,8 @@ class AuthService{
             });
 
             if(updatedPassword === 0){
-                sendResponse(res, 500, 'Error Occured. Try storing your password again');
-                return;
+                sendResponse(res, 500, 'Error Occured. Try setting your password again');
+                return 'Error Occured. Try setting your password again';
             }
 
             // remove the token from the cookie------------------------------------------------------------

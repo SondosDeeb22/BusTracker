@@ -5,6 +5,7 @@ import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
 import { burgundy } from '../styles/colorPalette';
 
+import { useSearchParams } from 'react-router-dom';
 
 const SetPassword = () => {
 //   const [email, setEmail] = useState('');
@@ -13,13 +14,19 @@ const SetPassword = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
     setLoading(true);
+    let response: "" | void = "";
     try {
-      const response = await axios.patch('http://localhost:3001/api/auth/set-password', 
+      
+      response = await axios.patch(`http://localhost:3001/api/auth/set-password/${token}`, 
         { newPassword, confirmPassword },
         {
           headers: {
@@ -34,7 +41,7 @@ const SetPassword = () => {
       return;
 
     } catch (error) {
-      setError('No JWT found');
+      setError(`${response}`);
       console.error('Error occured while Setting Password:', error);
 
     } finally {
