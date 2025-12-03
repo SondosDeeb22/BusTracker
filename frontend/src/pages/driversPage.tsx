@@ -3,8 +3,9 @@
 //======================================================================================
 import { useState } from 'react';
 import Table from '../components/Table';
-import AddDriver from '../components/ui/addDriver';
-import RemoveDriver from '../components/ui/removeDriver';
+import AddDriver from '../components/driver/addDriver';
+import RemoveDriver from '../components/driver/removeDriver';
+import UpdateDriver from '../components/driver/updateDriver';
 
 
 //======================================================================================
@@ -14,6 +15,8 @@ const DriversPage = () => {
   const [tableKey, setTableKey] = useState(0);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [driverToRemove, setDriverToRemove] = useState<{id: number, name: string} | null>(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [driverToUpdate, setDriverToUpdate] = useState<any>(null);
 
 
   // Open Model window------------------------------------------------
@@ -47,12 +50,6 @@ const DriversPage = () => {
 
 
 
-  
-  // ------------------------------------------------
-  const handleEdit = (driver: any) => {
-    console.log('Edit driver:', driver);
-    // TODO: Implement edit functionality
-  };
 
   // ------------------------------------------------
   const handleDelete = (driver: any) => {
@@ -79,6 +76,32 @@ const DriversPage = () => {
   };
 
 
+  
+  // ------------------------------------------------
+  const handleEdit = (driver: any) => {
+    console.log('Edit driver:', driver);
+    setDriverToUpdate(driver);
+    setShowUpdateModal(true);
+  };
+  
+  // Close update modal
+  const handleCloseUpdateModal = () => {
+    setShowUpdateModal(false);
+    setDriverToUpdate(null);
+  };
+
+  // Handle successful driver update
+  const handleUpdateSuccess = () => {
+    setSuccessMessage('Driver was successfully updated!');
+    setTableKey(prev => prev + 1); // Force table refresh
+    
+    // Clear success message after 5 seconds
+    setTimeout(() => {
+      setSuccessMessage('');
+    }, 5000);
+  };
+
+
 
 
 
@@ -86,7 +109,7 @@ const DriversPage = () => {
   return (
     <>
       {successMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md z-50">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
           {successMessage}
         </div>
       )}
@@ -110,6 +133,13 @@ const DriversPage = () => {
           driverName={driverToRemove.name}
           onClose={handleCloseRemoveModal}
           onSuccess={handleRemoveSuccess}
+        />
+      )}
+      {showUpdateModal && driverToUpdate && (
+        <UpdateDriver
+          driver={driverToUpdate}
+          onClose={handleCloseUpdateModal}
+          onSuccess={handleUpdateSuccess}
         />
       )}
     </>
