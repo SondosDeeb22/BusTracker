@@ -6,6 +6,6 @@ export declare class AuthController {
     sendEmailToResetPassword(req: Request, res: Response): Promise<void>;
     resetPassword(req: Request, res: Response): Promise<void>;
     sendValidateEmail(req: Request, res: Response, email: string): Promise<void>;
-    setPassword(req: Request, res: Response): Promise<void>;
+    setPassword(req: Request, res: Response): Promise<void | string>;
 }
 //# sourceMappingURL=authController.d.ts.map

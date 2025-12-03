@@ -58,7 +58,7 @@ const DriversPage = () => {
   return (
     <>
       {successMessage && (
-        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md z-50">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md z-50">
           {successMessage}
         </div>
       )}

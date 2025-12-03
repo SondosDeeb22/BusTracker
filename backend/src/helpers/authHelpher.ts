@@ -35,7 +35,6 @@ class AuthHelper{
     createJWTtoken(res: Response, tokenName: string,  components: { [key: string]: number | string | boolean}, maximumAge: number, storeCookie: boolean): string{
         //create token ------------------------------------------------------------------------------------
         const JWTkey = process.env.JWT_KEY;
-        console.log("JWT key: ", JWTkey);
         if(!JWTkey){
             throw new Error("Error in fetching JWT secret key");
         }

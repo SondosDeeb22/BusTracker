@@ -32,7 +32,7 @@ const SetPassword = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          withCredentials: false, // Important: include cookies
+          withCredentials: false,
         }
       );
       
@@ -40,8 +40,8 @@ const SetPassword = () => {
       navigate('/');
       return;
 
-    } catch (error) {
-      setError(`${response}`);
+    } catch (error: any) {
+      setError(error.response.data.message || 'Invalid Password, Try Again');
       console.error('Error occured while Setting Password:', error);
 
     } finally {

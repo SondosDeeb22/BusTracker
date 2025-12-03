@@ -6,6 +6,7 @@ import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 import {role, gender, status} from '../../../../backend/src/enums/userEnum';
+import { COLORS } from '../../styles/colorPalette';
 
 
 //====================================================================================================================================
@@ -65,13 +66,6 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
     setError('');//clears any previous error messages
 
 
-  // // Get setPassword cookie so we only send it --------------------------------------------------------------------------------------------------
-  // const getCookie = (name: string): string | undefined => {
-  //   const value = `; ${document.cookie}`;
-  //   const parts = value.split(`; ${name}=`);
-  //   if (parts.length === 2) return parts.pop()?.split(';').shift();
-  // };
-
   //===================================================================================================
 
     try {
@@ -86,9 +80,8 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
       onSuccess(); // refresh table and trigger success message
       onClose(); //close the model
       //-----------------------------------------------
-    } catch (error) {
-      console.log('Error occured while adding driver ***-- ', error);
-      setError(`Failed to add driver ${error}`);
+    } catch (error:any) {
+      setError(error.response.data.message || 'Error Occured while adding driver, Please try again!');
     } finally {
       setLoading(false);
     }
@@ -96,7 +89,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
   //===================================================================================================
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Add New Driver</h2>
@@ -146,19 +139,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Role *
-            </label>
-            <input
-              type="text"
-              name="role"
-              value={driverData.role}
-              disabled
-              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600"
-            />
-            <p className="text-xs text-gray-500 mt-1">Role is automatically set to 'driver'</p>
-          </div>
+  
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -258,7 +239,8 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2  text-white rounded-md hover:bg-red-600 transition-colors disabled:opacity-50"
+              style= {{background: COLORS.burgundy}}
             >
               {loading ? 'Adding...' : 'Add Driver'}
             </button>

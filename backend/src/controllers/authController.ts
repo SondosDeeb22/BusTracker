@@ -52,7 +52,7 @@ export class AuthController{
 
     //================================================================================================================================
     //function to set password (if it's new user, e.x: new driver )
-    async setPassword(req: Request , res: Response):Promise<void>{
+    async setPassword(req: Request , res: Response):Promise<void | string>{
         return authService.setPassword(req, res, tokenNames.setPasswordToken);
     }
 }
