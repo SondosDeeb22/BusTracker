@@ -138,7 +138,7 @@ export class UserHelper{
                     });
 
                     if (duplicated) {
-                        fail(500, `a ${dataName} was not Added, because a ${dataName} with the same ${field} already exists!`);
+                        fail(500, `${dataName} was not Added, because another ${dataName} with the same ${field} already exists!`);
                         return;
                     }
                 }
