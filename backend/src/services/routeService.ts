@@ -80,10 +80,7 @@ export class RouteService{
 
             if(displayAll){
                 routes = await RouteModel.findAll({
-                    where:{
-                        status: status.covered
-                    }, 
-                    attributes: ['id', 'title']
+                    attributes: ['id', 'title', 'color', 'totalStops', 'status']
                 });
                 
             }else{
@@ -100,10 +97,11 @@ export class RouteService{
                         where: {
                             id: routeId[i]?.assignedRoute
                         },
-                        attributes: ['id', 'title', 'color']
+                        attributes: ['id', 'title', 'color', 'totalStops', 'status']
                     });
-                    routes.push(route);
-
+                    if(route) {
+                        routes.push(route);
+                    }
                 }
             }
 

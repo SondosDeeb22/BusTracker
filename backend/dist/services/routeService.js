@@ -63,10 +63,7 @@ class RouteService {
             let routes = [];
             if (displayAll) {
                 routes = await routeModel_1.default.findAll({
-                    where: {
-                        status: routeEnum_1.status.covered
-                    },
-                    attributes: ['id', 'title']
+                    attributes: ['id', 'title', 'color', 'totalStops', 'status']
                 });
             }
             else {
@@ -82,9 +79,11 @@ class RouteService {
                         where: {
                             id: routeId[i]?.assignedRoute
                         },
-                        attributes: ['id', 'title', 'color']
+                        attributes: ['id', 'title', 'color', 'totalStops', 'status']
                     });
-                    routes.push(route);
+                    if (route) {
+                        routes.push(route);
+                    }
                 }
             }
             (0, messageTemplate_1.sendResponse)(res, 200, null, routes);

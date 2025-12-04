@@ -3,6 +3,7 @@ import Login from "./pages/login";
 import Homepage from "./pages/homepage";
 import DriversPage from "./pages/driversPage";
 import BusesPage from "./pages/busesPage";
+import RoutesPage from "./pages/routesPage";
 import HomepageLayout from "./layouts/homepageLayout";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ForgotPassword from "./pages/ForgotPasswordPage";
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "buses",
         element: <BusesPage />
+      },
+      {
+        path: "routes",
+        element: <RoutesPage />
       }
     ]
   }

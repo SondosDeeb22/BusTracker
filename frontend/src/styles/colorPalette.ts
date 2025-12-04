@@ -21,6 +21,7 @@ export const {
 //======================================================================================
 import { status as busStatus } from '../../../backend/src/enums/busEnum';
 import { status as userStatus } from '../../../backend/src/enums/userEnum';
+import { status as routeStatus } from '../../../backend/src/enums/routeEnum';
 
 //======================================================================================
 //? Status Configuration
@@ -55,10 +56,22 @@ export const statusConfig = {
       label: 'Passive',
       priority: 'low'
     }
+  },
+  route: {
+    [routeStatus.covered]: { 
+      color: 'bg-green-100 text-green-800', 
+      label: 'Covered',
+      priority: 'high'
+    },
+    [routeStatus.unassigned]: { 
+      color: 'bg-gray-100 text-gray-800', 
+      label: 'Unassigned',
+      priority: 'low'
+    }
   }
 };
 
-export type StatusType = 'bus' | 'driver';
+export type StatusType = 'bus' | 'driver' | 'route';
 
 //======================================================================================
 //? Helper Functions
