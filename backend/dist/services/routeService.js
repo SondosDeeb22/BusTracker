@@ -66,7 +66,7 @@ class RouteService {
                     where: {
                         status: routeEnum_1.status.covered
                     },
-                    attributes: ['title']
+                    attributes: ['id', 'title']
                 });
             }
             else {
@@ -82,7 +82,7 @@ class RouteService {
                         where: {
                             id: routeId[i]?.assignedRoute
                         },
-                        attributes: ['title', 'color']
+                        attributes: ['id', 'title', 'color']
                     });
                     routes.push(route);
                 }

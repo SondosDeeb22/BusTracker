@@ -3,9 +3,9 @@
 //======================================================================================
 import { useState } from 'react';
 import Table from '../components/Table';
-import AddDriver from '../components/driver/addDriver';
-import RemoveDriver from '../components/driver/removeDriver';
-import UpdateDriver from '../components/driver/updateDriver';
+import AddDriver from '../components/drivers/addDriver';
+import RemoveDriver from '../components/drivers/removeDriver';
+import UpdateDriver from '../components/drivers/updateDriver';
 
 
 //======================================================================================

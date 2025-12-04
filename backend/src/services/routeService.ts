@@ -83,7 +83,7 @@ export class RouteService{
                     where:{
                         status: status.covered
                     }, 
-                    attributes: ['title']
+                    attributes: ['id', 'title']
                 });
                 
             }else{
@@ -100,7 +100,7 @@ export class RouteService{
                         where: {
                             id: routeId[i]?.assignedRoute
                         },
-                        attributes: ['title', 'color']
+                        attributes: ['id', 'title', 'color']
                     });
                     routes.push(route);
 
