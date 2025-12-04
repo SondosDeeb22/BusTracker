@@ -4,6 +4,7 @@ import Homepage from "./pages/homepage";
 import DriversPage from "./pages/driversPage";
 import BusesPage from "./pages/busesPage";
 import RoutesPage from "./pages/routesPage";
+import StationsPage from "./pages/stationsPage";
 import HomepageLayout from "./layouts/homepageLayout";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ForgotPassword from "./pages/ForgotPasswordPage";
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "routes",
         element: <RoutesPage />
+      },
+      {
+        path: "stations",
+        element: <StationsPage />
       }
     ]
   }

@@ -22,6 +22,7 @@ export const {
 import { status as busStatus } from '../../../backend/src/enums/busEnum';
 import { status as userStatus } from '../../../backend/src/enums/userEnum';
 import { status as routeStatus } from '../../../backend/src/enums/routeEnum';
+import { status as stationStatus } from '../../../backend/src/enums/stationEnum';
 
 //======================================================================================
 //? Status Configuration
@@ -68,10 +69,22 @@ export const statusConfig = {
       label: 'Unassigned',
       priority: 'low'
     }
+  },
+  station: {
+    [stationStatus.covered]: { 
+      color: 'bg-green-100 text-green-800', 
+      label: 'Covered',
+      priority: 'high'
+    },
+    [stationStatus.notCovered]: { 
+      color: 'bg-red-100 text-red-800', 
+      label: 'Not Covered',
+      priority: 'low'
+    }
   }
 };
 
-export type StatusType = 'bus' | 'driver' | 'route';
+export type StatusType = 'bus' | 'driver' | 'route' | 'station';
 
 //======================================================================================
 //? Helper Functions

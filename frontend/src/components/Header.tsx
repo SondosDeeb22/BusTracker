@@ -50,30 +50,38 @@ const Header = () => {
     {/* Navigation bar ================================================================================================================ */}
     <nav className="h-12 w-full flex items-center justify-center " style={{ backgroundColor: COLORS.navbar }}>
         <div className="flex justify-between w-full max-w-[80%] mx-auto px-5">
+            
             <a href="/homepage" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <HomeIcon className="h-5 w-5" />
                 <span>Homepage</span>
             </a>
+
             <a href="/drivers" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <UserIcon className="h-5 w-5" />
                 <span>Drivers</span>
             </a>
+
             <a href="/buses" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <TruckIcon className="h-5 w-5" />
                 <span>Buses</span>
             </a>
+
             <a href="/routes" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <MapIcon className="h-5 w-5" />
                 <span>Routes</span>
             </a>
+
+            <a href="/stations" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
+                <BuildingOfficeIcon className="h-5 w-5" />
+                <span>Bus Stations</span>
+            </a>
+
             <a href="#" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <CalendarDaysIcon className="h-5 w-5" />
                 <span>Bus Schedule</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
-                <BuildingOfficeIcon className="h-5 w-5" />
-                <span>Bus Stations</span>
-            </a>
+
+            
         </div>
     </nav>
     </>
