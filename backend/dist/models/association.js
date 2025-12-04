@@ -26,6 +26,7 @@ userModel_1.default.hasOne(busModel_1.default, {
 //---------------------------------------------------------------------------------
 busModel_1.default.belongsTo(routeModel_1.default, {
     foreignKey: 'assignedRoute',
+    as: 'route',
     onDelete: 'CASCADE',
 });
 routeModel_1.default.hasMany(busModel_1.default, {

@@ -15,3 +15,76 @@ export const {
   burgundy, 
   navbar
 } = COLORS;
+
+//======================================================================================
+//? Import Backend Enums
+//======================================================================================
+import { status as busStatus } from '../../../backend/src/enums/busEnum';
+import { status as userStatus } from '../../../backend/src/enums/userEnum';
+
+//======================================================================================
+//? Status Configuration
+//======================================================================================
+
+export const statusConfig = {
+  bus: {
+    [busStatus.operating]: { 
+      color: 'bg-green-100 text-green-800', 
+      label: 'Operating',
+      priority: 'high'
+    },
+    [busStatus.offline]: { 
+      color: 'bg-gray-100 text-gray-800', 
+      label: 'Offline',
+      priority: 'low'
+    },
+    [busStatus.maintenance]: { 
+      color: 'bg-yellow-100 text-yellow-800', 
+      label: 'Maintenance',
+      priority: 'medium'
+    }
+  },
+  driver: {
+    [userStatus.active]: { 
+      color: 'bg-green-100 text-green-800', 
+      label: 'Active',
+      priority: 'high'
+    },
+    [userStatus.passive]: { 
+      color: 'bg-red-100 text-red-800', 
+      label: 'Passive',
+      priority: 'low'
+    }
+  }
+};
+
+export type StatusType = 'bus' | 'driver';
+
+//======================================================================================
+//? Helper Functions
+//======================================================================================
+
+export const getStatusConfig = (type: StatusType, status: string) => {
+  const typeConfig = statusConfig[type];
+  if (!typeConfig) {
+    return {
+      color: 'bg-gray-100 text-gray-800',
+      label: status,
+      priority: 'low'
+    };
+  }
+  
+  return typeConfig[status as keyof typeof typeConfig] || {
+    color: 'bg-gray-100 text-gray-800',
+    label: status,
+    priority: 'low'
+  };
+};
+
+export const getStatusColor = (type: StatusType, status: string) => {
+  return getStatusConfig(type, status).color;
+};
+
+export const getStatusLabel = (type: StatusType, status: string) => {
+  return getStatusConfig(type, status).label;
+};

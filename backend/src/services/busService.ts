@@ -7,6 +7,8 @@ import {Request, Response } from 'express';
 
 //import models
 import BusModel from "../models/busModel";
+import UserModel from "../models/userModel";
+import RouteModel from "../models/routeModel";
 
 //import Enums
 import { status } from '../enums/busEnum';
@@ -64,7 +66,21 @@ export class BusService{
     async fetchAllBuses(req: Request, res: Response){
         try {
             const buses = await BusModel.findAll({
-                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver']
+                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
+                include: [
+                    {
+                        model: UserModel,
+                        as: 'driver',
+                        attributes: ['id', 'name', 'email'],
+                        required: false
+                    },
+                    {
+                        model: RouteModel,
+                        as: 'route',
+                        attributes: ['id', 'title'],
+                        required: false
+                    }
+                ]
             });
 
             res.status(200).json({

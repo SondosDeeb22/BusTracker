@@ -96,12 +96,7 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Add New Bus</h2>
-        
-        {/* Debug info */}
-        <div className="mb-4 text-xs text-gray-500">
-          <div>Routes count: {routes.length}</div>
-          <div>Drivers count: {drivers.length}</div>
-        </div>
+
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

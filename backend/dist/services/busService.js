@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BusService = void 0;
 //import models
 const busModel_1 = __importDefault(require("../models/busModel"));
+const userModel_1 = __importDefault(require("../models/userModel"));
+const routeModel_1 = __importDefault(require("../models/routeModel"));
 //import Enums
 const busEnum_1 = require("../enums/busEnum");
 const userHelper_1 = require("../helpers/userHelper");
@@ -46,7 +48,21 @@ class BusService {
     async fetchAllBuses(req, res) {
         try {
             const buses = await busModel_1.default.findAll({
-                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver']
+                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
+                include: [
+                    {
+                        model: userModel_1.default,
+                        as: 'driver',
+                        attributes: ['id', 'name', 'email'],
+                        required: false
+                    },
+                    {
+                        model: routeModel_1.default,
+                        as: 'route',
+                        attributes: ['id', 'title'],
+                        required: false
+                    }
+                ]
             });
             res.status(200).json({
                 success: true,

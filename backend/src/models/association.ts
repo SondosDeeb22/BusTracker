@@ -27,6 +27,7 @@ UserModel.hasOne(BusModel,{
 
 BusModel.belongsTo(RouteModel,{
     foreignKey: 'assignedRoute',
+    as: 'route',
     onDelete: 'CASCADE',
 });
 
