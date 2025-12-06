@@ -25,9 +25,11 @@ const busService = new BusService();
 import authHleper from '../helpers/authHelpher';
 const authHelper = new authHleper();
 
-
+import { Op } from 'sequelize';
 
 import { sendResponse } from "../exceptions/messageTemplate";
+import BusScheduleModel from '../models/busScheduleModel';
+import RouteModel from '../models/routeModel';
 
 //===================================================================================================
 
@@ -131,4 +133,5 @@ export class UserService{
             return;
         }
     }
+
 }

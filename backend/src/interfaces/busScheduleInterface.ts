@@ -14,6 +14,6 @@ export interface BusScheduleAttributes{
     routeId: string,
     createdAt: Date,
     createdBy: string,
-    lastupdated: Date,
-    updatedBy: string,
+    updatedAt?: Date,
+    updatedBy?: string,
 }

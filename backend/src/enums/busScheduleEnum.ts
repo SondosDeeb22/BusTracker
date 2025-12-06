@@ -3,12 +3,12 @@
 //==============================
 
 export enum weekDays{
-    monday = 'monday',
-    tuesday = 'tuesday',
-    wednesday = 'wednesday',
-    thursday = 'thursday',
-    friday = 'friday',
-    saturday = 'saturday',
-    sunday = 'sunday'
+    monday = 'Monday',
+    tuesday = 'Tuesday',
+    wednesday = 'Wednesday',
+    thursday = 'Thursday',
+    friday = 'Friday',
+    saturday = 'Saturday',
+    sunday = 'Sunday'
 };
 

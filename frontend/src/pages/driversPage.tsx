@@ -115,6 +115,7 @@ const DriversPage = () => {
       <Table
         key={tableKey}
         title="Drivers"
+        subtitle="Drivers"
         endpoint="http://localhost:3001/api/admin/drivers/fetch"
         onEdit={handleEdit}
         onDelete={handleDelete}

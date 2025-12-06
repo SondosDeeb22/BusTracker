@@ -28,9 +28,6 @@ class UserController {
     // =================================================================================================================================
     // start/ stop bus (by driver)
     //===================================================================================================================    
-    // async changeBusStatus(req: Request, res: Response){
-    //     return busService.updateBus(req, res)
-    // }
     async changeBusStatus(req, res) {
         return userService.updateBusStatus(req, res);
     }

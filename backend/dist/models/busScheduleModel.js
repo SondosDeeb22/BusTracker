@@ -60,11 +60,11 @@ BusScheduleModel.init({
     },
     createdAt: {
         type: sequelize_1.DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     createdBy: {
         type: sequelize_1.DataTypes.STRING(4),
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'users',
             key: 'id',
@@ -72,13 +72,13 @@ BusScheduleModel.init({
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
     },
-    lastupdated: {
+    updatedAt: {
         type: sequelize_1.DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     updatedBy: {
         type: sequelize_1.DataTypes.STRING(4),
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'users',
             key: 'id',

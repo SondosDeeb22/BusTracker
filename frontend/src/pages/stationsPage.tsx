@@ -123,6 +123,7 @@ const StationsPage = () => {
       <Table
         key={tableKey}
         title="Stations"
+        subtitle="Stations"
         endpoint="http://localhost:3001/api/admin/stations/fetch"
         onAddNew={handleAddNew}
         onEdit={handleEditStation}

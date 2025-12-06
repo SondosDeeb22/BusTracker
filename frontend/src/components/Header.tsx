@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 //importing pictures ==============================
-import busTrackerLogo from '../assets/busTrackerlogo.png';
+import BusLogoWhite from '../assets/BusLogoWhite.png';
 import user from '../assets/user.png';
 
 //importing icons ==============================
@@ -36,7 +36,7 @@ const Header = () => {
     <header className="h-20 w-full flex items-center justify-between px-5" style={{ backgroundColor: COLORS.burgundy }}>
         {/* Logo -------------- */}
         <div className="flex items-center space-x-3">
-            <img className="h-10 w-10" src={busTrackerLogo} alt="Bus Tracker Logo"/>
+            <img className="h-12 w-12" src={BusLogoWhite} alt="Bus Tracker Logo"/>
             <p className="text-lg font-semibold text-white">Near East University Bus Tracker Admin</p>
         </div>
         
@@ -76,7 +76,7 @@ const Header = () => {
                 <span>Bus Stations</span>
             </a>
 
-            <a href="#" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
+            <a href="/schedule" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <CalendarDaysIcon className="h-5 w-5" />
                 <span>Bus Schedule</span>
             </a>

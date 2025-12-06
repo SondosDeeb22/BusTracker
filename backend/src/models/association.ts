@@ -62,6 +62,7 @@ stationModel.belongsToMany(RouteModel, {
 
 BusScheduleModel.belongsTo(RouteModel,{
     foreignKey: 'routeId',
+    as: 'route',
     onDelete: 'CASCADE',
 });
 
@@ -91,7 +92,7 @@ BusScheduleModel.belongsTo(UserModel,{
     onDelete: 'CASCADE',
 });
 
-UserModel.hasOne(BusScheduleModel,{
+UserModel.hasMany(BusScheduleModel,{
     foreignKey: 'updatedBy',
 });
 
@@ -99,6 +100,7 @@ UserModel.hasOne(BusScheduleModel,{
 
 BusScheduleModel.belongsTo(UserModel, {
   foreignKey: 'driverId',
+  as: 'driver',
   onDelete: 'RESTRICT',
 });
 UserModel.hasMany(BusScheduleModel, {

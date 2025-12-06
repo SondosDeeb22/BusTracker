@@ -135,6 +135,7 @@ const RoutesPage = () => {
       <Table
         key={tableKey}
         title="Routes"
+        subtitle="Routes"
         endpoint="http://localhost:3001/api/user/routes/all"
         onAddNew={handleAddNew}
         onEdit={handleEditRoute}

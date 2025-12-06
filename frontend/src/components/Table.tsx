@@ -13,6 +13,7 @@ interface ColumnConfig {
 
 interface TableProps {
   title: string;
+  subtitle: string;
   endpoint: string;
   onEdit?: (item: TableData) => void;
   onDelete?: (item: TableData) => void;
@@ -28,6 +29,7 @@ interface TableProps {
 
 const Table: React.FC<TableProps> = ({
   title,
+  subtitle,
   endpoint,
   onEdit,
   onDelete,
@@ -66,6 +68,8 @@ const Table: React.FC<TableProps> = ({
       const result = await response.json();
       const tableData = result.data || [];
       
+      console.log('API Response Data:', tableData); // debug log ----------------------------------
+      
       setData(tableData);
       
       // Extract column names from the first item if no column config provided
@@ -103,40 +107,8 @@ const Table: React.FC<TableProps> = ({
       if (config?.formatter) return config.formatter(value, columnName, row);
     }
 
-    // Default formatting logic
+    // Default formatting logic - just return the value as-is
     if (value === null || value === undefined) return '-';
-    
-    // Date formatting
-    if (columnName.toLowerCase().includes('date') || columnName.toLowerCase().includes('expiry')) {
-      return new Date(value).toLocaleDateString();
-    }
-    
-    // Status formatting with badges
-    if (columnName.toLowerCase().includes('status')) {
-      const isActive = value === 'Active' || value === 'active' || value === true;
-      return (
-        <span
-          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-            isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {String(value)}
-        </span>
-      );
-    }
-    
-    // Boolean formatting
-    if (typeof value === 'boolean') {
-      return (
-        <span
-          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-            value ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-          }`}
-        >
-          {value ? 'Yes' : 'No'}
-        </span>
-      );
-    }
     
     return String(value);
   };
@@ -180,7 +152,7 @@ const Table: React.FC<TableProps> = ({
       <div className="bg-white rounded-lg shadow-md">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-semibold text-gray-800">{  `${data.length} ${title}`}</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">{  `${data.length} ${subtitle}`}</h2>
           {showAddButton && (
             <button
               onClick={onAddNew}

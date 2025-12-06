@@ -24,12 +24,12 @@ class BusScheduleModel extends Model< InferAttributes<BusScheduleModel>, InferCr
     declare date:Date;
     declare day: keyof typeof weekDays;
     declare driverId: string;
-    declare busId: string;
     declare routeId: string;
+    declare busId: string;
     declare createdAt: Date;
     declare createdBy: string;
-    declare lastupdated: Date;
-    declare updatedBy: string;
+    declare updatedAt?: Date;
+    declare updatedBy?: string;
 }
 
 //======================================================================================================================
@@ -84,11 +84,11 @@ BusScheduleModel.init( {
     
     createdAt: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     createdBy: {
       type: DataTypes.STRING(4),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'users',
         key: 'id',
@@ -96,13 +96,14 @@ BusScheduleModel.init( {
       onDelete: 'RESTRICT',
       onUpdate: 'CASCADE',
     },
-    lastupdated: {
+    updatedAt: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     updatedBy: {
       type: DataTypes.STRING(4),
-      allowNull: false,
+      allowNull: true,
+      
       references: {
         model: 'users',
         key: 'id',

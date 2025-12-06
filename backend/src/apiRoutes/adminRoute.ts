@@ -30,6 +30,11 @@ import { StationController } from "../controllers/stationController";
 const stationController = new StationController();
 
 
+import { UserController } from "../controllers/userController";
+const userController = new UserController();
+ 
+import {BusScheduleController} from "../controllers/busScheduleController";
+const busScheduleController = new BusScheduleController();
 //import  Middlewares -------------------------------------
 import { accessRequireToken } from '../middlewares/tokenRequired'; // for authentication
 
@@ -50,6 +55,8 @@ router.post('/route/add', accessRequireToken(tokenNames.loginToken), authorizeRo
 
 router.post('/station/add', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), stationController.addStation);
 
+router.post('/schedule/add', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), busScheduleController.addSchedule);
+
 
 // Remove
 
@@ -60,6 +67,8 @@ router.delete('/bus/remove', accessRequireToken(tokenNames.loginToken), authoriz
 router.delete('/route/remove', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), routeController.removeRoute);
 
 router.delete('/station/remove', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), stationController.removeStation);
+
+router.delete('/schedule/remove', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), busScheduleController.removeSchedule);
 
 
 //Update
@@ -72,13 +81,17 @@ router.patch('/route/update',  accessRequireToken(tokenNames.loginToken), author
 
 router.patch('/station/update',  accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), stationController.updateStation);
 
-// fetch all drivers
+router.patch('/schedule/update', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), busScheduleController.updateSchedule);
+
+
+// fetch 
 router.get('/drivers/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), driverController.fetchAllDrivers);
 
-// fetch all buses
 router.get('/buses/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), busController.fetchAllBuses);
 
-// fetch all stations
+
 router.get('/stations/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), stationController.fetchAllStations);
+
+router.get('/schedule/fetch', accessRequireToken(tokenNames.loginToken), authorizeRole(role.admin), busScheduleController.getSchedules);
 //===========================================================================================================================
 export default router;

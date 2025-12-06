@@ -51,6 +51,7 @@ stationModel_1.default.belongsToMany(routeModel_1.default, {
 // Route Model ---------------------------------------------------------------------------------
 busScheduleModel_1.default.belongsTo(routeModel_1.default, {
     foreignKey: 'routeId',
+    as: 'route',
     onDelete: 'CASCADE',
 });
 routeModel_1.default.hasMany(busScheduleModel_1.default, {
@@ -71,12 +72,13 @@ busScheduleModel_1.default.belongsTo(userModel_1.default, {
     as: 'updater',
     onDelete: 'CASCADE',
 });
-userModel_1.default.hasOne(busScheduleModel_1.default, {
+userModel_1.default.hasMany(busScheduleModel_1.default, {
     foreignKey: 'updatedBy',
 });
 // User Model (driver) ---------------------------------------------------------------------------------
 busScheduleModel_1.default.belongsTo(userModel_1.default, {
     foreignKey: 'driverId',
+    as: 'driver',
     onDelete: 'RESTRICT',
 });
 userModel_1.default.hasMany(busScheduleModel_1.default, {

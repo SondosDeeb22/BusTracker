@@ -6,12 +6,12 @@ declare class BusScheduleModel extends Model<InferAttributes<BusScheduleModel>, 
     date: Date;
     day: keyof typeof weekDays;
     driverId: string;
-    busId: string;
     routeId: string;
+    busId: string;
     createdAt: Date;
     createdBy: string;
-    lastupdated: Date;
-    updatedBy: string;
+    updatedAt?: Date;
+    updatedBy?: string;
 }
 export default BusScheduleModel;
 //# sourceMappingURL=busScheduleModel.d.ts.map

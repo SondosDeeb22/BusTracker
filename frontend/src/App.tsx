@@ -10,7 +10,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ForgotPassword from "./pages/ForgotPasswordPage";
 import ResetPassword from "./pages/resetPasswordPage";
 import SetPassword from "./pages/setPassword";
-
+import BusSchedule from './pages/busSchedule'
 
 const router = createBrowserRouter([
   {
@@ -52,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "stations",
         element: <StationsPage />
+      },
+      {
+        path: "schedule",
+        element: <BusSchedule />
       }
     ]
   }

@@ -7,6 +7,7 @@ import { UserService } from '../services/userServices';
 const userService = new UserService();
 
 import { BusService } from '../services/busService';
+import users from '../seeders/sampleUser';
 const busService = new BusService();
 //============================================================================================================================================================
 
@@ -40,14 +41,13 @@ export class UserController{
     async changeRoute(req: Request, res: Response){
         return userService.changeRoute(req, res);
     }
+
     // =================================================================================================================================
     // start/ stop bus (by driver)
     //===================================================================================================================    
-    
-    // async changeBusStatus(req: Request, res: Response){
-    //     return busService.updateBus(req, res)
-    // }
     async changeBusStatus(req: Request, res: Response){
         return userService.updateBusStatus(req, res)
     }
+
+
 }

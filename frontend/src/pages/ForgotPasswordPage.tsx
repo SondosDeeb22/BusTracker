@@ -36,6 +36,7 @@ const ForgotPassword = () => {
       
 
     } catch (error) {
+      setLoading(false);
       setError('This email is not registered in our system. Please use the email associated with your account');
       console.error('email not registered in system error:', error);
 
