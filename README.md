@@ -8,16 +8,11 @@ A comprehensive web application for managing and tracking university buses in re
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [API Documentation](#api-documentation)
-- [Authentication & Security](#authentication--security)
+- [System Requirements](#system-requirement)
 - [Database](#database)
-- [Contributing](#contributing)
-- [License](#license)
+- [API Documentation](#API-documentation)
+- [Authentication & Security](#authentication--security)
 
-## -----------------------------------------------------------------------------------
 
 ## Overview
 
@@ -47,7 +42,6 @@ The Bus Tracker system is designed to streamline university transportation manag
 - **Token Verification Middleware** - Automatic validation on all protected endpoints
 - **Email-Based Password Recovery** - Secure password reset with token verification
 
-## -----------------------------------------------------------------------------------
 
 ## Technology Stack
 
@@ -74,7 +68,6 @@ The Bus Tracker system is designed to streamline university transportation manag
 - **npm** - JavaScript package manager
 - **ESLint & Prettier** - Code quality and formatting
 
-## -----------------------------------------------------------------------------------
 
 ## Project Structure
 
@@ -149,7 +142,6 @@ webApp/
     └── tsconfig.json
 ```
 
-## -----------------------------------------------------------------------------------
 
 ### System Requirements
 
@@ -160,7 +152,17 @@ Before you begin, ensure you have the following installed on your system:
 - **MySQL** v12.0 or higher
 - **Git** v2.0 or higher
 
-## -----------------------------------------------------------------------------------
+## Database
+
+### Schema Overview
+
+#### Users Table
+#### Drivers Table
+#### Buses Table
+#### Routes Table
+#### Stations Table
+#### Bus Schedules Table
+#### Contributing
 
 ## API Documentation
 
@@ -228,7 +230,6 @@ Before you begin, ensure you have the following installed on your system:
 | **PATCH** | `/change-route` | ✅ | Change route (drivers) |
 | **PATCH** | `/tracking` | ✅ | Start/Stop tracking |
 
-## -----------------------------------------------------------------------------------
 
 ## Authentication & Security
 
@@ -251,7 +252,6 @@ The application uses JWT (JSON Web Tokens) for stateless authentication:
 | **resetPasswordToken** | Password reset | 1 hour | Password reset flow only |
 | **setPasswordToken** | Initial password setup | 24 hours | Driver account setup |
 
-## -----------------------------------------------------------------------------------
 
 ### Security Measures
 
@@ -274,16 +274,4 @@ Example protected routes:
 - `/api/admin/bus/*` - Bus management (Admin only)
 - `/api/admin/schedule/*` - Schedule management (Admin only)
 
-## -----------------------------------------------------------------------------------
-## Database
-
-### Schema Overview
-
-#### Users Table
-#### Drivers Table
-#### Buses Table
-#### Routes Table
-#### Stations Table
-#### Bus Schedules Table
-#### Contributing
 
