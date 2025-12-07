@@ -29,7 +29,7 @@ const Login = () => {
       );
       //if user is not admin, prevent access ---------------------------------------------------------------------
       try {
-        const checkAuthority = await axios.get('http://localhost:3001/api/auth/me', {
+        const checkAuthority = await axios.get('http://localhost:3001/api/auth/user-info', {
           withCredentials: true // Important: include cookies
         });
         

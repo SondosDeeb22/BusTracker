@@ -28,7 +28,7 @@ import { accessRequireToken } from '../middlewares/tokenRequired';
 
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
-router.get('/me', accessRequireToken(tokenNames.loginToken), authController.getCurrentUser);
+router.get('/user-info', accessRequireToken(tokenNames.loginToken), authController.getCurrentUser);
 
 // Reset Password process
 router.post('/forgot-password', authController.sendEmailToResetPassword);

@@ -26,7 +26,7 @@ export const useAuth = (): UseAuthReturn => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/auth/me', {
+        const response = await axios.get('http://localhost:3001/api/auth/user-info', {
           withCredentials: true
         });
         

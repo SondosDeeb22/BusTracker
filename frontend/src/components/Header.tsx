@@ -16,7 +16,7 @@ const Header = () => {
     // Fetch current user data from secure backend API
     const fetchCurrentUser = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/auth/me', {
+        const response = await axios.get('http://localhost:3001/api/auth/user-info', {
           withCredentials: true // Important: include cookies
         });
         

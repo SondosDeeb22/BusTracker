@@ -23,7 +23,7 @@ const tokenRequired_1 = require("../middlewares/tokenRequired");
 //===========================================================================================================================
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
-router.get('/me', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), authController.getCurrentUser);
+router.get('/user-info', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), authController.getCurrentUser);
 // Reset Password process
 router.post('/forgot-password', authController.sendEmailToResetPassword);
 router.head('/reset-password', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.resetPasswordToken), (req, res) => {
