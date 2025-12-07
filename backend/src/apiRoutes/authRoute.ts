@@ -32,8 +32,13 @@ router.get('/me', accessRequireToken(tokenNames.loginToken), authController.getC
 
 // Reset Password process
 router.post('/forgot-password', authController.sendEmailToResetPassword);
+router.head('/reset-password', accessRequireToken(tokenNames.resetPasswordToken), (req, res) => {
+  res.sendStatus(200);
+});
 router.patch('/reset-password', accessRequireToken(tokenNames.resetPasswordToken), authController.resetPassword); /// reset-password-token is the name of required token
 
+
+// this endpoint for drivers only 
 router.patch('/set-password/:token', authController.setPassword); 
 
 //===========================================================================================================================

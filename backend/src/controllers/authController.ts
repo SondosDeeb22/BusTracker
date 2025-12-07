@@ -55,4 +55,7 @@ export class AuthController{
     async setPassword(req: Request , res: Response):Promise<void | string>{
         return authService.setPassword(req, res, tokenNames.setPasswordToken);
     }
+
 }
+
+//============================================================================================================================================================

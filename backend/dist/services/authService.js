@@ -338,6 +338,7 @@ class AuthService {
             // authHelper.removeCookieToken( res, tokenTitle);
             (0, messageTemplate_1.sendResponse)(res, 200, 'Password was stored successfully');
             return;
+            //======================================================================================================
         }
         catch (error) {
             (0, messageTemplate_1.sendResponse)(res, 500, `Error occurred while setting password. ${error}`);

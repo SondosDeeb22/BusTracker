@@ -437,8 +437,7 @@ class AuthService{
             sendResponse(res, 200, 'Password was stored successfully');
             return;
 
-            
-            
+            //======================================================================================================
         }catch(error){
             sendResponse(res, 500, `Error occurred while setting password. ${error}`);
             return;
