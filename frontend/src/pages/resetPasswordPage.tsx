@@ -19,7 +19,7 @@ const ResetPassword = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await axios.patch('http://localhost:3001/api/auth/reset-password', 
+      await axios.patch('http://localhost:3001/api/auth/reset-password', 
         { newPassword, confirmPassword },
         {
           headers: {
@@ -33,9 +33,15 @@ const ResetPassword = () => {
       navigate('/');
       return;
 
-    } catch (error) {
-      setError('No JWT found');
-      console.error('Error occured while Resetting Password:', error);
+    } catch (error: any) {
+      // If 401 error, token is invalid/expired
+      if (error.response?.status === 401) {
+        setError('Your reset link has expired or is invalid. Please request a new one.');
+        setTimeout(() => navigate('/forgot-password'), 2000);
+      } else {
+        setError('Error resetting password. Please try again.');
+      }
+      console.error('Error occurred while resetting password:', error);
 
     } finally {
       setLoading(false);

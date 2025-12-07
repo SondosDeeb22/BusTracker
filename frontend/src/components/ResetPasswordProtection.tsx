@@ -1,0 +1,97 @@
+//====================================================================================================================================
+//? Importing
+//====================================================================================================================================
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { COLORS } from '../styles/colorPalette';
+
+interface ResetPasswordProtectionProps {
+  children: React.ReactNode;
+}
+
+
+//====================================================================================================================================
+//? ResetPasswordProtection Component - Protects reset password page with token validation
+//====================================================================================================================================
+
+const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ children }) => {
+  const navigate = useNavigate();
+  const [isValid, setIsValid] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        // Make a HEAD request to check if resetPasswordToken is valid
+        // The middleware will validate the token in cookies
+        const response = await fetch('http://localhost:3001/api/auth/reset-password', {
+          method: 'HEAD',
+          credentials: 'include',
+        });
+
+        if (response.ok) {// Token is valid
+          setIsValid(true);
+
+        } else if (response.status === 401) { // Token is invalid/expired         
+          setIsValid(false);
+
+        }
+      //-------------------------------------------------------------------------------------------
+      } catch (error) {
+        console.error('Error checking reset token:', error);
+        setIsValid(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkToken();
+  }, [navigate]);
+
+  // Show loading state while checking token ======================================================================
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-burgundy mx-auto mb-4"></div>
+          <p className="text-gray-600">Verifying reset token...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if token is invalid =========================================================================
+  if (!isValid) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 
+            className="text-2xl font-bold mb-4"
+            style={{color: COLORS.burgundy}}
+          >
+            Invalid Reset Link
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Your reset link has expired or is invalid.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Please request a new password reset link.
+          </p>
+          <a 
+            href="/forgot-password" 
+            className="inline-block px-6 py-2 text-white rounded-md hover:bg-red-900"
+            style={{backgroundColor: COLORS.burgundy}}
+          >
+            Request New Reset Link
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Render the reset password page if token is valid =======================================================================
+  return <>{children}</>;
+};
+//====================================================================================================================================
+export default ResetPasswordProtection;

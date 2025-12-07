@@ -1,16 +1,28 @@
+//===============================================================================================
+//? Importing
+//===============================================================================================
 // import './App.css'
 import Login from "./pages/login";
+import ForgotPassword from "./pages/ForgotPasswordPage";
+import ResetPassword from "./pages/resetPasswordPage";
+// import SetPassword from "./pages/setPassword";
+
 import Homepage from "./pages/homepage";
+import HomepageLayout from "./layouts/homepageLayout";
+
 import DriversPage from "./pages/driversPage";
 import BusesPage from "./pages/busesPage";
 import RoutesPage from "./pages/routesPage";
 import StationsPage from "./pages/stationsPage";
-import HomepageLayout from "./layouts/homepageLayout";
+import BusSchedule from './pages/busSchedule';
+
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ForgotPassword from "./pages/ForgotPasswordPage";
-import ResetPassword from "./pages/resetPasswordPage";
-import SetPassword from "./pages/setPassword";
-import BusSchedule from './pages/busSchedule'
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import ResetPasswordProtection from "./components/ResetPasswordProtection";
+
+//===============================================================================================
 
 const router = createBrowserRouter([
   {
@@ -23,15 +35,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/reset-password",
-    element: <ResetPassword />
+    element: <ResetPasswordProtection><ResetPassword /></ResetPasswordProtection>
   },
-  {
-    path:"/set-password",
-    element: <SetPassword />
-  },
+  // this is for driver, we don't need it in the web app
+  // {
+  //   path:"/set-password",
+  //   element: <SetPassword />
+  // },
   {
     path: "/",
-    element: <HomepageLayout />,
+    element: <ProtectedRoute>  <HomepageLayout />  </ProtectedRoute>,
     children: [
       {
         path: "homepage",
@@ -66,5 +79,6 @@ const App = () => {
   
   return <RouterProvider router={router}/>
 };
+//===============================================================================================
 
 export default App;
