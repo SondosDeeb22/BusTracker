@@ -34,28 +34,28 @@ const authorizeRole_1 = require("../middlewares/authorizeRole"); // for authoriz
 // Router
 //===========================================================================================================================
 // Adding 
-router.post('/driver/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.addDriver);
-router.post('/bus/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.addBus);
-router.post('/route/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.addRoute);
-router.post('/station/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.addStation);
-router.post('/schedule/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.addSchedule);
+router.post('/driver/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.addDriver);
+router.post('/bus/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.addBus);
+router.post('/route/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.addRoute);
+router.post('/station/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.addStation);
+router.post('/schedule/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.addSchedule);
 // Remove
-router.delete('/driver/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.removeDriver);
-router.delete('/bus/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.removeBus);
-router.delete('/route/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.removeRoute);
-router.delete('/station/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.removeStation);
-router.delete('/schedule/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.removeSchedule);
+router.delete('/driver/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.removeDriver);
+router.delete('/bus/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.removeBus);
+router.delete('/route/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.removeRoute);
+router.delete('/station/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.removeStation);
+router.delete('/schedule/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.removeSchedule);
 //Update
-router.patch('/driver/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.updateDriver);
-router.patch('/bus/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.updateBus);
-router.patch('/route/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.updateRoute);
-router.patch('/station/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.updateStation);
-router.patch('/schedule/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.updateSchedule);
+router.patch('/driver/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.updateDriver);
+router.patch('/bus/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.updateBus);
+router.patch('/route/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), routeController.updateRoute);
+router.patch('/station/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.updateStation);
+router.patch('/schedule/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.updateSchedule);
 // fetch 
-router.get('/drivers/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.fetchAllDrivers);
-router.get('/buses/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchAllBuses);
-router.get('/stations/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.fetchAllStations);
-router.get('/schedule/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.getSchedules);
+router.get('/drivers/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.fetchAllDrivers);
+router.get('/buses/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchAllBuses);
+router.get('/stations/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.fetchAllStations);
+router.get('/schedule/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.getSchedules);
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=adminRoute.js.map

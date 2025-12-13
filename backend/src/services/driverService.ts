@@ -18,7 +18,6 @@ import { sendEmail } from "../helpers/sendEmail";
 import  AuthHelper  from '../helpers/authHelpher';
 const authHelper = new AuthHelper();
 
-import { tokenNames } from '../enums/tokenNameEnum';
 import AuthService from './authService';
 const authService = new AuthService();
 

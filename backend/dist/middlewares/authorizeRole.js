@@ -20,7 +20,7 @@ const authHelper = new authHelpher_1.default();
 const authorizeRole = (role) => {
     return (req, res, next) => {
         // Get the user data from the token
-        const tokenData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+        const tokenData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
         if (typeof tokenData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
             console.log(tokenData); // userData here is Error message , check authHelper.ts file
             res.status(500).json({ message: tokenData });

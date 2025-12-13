@@ -30,12 +30,12 @@ router.get('/routes/all', routeController.viewAllRoutes);
 // view routes of operating buses
 router.get('/routes/operating', routeController.viewOperatingRoutes);
 //change the language or appeareance
-router.patch('/language', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), userController.changeLanguage);
-router.patch('/appearance', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), userController.changeAppearance);
+router.patch('/language', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeLanguage);
+router.patch('/appearance', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeAppearance);
 // change the route (by admin)
-router.patch('/change-route', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), userController.changeRoute);
+router.patch('/change-route', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), userController.changeRoute);
 // Start / Stop real-time tracking 
-router.patch('/tracking', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.tokenNames.loginToken), userController.changeBusStatus);
+router.patch('/tracking', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeBusStatus);
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=userRoute.js.map

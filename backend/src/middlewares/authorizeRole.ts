@@ -8,7 +8,7 @@ import { Request, Response, NextFunction } from 'express';
 import { JWTdata } from "../interfaces/helper&middlewareInterface"; // it defiens the structure for the token 
 
 //import enums
-import { tokenNames } from '../enums/tokenNameEnum';
+import { loginToken } from '../enums/tokenNameEnum';
 
 //import helpers
 import AuthHelper from '../helpers/authHelpher';
@@ -24,7 +24,7 @@ export const authorizeRole = (role: string) => {
     return (req: Request, res: Response, next: NextFunction): void=>{
 
     // Get the user data from the token
-    const tokenData = authHelper.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+    const tokenData = authHelper.extractJWTData<JWTdata>(req, loginToken);
     if(typeof tokenData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
         console.log(tokenData); // userData here is Error message , check authHelper.ts file
         res.status(500).json({message: tokenData})

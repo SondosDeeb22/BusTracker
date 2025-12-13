@@ -29,7 +29,7 @@ class BusScheduleService {
     //===================================================================================================
     async addScheduleRecord(req, res) {
         // Extract JWT data to get user ID and name
-        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
         if (typeof jwtData === "string") {
             return (0, messageTemplate_1.sendResponse)(res, 401, jwtData);
         }
@@ -53,7 +53,7 @@ class BusScheduleService {
     //===================================================================================================
     async updateScheduleRecord(req, res) {
         // Extract JWT data to get user ID and name
-        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
         if (typeof jwtData === "string") {
             return (0, messageTemplate_1.sendResponse)(res, 401, jwtData);
         }

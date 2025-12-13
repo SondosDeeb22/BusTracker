@@ -176,7 +176,7 @@ Before you begin, ensure you have the following installed on your system:
 | **POST** | `/forgot-password` | ❌ | Request password reset |
 | **HEAD** | `/reset-password` | ✅ | Verify reset token |
 | **PATCH** | `/reset-password` | ✅ | Submit new password |
-| **PATCH** | `/set-password/:token` | ❌ | Set password (drivers) |
+| **PATCH** | `/set-password/:token` | ✅ | Set password (drivers) |
 
 ### Admin Endpoints (`/api/admin`)
 

@@ -5,7 +5,7 @@
 import Login from "./pages/login";
 import ForgotPassword from "./pages/ForgotPasswordPage";
 import ResetPassword from "./pages/resetPasswordPage";
-// import SetPassword from "./pages/setPassword";
+import SetPassword from "./pages/setPassword";
 
 import Homepage from "./pages/homepage";
 import HomepageLayout from "./layouts/homepageLayout";
@@ -36,6 +36,11 @@ const router = createBrowserRouter([
   {
     path: "/reset-password",
     element: <ResetPasswordProtection><ResetPassword /></ResetPasswordProtection>
+  },
+  // route for drivers to set their initial password (link in validation emails)
+  {
+    path: "/set-password",
+    element: <SetPassword />
   },
   // this is for driver, we don't need it in the web app
   // {

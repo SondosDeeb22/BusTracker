@@ -46,7 +46,7 @@ class AuthController {
     //================================================================================================================================
     //function to set password (if it's new user, e.x: new driver )
     async setPassword(req, res) {
-        return authService.setPassword(req, res, tokenNameEnum_1.tokenNames.setPasswordToken);
+        return authService.setPassword(req, res, tokenNameEnum_1.setPasswordToken);
     }
 }
 exports.AuthController = AuthController;

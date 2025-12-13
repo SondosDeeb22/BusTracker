@@ -18,7 +18,7 @@ import BusModel from '../models/busModel';
 import { sendResponse } from '../exceptions/messageTemplate';
 
 //import Enums ------------------------------------------------------------------------------
-import { tokenNames } from "../enums/tokenNameEnum";
+import { loginToken } from "../enums/tokenNameEnum";
 
 // import interfaces ------------------------------------------------------------------------
 import { JWTdata } from "../interfaces/helper&middlewareInterface";
@@ -166,7 +166,7 @@ class AuthHelper{
     async validateUser(req: Request, res: Response, id: string): Promise<boolean>{
         try{
             // get the logged in user data ---------------------------------------------------
-            const userData = this.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+            const userData = this.extractJWTData<JWTdata>(req, loginToken);
 
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file

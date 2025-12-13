@@ -8,7 +8,6 @@ import { validateEnum } from './validateEnumValue';
 import { Model, ModelStatic } from 'sequelize';
 
 //import Enums ------------------------------------------------------------------------------
-import { tokenNames } from "../enums/tokenNameEnum";
 
 // import interfaces ------------------------------------------------------------------------
 import { JWTdata } from "../interfaces/helper&middlewareInterface";

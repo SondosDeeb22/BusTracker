@@ -10,7 +10,7 @@ import userModel from "../models/userModel";
 //import Enums
 import {status } from '../enums/stationEnum';
 
-import {tokenNames} from '../enums/tokenNameEnum';
+import {loginToken} from '../enums/tokenNameEnum';
 
 //import interfaces
 import { JWTdata } from "../interfaces/helper&middlewareInterface";
@@ -45,7 +45,7 @@ export class UserService{
         try{
             const body = req.body;
 
-            const userData = authHelper.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken);
         
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                     sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
@@ -76,7 +76,7 @@ export class UserService{
         try{
             const body = req.body;
 
-            const userData = authHelper.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken);
 
             if(typeof userData === "string"){ 
                 sendResponse(res, 500, userData);

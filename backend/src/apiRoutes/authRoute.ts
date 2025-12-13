@@ -10,7 +10,7 @@ const router: Router = express.Router();
 //===========================================================================================================================
 
 //import enums ----------------------------------------------------------------
-import { tokenNames } from '../enums/tokenNameEnum';
+import { loginToken, resetPasswordToken } from '../enums/tokenNameEnum';
 
 //import controller ----------------------------------------------------------
 import {AuthController} from "../controllers/authController";
@@ -28,14 +28,14 @@ import { accessRequireToken } from '../middlewares/tokenRequired';
 
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
-router.get('/user-info', accessRequireToken(tokenNames.loginToken), authController.getCurrentUser);
+router.get('/user-info', accessRequireToken(loginToken), authController.getCurrentUser);
 
 // Reset Password process
 router.post('/forgot-password', authController.sendEmailToResetPassword);
-router.head('/reset-password', accessRequireToken(tokenNames.resetPasswordToken), (req, res) => {
+router.head('/reset-password', accessRequireToken(resetPasswordToken), (req, res) => {
   res.sendStatus(200);
 });
-router.patch('/reset-password', accessRequireToken(tokenNames.resetPasswordToken), authController.resetPassword); /// reset-password-token is the name of required token
+router.patch('/reset-password', accessRequireToken(resetPasswordToken), authController.resetPassword); /// reset-password-token is the name of required token
 
 
 // this endpoint for drivers only 

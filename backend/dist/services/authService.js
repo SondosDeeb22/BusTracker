@@ -35,7 +35,7 @@ class AuthService {
     async getCurrentUser(req, res) {
         try {
             // Use the secure extractJWTData function to get user data
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
             if (typeof userData === "string") {
                 (0, messageTemplate_1.sendResponse)(res, 401, userData);
                 return;
@@ -112,14 +112,14 @@ class AuthService {
     // =================================================================================================================================
     async logout(req, res) {
         try {
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
             if (typeof userData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
                 return;
             }
             // get the user name from the token
             const name = userData.userName; //"fix the auth func "
-            authHelper.removeCookieToken(res, tokenNameEnum_1.tokenNames.loginToken);
+            authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
             (0, messageTemplate_1.sendResponse)(res, 200, `${name} logged out`);
             return;
             // ===============================================================================================================================
@@ -152,7 +152,7 @@ class AuthService {
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
             try {
-                authHelper.createJWTtoken(res, tokenNameEnum_1.tokenNames.resetPasswordToken, { email: email }, 600000, true); // 600,000 millisecond = 10 minutes
+                authHelper.createJWTtoken(res, tokenNameEnum_1.resetPasswordToken, { email: email }, 600000, true); // 600,000 millisecond = 10 minutes
             }
             catch (error) {
                 (0, messageTemplate_1.sendResponse)(res, 500, error.message);
@@ -205,7 +205,7 @@ class AuthService {
                 return;
             }
             // extract email from the token ---------------------------------------
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.tokenNames.resetPasswordToken);
+            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.resetPasswordToken);
             if (typeof userData === "string") { // when no userData is string (so it's not object that contains users data ) we stop the function 
                 console.log(userData);
                 (0, messageTemplate_1.sendResponse)(res, 500, userData);
@@ -225,7 +225,7 @@ class AuthService {
                 return;
             }
             // remove the token from the cookie
-            authHelper.removeCookieToken(res, tokenNameEnum_1.tokenNames.resetPasswordToken);
+            authHelper.removeCookieToken(res, tokenNameEnum_1.resetPasswordToken);
             (0, messageTemplate_1.sendResponse)(res, 200, 'Password was resetted successfully');
             return;
             //=========================================================================
@@ -241,9 +241,9 @@ class AuthService {
     async sendValidateEmail(req, res, email) {
         try {
             //create token and store it in cookie----------------------------------------------------------------------------------
-            let setPasswordToken;
+            let setPasswordTokenCreation;
             try {
-                setPasswordToken = authHelper.createJWTtoken(res, tokenNameEnum_1.tokenNames.setPasswordToken, { email: req.body.email }, 86400000, false); // 86,400,000 millisecond = 24 hour
+                setPasswordTokenCreation = authHelper.createJWTtoken(res, tokenNameEnum_1.setPasswordToken, { email: req.body.email }, 1200000, false); // 1,200,000 millisecond = 20 minutes
             }
             catch (error) {
                 console.log('Error occured while creating token:', error);
@@ -252,7 +252,7 @@ class AuthService {
             // ==============================================================================================================================
             const mailSubject = "Set your Password";
             // ---------------------------------------------------------------------
-            const setLink = `http://localhost:3000/set-password?token=${setPasswordToken}`;
+            const setLink = `http://localhost:3000/set-password?token=${setPasswordTokenCreation}`;
             const htmlContent = `
             <p>Hello,</p>
 
@@ -300,6 +300,8 @@ class AuthService {
             // get the passwords from the user input ------------------------------------------
             const body = req.body;
             const { newPassword, confirmPassword } = body;
+            console.log("=============");
+            console.log(token);
             if (!newPassword || !confirmPassword) {
                 (0, messageTemplate_1.sendResponse)(res, 500, "Please provide a password to proceed with the Password Setting operation");
                 return "Please provide a password to proceed with the Password Setting operation";

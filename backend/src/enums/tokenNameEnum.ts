@@ -1,8 +1,11 @@
 //=============================================================================================================
 // Enum that stores the names of the tokens I'm using
 
-export enum tokenNames {
-    loginToken= "loginToken",
-    resetPasswordToken = "resetPasswordToken",
-    setPasswordToken = "setPasswordToken"
-}
+
+const loginToken= "loginToken"
+
+const resetPasswordToken = "resetPasswordToken"
+
+const setPasswordToken = "setPasswordToken"
+
+export {loginToken, resetPasswordToken, setPasswordToken};

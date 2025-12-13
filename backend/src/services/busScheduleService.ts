@@ -25,7 +25,7 @@ import { weekDays } from "../enums/busScheduleEnum";
 import { JWTdata } from "../interfaces/helper&middlewareInterface";
 
 //import enums
-import { tokenNames } from "../enums/tokenNameEnum";
+import {loginToken} from "../enums/tokenNameEnum";
 
 //===================================================================================================
 
@@ -37,7 +37,7 @@ export class BusScheduleService {
 
     async addScheduleRecord(req: Request, res: Response) {
         // Extract JWT data to get user ID and name
-        const jwtData = authHelper.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+        const jwtData = authHelper.extractJWTData<JWTdata>(req, loginToken);
         
         if (typeof jwtData === "string") {
             return sendResponse(res, 401, jwtData);
@@ -67,7 +67,7 @@ export class BusScheduleService {
 
     async updateScheduleRecord(req: Request, res: Response) {
         // Extract JWT data to get user ID and name
-        const jwtData = authHelper.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+        const jwtData = authHelper.extractJWTData<JWTdata>(req, loginToken);
         
         if (typeof jwtData === "string") {
             return sendResponse(res, 401, jwtData);

@@ -18,7 +18,7 @@ import { UserController } from "../controllers/userController";
 const userController = new UserController();
 
 //import enums ----------------------------------------------------------------
-import { tokenNames } from '../enums/tokenNameEnum';
+import { loginToken } from '../enums/tokenNameEnum';
 
 import { role } from '../enums/userEnum';
 
@@ -37,14 +37,14 @@ router.get('/routes/all' , routeController.viewAllRoutes);
 router.get('/routes/operating', routeController.viewOperatingRoutes);
 
 //change the language or appeareance
-router.patch('/language', accessRequireToken(tokenNames.loginToken), userController.changeLanguage);
-router.patch('/appearance', accessRequireToken(tokenNames.loginToken), userController.changeAppearance);
+router.patch('/language', accessRequireToken(loginToken), userController.changeLanguage);
+router.patch('/appearance', accessRequireToken(loginToken), userController.changeAppearance);
 
 
 // change the route (by admin)
-router.patch('/change-route', accessRequireToken(tokenNames.loginToken), authorizeRole(role.driver),  userController.changeRoute);
+router.patch('/change-route', accessRequireToken(loginToken), authorizeRole(role.driver),  userController.changeRoute);
 
 // Start / Stop real-time tracking 
-router.patch('/tracking', accessRequireToken(tokenNames.loginToken), userController.changeBusStatus);
+router.patch('/tracking', accessRequireToken(loginToken), userController.changeBusStatus);
 //===========================================================================================================================
 export default router;

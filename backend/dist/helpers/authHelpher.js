@@ -137,7 +137,7 @@ class AuthHelper {
     async validateUser(req, res, id) {
         try {
             // get the logged in user data ---------------------------------------------------
-            const userData = this.extractJWTData(req, tokenNameEnum_1.tokenNames.loginToken);
+            const userData = this.extractJWTData(req, tokenNameEnum_1.loginToken);
             if (typeof userData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
                 return false;

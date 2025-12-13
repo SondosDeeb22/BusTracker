@@ -6,7 +6,7 @@ import { Request, Response } from "express"
 import bcrypt from "bcrypt";
 
 //import Enums ------------------------------------------------------------------------------
-import { tokenNames } from "../enums/tokenNameEnum";
+import { loginToken, resetPasswordToken, setPasswordToken } from "../enums/tokenNameEnum";
 
 // import interfaces ------------------------------------------------------------------------
 import { loginData, resetPassword, NewPassword} from "../interfaces/authServiceInterface";    
@@ -54,7 +54,7 @@ class AuthService{
     async getCurrentUser(req: Request, res: Response): Promise<void>{
         try {
             // Use the secure extractJWTData function to get user data
-            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, tokenNames.loginToken);
+            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, loginToken);
 
             if(typeof userData === "string"){
                 sendResponse(res, 401, userData);
@@ -153,7 +153,7 @@ class AuthService{
 
     async logout(req: Request, res: Response): Promise<void>{
         try {
-            const userData = authHelper.extractJWTData<JWTdata>(req, tokenNames.loginToken);
+            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken);
 
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
@@ -163,7 +163,7 @@ class AuthService{
             // get the user name from the token
             const name: string = userData.userName //"fix the auth func "
 
-            authHelper.removeCookieToken( res, tokenNames.loginToken);
+            authHelper.removeCookieToken( res, loginToken);
 
             sendResponse(res, 200, `${name} logged out`);
             return;
@@ -205,7 +205,7 @@ class AuthService{
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
             try{
-                authHelper.createJWTtoken( res, tokenNames.resetPasswordToken, {email: email}, 600000, true);// 600,000 millisecond = 10 minutes
+                authHelper.createJWTtoken( res, resetPasswordToken, {email: email}, 600000, true);// 600,000 millisecond = 10 minutes
                 
             }catch(error){
                 sendResponse(res, 500, (error as Error).message);
@@ -268,7 +268,7 @@ class AuthService{
             }
 
             // extract email from the token ---------------------------------------
-            const userData= authHelper.extractJWTData<resetPassword>(req, tokenNames.resetPasswordToken);
+            const userData= authHelper.extractJWTData<resetPassword>(req, resetPasswordToken);
 
             if(typeof userData === "string"){ // when no userData is string (so it's not object that contains users data ) we stop the function 
                 console.log(userData);
@@ -294,7 +294,7 @@ class AuthService{
             }
 
             // remove the token from the cookie
-            authHelper.removeCookieToken( res, tokenNames.resetPasswordToken);
+            authHelper.removeCookieToken( res, resetPasswordToken);
 
             sendResponse(res, 200, 'Password was resetted successfully');
             return;
@@ -313,10 +313,10 @@ class AuthService{
     async sendValidateEmail(req: Request, res: Response, email: string, ){
         try{
             //create token and store it in cookie----------------------------------------------------------------------------------
-            let setPasswordToken: string;
+            let setPasswordTokenCreation: string;
             try{
-                setPasswordToken = authHelper.createJWTtoken( res, tokenNames.setPasswordToken
-                , {email: req.body.email}, 86400000, false);// 86,400,000 millisecond = 24 hour
+                setPasswordTokenCreation = authHelper.createJWTtoken( res, setPasswordToken
+                , {email: req.body.email}, 1200000, false);// 1,200,000 millisecond = 20 minutes
                 
                 
             }catch(error){
@@ -327,7 +327,7 @@ class AuthService{
             // ==============================================================================================================================
             const mailSubject: string = "Set your Password";
             // ---------------------------------------------------------------------
-            const setLink = `http://localhost:3000/set-password?token=${setPasswordToken}`; 
+            const setLink = `http://localhost:3000/set-password?token=${setPasswordTokenCreation}`; 
             const htmlContent = `
             <p>Hello,</p>
 
@@ -387,6 +387,8 @@ class AuthService{
                 confirmPassword
             }= body;
 
+            console.log("=============");
+            console.log(token);
             if(!newPassword || !confirmPassword){
                 sendResponse(res, 500, "Please provide a password to proceed with the Password Setting operation");
                 return "Please provide a password to proceed with the Password Setting operation";

@@ -5,7 +5,7 @@ import  AuthService  from '../services/authService';
 import { Request, Response } from 'express';
 
 //import Enums ------------------------------------------------------------------------------
-import { tokenNames } from "../enums/tokenNameEnum";
+import { setPasswordToken } from "../enums/tokenNameEnum";
 
 
 const authService = new AuthService();
@@ -53,7 +53,7 @@ export class AuthController{
     //================================================================================================================================
     //function to set password (if it's new user, e.x: new driver )
     async setPassword(req: Request , res: Response):Promise<void | string>{
-        return authService.setPassword(req, res, tokenNames.setPasswordToken);
+        return authService.setPassword(req, res, setPasswordToken);
     }
 
 }
