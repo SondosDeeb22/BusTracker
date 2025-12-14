@@ -53,8 +53,14 @@ class AuthService{
     //==========================================================================================================
     async getCurrentUser(req: Request, res: Response): Promise<void>{
         try {
-            // Use the secure extractJWTData function to get user data
-            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, loginToken);
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            return;
+            }
+           
+            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, loginToken, jwtLoginKey);
 
             if(typeof userData === "string"){
                 sendResponse(res, 401, userData);
@@ -116,7 +122,14 @@ class AuthService{
                 // Create JWT 
 
                 try{
-                    authHelper.createJWTtoken( res, "loginToken", 
+                    //check if JWT exists in .env file
+                    const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+                    if (!jwtLoginKey) {
+                        sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                        return;
+                    }
+                
+                    authHelper.createJWTtoken( res, loginToken, jwtLoginKey,
                         {userID: userExists.id, userRole: userExists.role, userName: userExists.name                        
                         }, 3600000, true);// 3,600,000 millisecond = 60 minutes
                     
@@ -153,7 +166,14 @@ class AuthService{
 
     async logout(req: Request, res: Response): Promise<void>{
         try {
-            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken);
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                return;
+            }
+           
+            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
@@ -163,7 +183,9 @@ class AuthService{
             // get the user name from the token
             const name: string = userData.userName //"fix the auth func "
 
-            authHelper.removeCookieToken( res, loginToken);
+            authHelper.removeCookieToken(res, loginToken)
+
+            
 
             sendResponse(res, 200, `${name} logged out`);
             return;
@@ -205,7 +227,19 @@ class AuthService{
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
             try{
-                authHelper.createJWTtoken( res, resetPasswordToken, {email: email}, 600000, true);// 600,000 millisecond = 10 minutes
+
+                //check if JWT exists in .env file
+                const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+                if (!jwtResetPasswordKey) {
+                    sendResponse(res, 500, `JWT_RESET_PASSWORD_KEY is not defined : ${jwtResetPasswordKey}`);
+                    return;
+                }
+                authHelper.createJWTtoken( res, 
+                    resetPasswordToken, 
+                    jwtResetPasswordKey, 
+                    {email: email}, 
+                    1200000, 
+                    true);// 1,200,000 millisecond = 20 minutes
                 
             }catch(error){
                 sendResponse(res, 500, (error as Error).message);
@@ -268,7 +302,14 @@ class AuthService{
             }
 
             // extract email from the token ---------------------------------------
-            const userData= authHelper.extractJWTData<resetPassword>(req, resetPasswordToken);
+
+            //check if JWT exists in .env file
+            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+            if (!jwtResetPasswordKey) {
+                sendResponse(res, 500, `JWT_RESET_PASSWORD_KEY is not defined : ${jwtResetPasswordKey}`);
+                return;
+            }
+            const userData= authHelper.extractJWTData<resetPassword>(req, resetPasswordToken, jwtResetPasswordKey);
 
             if(typeof userData === "string"){ // when no userData is string (so it's not object that contains users data ) we stop the function 
                 console.log(userData);
@@ -310,13 +351,19 @@ class AuthService{
     //====================================================================================================
     //? send Validation Email for new user (in order to set his password) 
     //=========================================================================================
-    async sendValidateEmail(req: Request, res: Response, email: string, ){
+    async sendValidateEmail(res: Response, email: string, ){
         try{
-            //create token and store it in cookie----------------------------------------------------------------------------------
+            //create token WITHOUT storing in cookie (only in URL)----------------------------------------------------------------------------------
             let setPasswordTokenCreation: string;
             try{
-                setPasswordTokenCreation = authHelper.createJWTtoken( res, setPasswordToken
-                , {email: req.body.email}, 1200000, false);// 1,200,000 millisecond = 20 minutes
+                //check if JWT exists in .env file
+                const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
+                if (!jwtSetPasswordKey) {
+                    sendResponse(res, 500, `JWT_SET_PASSWORD_KEY is not defined : ${jwtSetPasswordKey}`);
+                    return;
+                 }   
+                setPasswordTokenCreation = authHelper.createJWTtoken( res, setPasswordToken, jwtSetPasswordKey
+                , {email: email}, 1200000, false);// 1,200,000 millisecond = 20 minutes
                 
                 
             }catch(error){
@@ -345,14 +392,13 @@ class AuthService{
                 padding: 12px 24px;">Set Password</a>
             <br><br>
 
-            <p>For security reasons, this link will expire in 24 hours. If the link expires, you can request a new activation link from the login page.</p>
-
+            
             <br><br>
             <p>Thank you,</p>
             <p>NEU Bus Tracker Team</p>
             
             <br><br>
-            <p>Please note that this Link will expire in 24 hours</p>`;
+            <p>Please note that this Reset Link will expire in 10 minutes</p>`;
 
             
             const sendEmailSResponse = await sendEmail(email, mailSubject, htmlContent);
@@ -368,7 +414,7 @@ class AuthService{
     //===================================================================================================================================
     //? set password 
     //===================================================================================================================================
-    async setPassword(req: Request, res: Response, tokenTitle: string): Promise<string | void>{
+    async setPassword(req: Request, res: Response): Promise<string | void>{
         try{ 
             // Extract token from URL parameters (/set-password/:token) -----------------
 
@@ -404,16 +450,24 @@ class AuthService{
 
             // extract email from the token ---------------------------------------
 
-            const JWT_key = process.env.JWT_KEY;
-            if(!JWT_key){
-                sendResponse(res, 500, "Internal Error! missing token key in environment file");
-                return ;
-            }
     
-            const userData = jwt.verify(token, JWT_key) ;
+            //check if JWT exists in .env file
+            const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
+            if (!jwtSetPasswordKey) {
+                sendResponse(res, 500, `JWT_SET_PASSWORD_KEY is not defined : ${jwtSetPasswordKey}`);
+            return;
+            }
+
+            const userData = jwt.verify(token, jwtSetPasswordKey) ;
             if(!userData || typeof userData !== "object"){
                 sendResponse(res, 500, "Invalid JWT token");
                 return "Invalid JWT token";
+            }
+
+            // Validate token has email field (setPasswordToken should have email, not userID/userRole)
+            if(!userData.email){
+                sendResponse(res, 500, "Invalid token format");
+                return "Invalid token format";
             }
         
             // set password in the db ----------------------------------------------------------------------------------------
@@ -433,9 +487,7 @@ class AuthService{
                 return 'Error Occured. Try setting your password again';
             }
 
-            // remove the token from the cookie------------------------------------------------------------
-            // authHelper.removeCookieToken( res, tokenTitle);
-
+    
             sendResponse(res, 200, 'Password was stored successfully');
             return;
 

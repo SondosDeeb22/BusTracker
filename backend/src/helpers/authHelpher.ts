@@ -32,25 +32,27 @@ class AuthHelper{
     // Function to Create JWT
     //===========================================================================================================================================
 
-    createJWTtoken(res: Response, tokenName: string,  components: { [key: string]: number | string | boolean}, maximumAge: number, storeCookie: boolean): string{
+    createJWTtoken(res: Response, 
+        tokenName: string, 
+        secretKey: string,  
+        components: { [key: string]: number | string | boolean}, 
+        maximumAge: number, 
+        storeCookie: boolean ): string{
         //create token ------------------------------------------------------------------------------------
-        const JWTkey = process.env.JWT_KEY;
-        if(!JWTkey){
-            throw new Error("Error in fetching JWT secret key");
-        }
-        const token: string = jwt.sign( components, JWTkey);
+        // const JWTkey = process.env.key;
+        // if(!JWTkey){
+        //     throw new Error("Error in fetching JWT secret key");
+        // }
+        const token: string = jwt.sign( components, secretKey,  { expiresIn: maximumAge / 1000 });
     
-        // generate cookie and store the token inside it------------------------------------------------------------------------------------
-        // res.cookie(tokenName ,token, {httpOnly: true, maxAge: maximumAge});
-
-        // Only set cookie if explicitly requested
+        // Only set cookie if explicitly requested------------------------------------------------------------------------------------
         if(storeCookie){
             res.cookie(tokenName, token, {
             httpOnly: true,
-            maxAge: maximumAge,
-            secure: process.env.NODE_ENV === 'production', // only for HTTPS in production
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'lax' for development
-        });
+            secure: true,
+            sameSite: "strict",
+            path: "/api"
+         });
         } 
         
         return token; // Return the JWT token
@@ -59,17 +61,23 @@ class AuthHelper{
     //===========================================================================================================================================
     // Function to remove a cookie
     //===========================================================================================================================================
-    removeCookieToken( res: Response, tokenName: string ): null{
-        res.clearCookie( tokenName );
-        return null ;
-
+    removeCookieToken(res: Response, tokenName: string): null {
+        res.clearCookie(tokenName, {
+            httpOnly: true,
+            path: "/",
+            sameSite: "lax",
+            secure: false
+        });
+        return null;
     }
 
     //===========================================================================================================================================
     // Function to Extract a token data
     //============================================================================================================================================
-    extractJWTData =  <tokentInterface>(req: Request,  tokenName: string): tokentInterface | string => {
+    extractJWTData =  <tokentInterface>(req: Request,  tokenName: string, secretKey: string): tokentInterface | string => {
         try{
+
+
             // take the token from the cookie 
             const token: string = req.cookies[tokenName];
     
@@ -77,12 +85,12 @@ class AuthHelper{
                 return "Session expired, Please log in again";
             }
             
-            const JWT_key = process.env.JWT_KEY;
-            if(!JWT_key){
-                return "Internal Error! missing token key in environment file";
-            }
+            // const JWT_key = process.env.key;
+            // if(!JWT_key){
+            //     return "Internal Error! missing token key in environment file";
+            // }
     
-            const user_data = jwt.verify(token, JWT_key) as tokentInterface;
+            const user_data = jwt.verify(token, secretKey) as tokentInterface;
             if(!user_data || typeof user_data !== "object"){
                 return "Invalid JWT token";
             }
@@ -165,8 +173,14 @@ class AuthHelper{
     // =================================================================================================================================
     async validateUser(req: Request, res: Response, id: string): Promise<boolean>{
         try{
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if(!jwtLoginKey){
+                sendResponse(res, 500, "Error in fetching JWT secret key");
+                return false;
+            }
+
             // get the logged in user data ---------------------------------------------------
-            const userData = this.extractJWTData<JWTdata>(req, loginToken);
+            const userData = this.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file

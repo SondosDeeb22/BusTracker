@@ -7,8 +7,7 @@ A comprehensive web application for managing and tracking university buses in re
 - [Overview](#overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [System Requirements](#system-requirement)
+- [Setup your environment](#setup-your-environment)
 - [Database](#database)
 - [API Documentation](#API-documentation)
 - [Authentication & Security](#authentication--security)
@@ -69,81 +68,8 @@ The Bus Tracker system is designed to streamline university transportation manag
 - **ESLint & Prettier** - Code quality and formatting
 
 
-## Project Structure
 
-```
-webApp/
-├── frontend/                          # React frontend application
-│   ├── src/
-│   │   ├── components/               # Reusable React components
-│   │   │   ├── Header.tsx            # Navigation header
-│   │   │   ├── ProtectedRoute.tsx    # Route protection wrapper
-│   │   │   └── ResetPasswordProtection.tsx
-│   │   ├── pages/                    # Page components
-│   │   │   ├── login.tsx             # Login page
-│   │   │   ├── homepage.tsx          # Admin dashboard
-│   │   │   ├── driversPage.tsx       # Driver management
-│   │   │   ├── busesPage.tsx         # Bus management
-│   │   │   ├── routesPage.tsx        # Route management
-│   │   │   ├── stationsPage.tsx      # Station management
-│   │   │   ├── busSchedule.tsx       # Schedule management
-│   │   │   ├── ForgotPasswordPage.tsx
-│   │   │   ├── resetPasswordPage.tsx
-│   │   │   └── setPassword.tsx
-│   │   ├── hooks/                    # Custom React hooks
-│   │   │   ├── useAuth.ts            # Authentication hook
-│   │   │   └── useNavigate.ts
-│   │   ├── layouts/                  # Layout components
-│   │   │   └── homepageLayout.tsx
-│   │   ├── styles/                   # Global styles
-│   │   │   └── colorPalette.ts
-│   │   ├── assets/                   # Images and static files
-│   │   ├── App.tsx                   # Main app component
-│   │   └── main.tsx                  # Entry point
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── tsconfig.json
-│
-└── backend/                           # Express backend application
-    ├── src/
-    │   ├── controllers/              # Request handlers
-    │   │   ├── authController.ts
-    │   │   ├── driverController.ts
-    │   │   ├── busController.ts
-    │   │   ├── routeController.ts
-    │   │   ├── stationController.ts
-    │   │   ├── busScheduleController.ts
-    │   │   └── userController.ts
-    │   ├── services/                 # Business logic
-    │   │   ├── authService.ts
-    │   │   ├── driverService.ts
-    │   │   ├── busService.ts
-    │   │   ├── routeService.ts
-    │   │   ├── stationService.ts
-    │   │   ├── busScheduleService.ts
-    │   │   └── userService.ts
-    │   ├── middlewares/              # Express middlewares
-    │   │   ├── tokenRequired.ts      # JWT verification
-    │   │   └── authorizeRole.ts      # Role-based access
-    │   ├── apiRoutes/                # API route definitions
-    │   │   ├── authRoute.ts
-    │   │   ├── adminRoute.ts
-    │   │   └── userRoute.ts
-    │   ├── enums/                    # TypeScript enums
-    │   │   ├── tokenNameEnum.ts
-    │   │   └── userEnum.ts
-    │   ├── helpers/                  # Utility functions
-    │   │   └── authHelper.ts
-    │   ├── config/                   # Configuration files
-    │   │   └── database.ts
-    │   ├── index.ts                  # Server entry point
-    │   └── .env                      # Environment variables
-    ├── package.json
-    └── tsconfig.json
-```
-
-
-### System Requirements
+### Setup your environment
 
 Before you begin, ensure you have the following installed on your system:
 
@@ -248,9 +174,9 @@ The application uses JWT (JSON Web Tokens) for stateless authentication:
 
 | Token Type | Purpose | Expiry | Usage |
 |-----------|---------|--------|-------|
-| **loginToken** | General authentication | 7 days | All authenticated operations |
-| **resetPasswordToken** | Password reset | 1 hour | Password reset flow only |
-| **setPasswordToken** | Initial password setup | 24 hours | Driver account setup |
+| **loginToken** | General authentication | 1 hour | All authenticated operations |
+| **resetPasswordToken** | Password reset | 20 minutes | Password reset flow only |
+| **setPasswordToken** | Initial password setup | 20 minutes | Driver account setup |
 
 
 ### Security Measures
@@ -268,10 +194,4 @@ All administrative routes require:
 - Valid JWT token in cookie
 - Admin role authorization
 - Additional role-specific permissions
-
-Example protected routes:
-- `/api/admin/driver/*` - Driver management (Admin only)
-- `/api/admin/bus/*` - Bus management (Admin only)
-- `/api/admin/schedule/*` - Schedule management (Admin only)
-
 

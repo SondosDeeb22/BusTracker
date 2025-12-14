@@ -36,7 +36,6 @@ const Login = () => {
         const userData = checkAuthority.data.data;
         console.log(userData);
         console.log(userData.userRole);
-        console.log("i Survivid me endpoint")
 
         if (userData.userRole !== 'admin') {
           try {
@@ -45,6 +44,7 @@ const Login = () => {
             {},
             { withCredentials: true }
           );
+          navigate('/', { replace: true });
           setError('Access Denied, unauthorized user');
          }catch(error){
           setError('Internal server error00---')
@@ -56,7 +56,7 @@ const Login = () => {
         }
       } catch (error) {
         console.log(error);
-        setError('Internal server error1111')
+        setError('Internal server error')
       }
 
       

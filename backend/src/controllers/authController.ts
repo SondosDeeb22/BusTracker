@@ -47,13 +47,13 @@ export class AuthController{
     //==================================================================================================================================
     // function to send validate email to set password (for fresh user, like just added dirver)
     async sendValidateEmail(req: Request, res: Response, email: string){
-        return authService.sendValidateEmail(req, res, email);
+        return authService.sendValidateEmail( res, email);
     }
 
     //================================================================================================================================
     //function to set password (if it's new user, e.x: new driver )
     async setPassword(req: Request , res: Response):Promise<void | string>{
-        return authService.setPassword(req, res, setPasswordToken);
+        return authService.setPassword(req, res);
     }
 
 }

@@ -50,7 +50,7 @@ export class DriverService{
         });
 
         // Send validation email
-        await authService.sendValidateEmail(req, res, req.body.email);
+        await authService.sendValidateEmail(res, req.body.email);
 
         return sendResponse(res, 200, "Driver added successfully. Validation email sent.");
     }

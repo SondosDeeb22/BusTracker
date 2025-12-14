@@ -26,25 +26,26 @@ const Header = () => {
         const userData = response.data.data;
         setUserName(userData.userName || 'User');
       } catch (error) {
-        setUserName('User');
+        navigate('/', { replace: true });
       }
     };
 
     fetchCurrentUser();
   }, []);
 
-  // Handle logout
+  // Handle logout ==================================================
   const handleLogout = async () => {
     try {
       await axios.post('http://localhost:3001/api/auth/logout', {}, {
         withCredentials: true
       });
       // Redirect to login page
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Logout failed:', error);
-      // Still redirect even if logout fails
-      navigate('/');
+      
+    }finally{
+      navigate('/', { replace: true });
     }
   };
 

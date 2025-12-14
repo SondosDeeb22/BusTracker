@@ -41,7 +41,7 @@ class DriverService {
                 skipResponse: true
             });
             // Send validation email
-            await authService.sendValidateEmail(req, res, req.body.email);
+            await authService.sendValidateEmail(res, req.body.email);
             return (0, messageTemplate_1.sendResponse)(res, 200, "Driver added successfully. Validation email sent.");
         }
         catch (error) {

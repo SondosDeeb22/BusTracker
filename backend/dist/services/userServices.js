@@ -26,7 +26,13 @@ class UserService {
     async changeLanguage(req, res) {
         try {
             const body = req.body;
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                return;
+            }
+            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
             if (typeof userData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                 (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
                 return;
@@ -49,7 +55,13 @@ class UserService {
     async changeAppearance(req, res) {
         try {
             const body = req.body;
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                return;
+            }
+            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
             if (typeof userData === "string") {
                 (0, messageTemplate_1.sendResponse)(res, 500, userData);
                 return;

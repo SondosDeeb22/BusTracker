@@ -6,6 +6,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { JWTdata } from '../interfaces/helper&middlewareInterface';//  import JWT_data interface (which have the attributes stored in token)
+
+// import exceptions --------------------------------------------------------------------
+import { sendResponse } from "../exceptions/messageTemplate";
+
+
 //=======================================================================================
 //? Authentication functions:
 // it ensures that only logged in users are able to access the routes
@@ -21,16 +26,17 @@ export const accessRequireToken = ( tokenName: string) => {
         res.status(401).json({message: "Session expired, Please log in again"});
         return ;
       }
-      //check JWT key exists in the database
-      const JWTkey = process.env.JWT_KEY;
-      if(!JWTkey){
-          console.error("Internal Error! missing token key in environment file");
-          res.status(500).json({message: "Internal Error! missing token key in environment file"});
-          return ;
+      
+      //check if JWT exists in .env file
+      const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+      if (!jwtLoginKey) {
+          sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+      return;
       }
 
+
       // verifty the correctenss of the token
-      const userData = jwt.verify(token, JWTkey) as JWTdata;
+      const userData = jwt.verify(token, jwtLoginKey) as JWTdata;
       if(!userData || typeof userData !== "object"){
         console.log("Invalid JWT token");
         res.status(401).json({message: "Invalid JWT token"});

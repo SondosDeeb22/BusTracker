@@ -8,6 +8,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.accessRequireToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// import exceptions --------------------------------------------------------------------
+const messageTemplate_1 = require("../exceptions/messageTemplate");
 //=======================================================================================
 //? Authentication functions:
 // it ensures that only logged in users are able to access the routes
@@ -22,15 +24,14 @@ const accessRequireToken = (tokenName) => {
                 res.status(401).json({ message: "Session expired, Please log in again" });
                 return;
             }
-            //check JWT key exists in the database
-            const JWTkey = process.env.JWT_KEY;
-            if (!JWTkey) {
-                console.error("Internal Error! missing token key in environment file");
-                res.status(500).json({ message: "Internal Error! missing token key in environment file" });
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
                 return;
             }
             // verifty the correctenss of the token
-            const userData = jsonwebtoken_1.default.verify(token, JWTkey);
+            const userData = jsonwebtoken_1.default.verify(token, jwtLoginKey);
             if (!userData || typeof userData !== "object") {
                 console.log("Invalid JWT token");
                 res.status(401).json({ message: "Invalid JWT token" });

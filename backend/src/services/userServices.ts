@@ -45,7 +45,14 @@ export class UserService{
         try{
             const body = req.body;
 
-            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken);
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            return;
+            }
+            
+            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
         
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
                     sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
@@ -76,7 +83,14 @@ export class UserService{
         try{
             const body = req.body;
 
-            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken);
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            return;
+            }
+            
+            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
             if(typeof userData === "string"){ 
                 sendResponse(res, 500, userData);

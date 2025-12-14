@@ -29,7 +29,13 @@ class BusScheduleService {
     //===================================================================================================
     async addScheduleRecord(req, res) {
         // Extract JWT data to get user ID and name
-        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
+        //check if JWT exists in .env file
+        const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+        if (!jwtLoginKey) {
+            (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            return;
+        }
+        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
         if (typeof jwtData === "string") {
             return (0, messageTemplate_1.sendResponse)(res, 401, jwtData);
         }
@@ -53,7 +59,13 @@ class BusScheduleService {
     //===================================================================================================
     async updateScheduleRecord(req, res) {
         // Extract JWT data to get user ID and name
-        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken);
+        //check if JWT exists in .env file
+        const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+        if (!jwtLoginKey) {
+            (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            return;
+        }
+        const jwtData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
         if (typeof jwtData === "string") {
             return (0, messageTemplate_1.sendResponse)(res, 401, jwtData);
         }
