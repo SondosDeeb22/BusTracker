@@ -33,7 +33,7 @@ class AuthHelper {
                 httpOnly: true,
                 secure: true,
                 sameSite: "strict",
-                path: "/api"
+                path: "/"
             });
         }
         return token; // Return the JWT token

@@ -4,7 +4,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { COLORS } from '../styles/colorPalette';
+
+import { useSearchParams } from 'react-router-dom';
 
 interface ResetPasswordProtectionProps {
   children: React.ReactNode;
@@ -19,22 +22,28 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
 
   useEffect(() => {
     const checkToken = async () => {
+      // direct user error messsage page in case if the token didn't exists
+      if (!token) {
+        setIsValid(false);
+        setLoading(false);
+        return;
+      }
       try {
         // Make a HEAD request to check if resetPasswordToken is valid
-        // The middleware will validate the token in cookies
-        const response = await fetch('http://localhost:3001/api/auth/reset-password', {
-          method: 'HEAD',
-          credentials: 'include',
+        const response = await axios.head(`http://localhost:3001/api/auth/reset-password/${token}`, {
+          withCredentials: true,
         });
 
-        if (response.ok) {// Token is valid
+        console.log('response is : =======================')
+        console.log(response);
+        if (response.status === 200) {// Token is valid
           setIsValid(true);
-
-        } else if (response.status === 401) { // Token is invalid/expired         
-          setIsValid(false);
 
         }
       //-------------------------------------------------------------------------------------------
@@ -47,7 +56,7 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
     };
 
     checkToken();
-  }, [navigate]);
+  }, [navigate, token]);
 
   // Show loading state while checking token ======================================================================
   if (loading) {

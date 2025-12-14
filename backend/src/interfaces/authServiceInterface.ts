@@ -10,7 +10,7 @@ export interface loginData{
 // ========================================================================================================
 //? interface for data taken from user to perform password reset 
 // ========================================================================================================
-export interface resetPassword{
+export interface emailInterface{
     email: string;
 }
 

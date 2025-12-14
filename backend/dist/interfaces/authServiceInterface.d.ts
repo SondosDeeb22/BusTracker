@@ -2,7 +2,7 @@ export interface loginData {
     email: string;
     password: string;
 }
-export interface resetPassword {
+export interface emailInterface {
     email: string;
 }
 export interface NewPassword {

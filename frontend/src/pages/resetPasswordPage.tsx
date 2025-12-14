@@ -5,6 +5,9 @@ import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
 import { burgundy } from '../styles/colorPalette';
 
+import { useSearchParams } from 'react-router-dom';
+
+
 
 const ResetPassword = () => {
 //   const [email, setEmail] = useState('');
@@ -14,18 +17,22 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await axios.patch('http://localhost:3001/api/auth/reset-password', 
+      await axios.patch(`http://localhost:3001/api/auth/reset-password/${token}`, 
         { newPassword, confirmPassword },
         {
           headers: {
             'Content-Type': 'application/json',
           },
-          withCredentials: true, // Important: include cookies
+          withCredentials: false, // Important: include cookies
         }
       );
       

@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 
 //import Enums ------------------------------------------------------------------------------
 import { setPasswordToken } from "../enums/tokenNameEnum";
+import { loginData, emailInterface, NewPassword} from "../interfaces/authServiceInterface";    
 
 
 const authService = new AuthService();
@@ -41,9 +42,25 @@ export class AuthController{
 
     //=================================================================================================================================
     // function to rest the password
-    async resetPassword(req: Request, res: Response): Promise<void>{
+    async resetPassword(req: Request, res: Response): Promise<void | string>{
         return authService.resetPassword(req, res);
     }
+
+    //==================================================================================================================================
+    // verify reset password token (HEAD/GET)
+
+    
+    async verifyResetPasswordToken(req: Request, res: Response): Promise<void | string | emailInterface>{
+        // ensure that JWT_RESET_PASSWORD_KEY exists in .env
+            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+            if (!jwtResetPasswordKey) {
+                res.sendStatus(500);
+                return  "jwt key is not defined";
+            }
+
+        return authService.verifyToken(req, res, jwtResetPasswordKey);
+    }
+
     //==================================================================================================================================
     // function to send validate email to set password (for fresh user, like just added dirver)
     async sendValidateEmail(req: Request, res: Response, email: string){

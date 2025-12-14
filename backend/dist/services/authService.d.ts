@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
+import { emailInterface } from "../interfaces/authServiceInterface";
 declare class AuthService {
     getCurrentUser(req: Request, res: Response): Promise<void>;
     login(req: Request, res: Response): Promise<void>;
     logout(req: Request, res: Response): Promise<void>;
     sendPasswordResetEmail(req: Request, res: Response): Promise<void>;
-    resetPassword(req: Request, res: Response): Promise<void>;
+    verifyToken(req: Request, res: Response, secretKey: string): Promise<void | string | emailInterface>;
+    resetPassword(req: Request, res: Response): Promise<string | void>;
     sendValidateEmail(res: Response, email: string): Promise<void>;
     setPassword(req: Request, res: Response): Promise<string | void>;
 }

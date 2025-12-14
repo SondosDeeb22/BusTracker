@@ -153,6 +153,9 @@ class AuthService {
         try {
             const body = req.body;
             const { email } = body;
+            // different methdo, 
+            // // Take email from the body -----------------------------
+            // const { email } = req.body as { email?: string };
             if (!email) {
                 (0, messageTemplate_1.sendResponse)(res, 500, 'Enter Email address to proceed in Reset password operation');
                 return;
@@ -168,6 +171,7 @@ class AuthService {
                 return;
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
+            let resetPasswordTokenCreation;
             try {
                 //check if JWT exists in .env file
                 const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
@@ -175,7 +179,7 @@ class AuthService {
                     (0, messageTemplate_1.sendResponse)(res, 500, `JWT_RESET_PASSWORD_KEY is not defined : ${jwtResetPasswordKey}`);
                     return;
                 }
-                authHelper.createJWTtoken(res, tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey, { email: email }, 1200000, true); // 1,200,000 millisecond = 20 minutes
+                resetPasswordTokenCreation = authHelper.createJWTtoken(res, tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey, { email: email }, 1200000, false); // 1,200,000 millisecond = 20 minutes
             }
             catch (error) {
                 (0, messageTemplate_1.sendResponse)(res, 500, error.message);
@@ -187,15 +191,16 @@ class AuthService {
             // If you would like to proceed in this operation, please click on the button below 
             // Please note that this Reset Link will expire in 10 minutes`;
             // ---------------------------------------------------------------------
-            const resetLink = "http://localhost:3000/reset-password";
+            const resetLink = `http://localhost:3000/reset-password?token=${resetPasswordTokenCreation}`;
             const htmlContent = `
             <p>A request has been received to reset the password for your account in NEU Bus Tracker</p>
             <p>If you would like to proceed in this operation, please click on the button below</p>
             <a href="${resetLink}"
                 style="display: inline-block;
-                background-color:blue;
+                background-color:#59011A;
                 color:white;
                 text-decoration:none;
+                font-weight:bold;
                 border-radious: 4px;
                 cursor: pointer;
                 padding: 12px 24px;">Reset Password</a>
@@ -211,11 +216,50 @@ class AuthService {
             return;
         }
     }
+    // =================================================================================================================================
+    //? Function to verify reset-password token (for HEAD/GET checks)
+    // =================================================================================================================================
+    async verifyToken(req, res, secretKey) {
+        try {
+            //get token from url 
+            const token = String(req.params.token || req.query.token);
+            if (!token) {
+                res.sendStatus(401);
+                return "Error occured, token was not found";
+            }
+            // check that token has the email address
+            const userData = jsonwebtoken_1.default.verify(token, secretKey);
+            if (!userData || typeof userData !== "object" || !userData.email) {
+                res.sendStatus(401);
+                return "Invalid JWT token";
+            }
+            // send the userdata (email as respond)
+            res.sendStatus(200);
+            return userData;
+        }
+        catch (error) {
+            res.sendStatus(401);
+            return;
+        }
+    }
     //? =================================================================================================================================
     //? Function to reset the password
     // =================================================================================================================================
     async resetPassword(req, res) {
         try {
+            // ensure that JWT_RESET_PASSWORD_KEY exists in .env
+            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+            if (!jwtResetPasswordKey) {
+                res.sendStatus(500);
+                return "jwt key is not defined";
+            }
+            // ensure token was provided 
+            const userData = await this.verifyToken(req, res, jwtResetPasswordKey);
+            if (!userData || typeof userData === "string") {
+                (0, messageTemplate_1.sendResponse)(res, 401, "Error occurred while verifying reset-password-token");
+                return;
+            }
+            // get the passwords from the user input ------------------------------------------
             const body = req.body;
             const { newPassword, confirmPassword } = body;
             if (!newPassword || !confirmPassword) {
@@ -225,19 +269,6 @@ class AuthService {
             //ensure the user entered identical passwords
             if (newPassword !== confirmPassword) {
                 (0, messageTemplate_1.sendResponse)(res, 500, "Make sure both passwords are identical");
-                return;
-            }
-            // extract email from the token ---------------------------------------
-            //check if JWT exists in .env file
-            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
-            if (!jwtResetPasswordKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_RESET_PASSWORD_KEY is not defined : ${jwtResetPasswordKey}`);
-                return;
-            }
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey);
-            if (typeof userData === "string") { // when no userData is string (so it's not object that contains users data ) we stop the function 
-                console.log(userData);
-                (0, messageTemplate_1.sendResponse)(res, 500, userData);
                 return;
             }
             // update the password in the database ----------------------------------------------------------
@@ -251,7 +282,7 @@ class AuthService {
             });
             if (updatedPassword === 0) {
                 (0, messageTemplate_1.sendResponse)(res, 500, 'Error Occured. Try resetting your password again');
-                return;
+                return 'Error Occured. Try resetting your password again';
             }
             // remove the token from the cookie
             authHelper.removeCookieToken(res, tokenNameEnum_1.resetPasswordToken);
@@ -297,18 +328,15 @@ class AuthService {
 
             <a href="${setLink}"
                 style="display: inline-block;
-                background-color:blue;
+                background-color:#59011A;
                 color:white;
                 text-decoration:none;
-                border-radious: 4px;
+                font-weight:bold;
+                border-radious: 15px;
                 cursor: pointer;
                 padding: 12px 24px;">Set Password</a>
             <br><br>
 
-            
-            <br><br>
-            <p>Thank you,</p>
-            <p>NEU Bus Tracker Team</p>
             
             <br><br>
             <p>Please note that this Reset Link will expire in 10 minutes</p>`;
@@ -345,14 +373,14 @@ class AuthService {
                 (0, messageTemplate_1.sendResponse)(res, 500, "Make sure both passwords are identical");
                 return "Make sure both passwords are identical";
             }
-            // check if user is authorized to commit this action (user has valid setPasswordToken )-----------
-            // extract email from the token ---------------------------------------
+            // Enuse that user is authorized to commit this action (user has valid setPasswordToken )-----------
             //check if JWT exists in .env file
             const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
             if (!jwtSetPasswordKey) {
                 (0, messageTemplate_1.sendResponse)(res, 500, `JWT_SET_PASSWORD_KEY is not defined : ${jwtSetPasswordKey}`);
                 return;
             }
+            // extract email from the token
             const userData = jsonwebtoken_1.default.verify(token, jwtSetPasswordKey);
             if (!userData || typeof userData !== "object") {
                 (0, messageTemplate_1.sendResponse)(res, 500, "Invalid JWT token");

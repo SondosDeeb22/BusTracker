@@ -24,12 +24,10 @@ const tokenRequired_1 = require("../middlewares/tokenRequired");
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.get('/user-info', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), authController.getCurrentUser);
-// Reset Password process
 router.post('/forgot-password', authController.sendEmailToResetPassword);
-// router.head('/reset-password', accessRequireToken(resetPasswordToken), (req, res) => {
-//   res.sendStatus(200);
-// });
-router.patch('/reset-password', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.resetPasswordToken), authController.resetPassword); /// reset-password-token is the name of required token
+// public token verification endpoint for reset password (HEAD) using same handler for shared logic
+router.head('/reset-password/:token', authController.verifyResetPasswordToken);
+router.patch('/reset-password/:token', authController.resetPassword); /// reset-password-token is the name of required token
 // this endpoint for drivers only 
 router.patch('/set-password/:token', authController.setPassword);
 //===========================================================================================================================

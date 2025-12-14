@@ -262,10 +262,9 @@ class AuthService{
             <p>If you would like to proceed in this operation, please click on the button below</p>
             <a href="${resetLink}"
                 style="display: inline-block;
-                background-color:#59011A;
+                background-color:blue;
                 color:white;
                 text-decoration:none;
-                font-weight:bold;
                 border-radious: 4px;
                 cursor: pointer;
                 padding: 12px 24px;">Reset Password</a>
@@ -287,10 +286,8 @@ class AuthService{
     // =================================================================================================================================
     //? Function to verify reset-password token (for HEAD/GET checks)
     // =================================================================================================================================
-    async verifyToken(req: Request, res: Response, secretKey: string): Promise<void | string   | emailInterface>{
+    async verifyResetPasswordToken(req: Request, res: Response): Promise<void | string   | emailInterface>{
         try{
-      
-            //get token from url 
             const token = String(req.params.token || req.query.token);
 
             if(!token){
@@ -299,14 +296,18 @@ class AuthService{
 
             }
 
-            // check that token has the email address
-            const userData = jwt.verify(token, secretKey) as emailInterface;
+            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+            if (!jwtResetPasswordKey) {
+                res.sendStatus(500);
+                return  "jwt key is not defined";
+            }
+
+            const userData = jwt.verify(token, jwtResetPasswordKey) as emailInterface;
             if(!userData || typeof userData !== "object" || !userData.email){
                 res.sendStatus(401);
                 return "Invalid JWT token";
             }
 
-            // send the userdata (email as respond)
             res.sendStatus(200);
             return userData;
         }catch(error){
@@ -320,16 +321,8 @@ class AuthService{
     // =================================================================================================================================
     async resetPassword(req: Request, res: Response):Promise<string | void>{
         try{
-
-            // ensure that JWT_RESET_PASSWORD_KEY exists in .env
-            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
-            if (!jwtResetPasswordKey) {
-                res.sendStatus(500);
-                return  "jwt key is not defined";
-            }
-
             // ensure token was provided 
-            const userData = await this.verifyToken(req, res,jwtResetPasswordKey );
+            const userData = await this.verifyResetPasswordToken(req, res);
 
             if(!userData || typeof userData === "string"){
                 sendResponse(res, 401, "Error occurred while verifying reset-password-token");
@@ -423,11 +416,10 @@ class AuthService{
 
             <a href="${setLink}"
                 style="display: inline-block;
-                background-color:#59011A;
+                background-color:blue;
                 color:white;
                 text-decoration:none;
-                font-weight:bold;
-                border-radious: 15px;
+                border-radious: 4px;
                 cursor: pointer;
                 padding: 12px 24px;">Set Password</a>
             <br><br>
