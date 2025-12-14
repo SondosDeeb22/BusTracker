@@ -488,10 +488,13 @@ class AuthService{
             }
 
     
+            // Clear any existing login session on this browser (e.g., if an admin session was open)
+            authHelper.removeCookieToken(res, loginToken);
+
             sendResponse(res, 200, 'Password was stored successfully');
             return;
 
-            //======================================================================================================
+        //======================================================================================================
         }catch(error){
             sendResponse(res, 500, `Error occurred while setting password. ${error}`);
             return;

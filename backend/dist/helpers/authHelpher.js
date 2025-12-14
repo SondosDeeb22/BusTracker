@@ -42,6 +42,14 @@ class AuthHelper {
     // Function to remove a cookie
     //===========================================================================================================================================
     removeCookieToken(res, tokenName) {
+        // remove current cookie variant (matches how we set it)
+        res.clearCookie(tokenName, {
+            httpOnly: true,
+            path: "/api",
+            sameSite: "strict",
+            secure: true
+        });
+        // also remove legacy cookies that may have been set with different attributes
         res.clearCookie(tokenName, {
             httpOnly: true,
             path: "/",

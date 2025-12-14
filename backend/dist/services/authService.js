@@ -376,6 +376,8 @@ class AuthService {
                 (0, messageTemplate_1.sendResponse)(res, 500, 'Error Occured. Try setting your password again');
                 return 'Error Occured. Try setting your password again';
             }
+            // Clear any existing login session on this browser (e.g., if an admin session was open)
+            authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
             (0, messageTemplate_1.sendResponse)(res, 200, 'Password was stored successfully');
             return;
             //======================================================================================================
