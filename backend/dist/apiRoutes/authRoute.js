@@ -29,6 +29,7 @@ router.post('/forgot-password', authController.sendEmailToResetPassword);
 router.head('/reset-password/:token', authController.verifyResetPasswordToken);
 router.patch('/reset-password/:token', authController.resetPassword); /// reset-password-token is the name of required token
 // this endpoint for drivers only 
+router.head('/set-password/:token', authController.verifySetPasswordToken);
 router.patch('/set-password/:token', authController.setPassword);
 //===========================================================================================================================
 exports.default = router;

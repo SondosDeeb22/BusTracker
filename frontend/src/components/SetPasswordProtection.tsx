@@ -9,16 +9,16 @@ import { COLORS } from '../styles/colorPalette';
 
 import { useSearchParams } from 'react-router-dom';
 
-interface ResetPasswordProtectionProps {
+interface SetPasswordProtectionProps {
   children: React.ReactNode;
 }
 
 
 //====================================================================================================================================
-//? ResetPasswordProtection Component - Protects reset password page with token validation
+//? Set Password Protection Component - Protects set password page with token validation
 //====================================================================================================================================
 
-const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ children }) => {
+const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children }) => {
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
       }
       try {
         // Make a HEAD request to check if resetPasswordToken is valid
-        const response = await axios.head(`http://localhost:3001/api/auth/reset-password/${token}`, {
+        const response = await axios.head(`http://localhost:3001/api/auth/set-password/${token}`, {
           withCredentials: true,
         });
 
@@ -46,7 +46,7 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
         }
       //-------------------------------------------------------------------------------------------
       } catch (error) {
-        console.error('Error checking reset token:', error);
+        console.error('Error checking set token:', error);
         setIsValid(false);
       } finally {
         setLoading(false);
@@ -77,20 +77,20 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
             className="text-2xl font-bold mb-4"
             style={{color: COLORS.burgundy}}
           >
-            Invalid Reset Link
+            Invalid Setup Link
           </h1>
           <p className="text-gray-600 mb-6">
-            Your reset link has expired or is invalid.
+            Your Setup link has expired or is invalid.
           </p>
           <p className="text-sm text-gray-500 mb-6">
-            Please request a new password reset link.
+            Please request a new password setting link.
           </p>
           <a 
             href="/forgot-password" 
             className="inline-block px-6 py-2 text-white rounded-md hover:bg-red-900"
             style={{backgroundColor: COLORS.burgundy}}
           >
-            Request New Reset Link
+            Request New Setup Link
           </a>
         </div>
       </div>
@@ -101,4 +101,4 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
   return <>{children}</>;
 };
 //====================================================================================================================================
-export default ResetPasswordProtection;
+export default SetPasswordProtection;

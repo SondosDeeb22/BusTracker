@@ -218,7 +218,7 @@ class AuthService {
     // =================================================================================================================================
     //? Function to verify reset-password token (for HEAD/GET checks)
     // =================================================================================================================================
-    async verifyResetPasswordToken(req, res) {
+    async verifyToken(req, res) {
         try {
             const token = String(req.params.token || req.query.token);
             if (!token) {
@@ -249,7 +249,7 @@ class AuthService {
     async resetPassword(req, res) {
         try {
             // ensure token was provided 
-            const userData = await this.verifyResetPasswordToken(req, res);
+            const userData = await this.verifyToken(req, res);
             if (!userData || typeof userData === "string") {
                 (0, messageTemplate_1.sendResponse)(res, 401, "Error occurred while verifying reset-password-token");
                 return;

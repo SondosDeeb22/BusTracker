@@ -21,6 +21,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import ResetPasswordProtection from "./components/ResetPasswordProtection";
+import SetPasswordProtection from "./components/SetPasswordProtection";
 
 //===============================================================================================
 
@@ -40,13 +41,9 @@ const router = createBrowserRouter([
   // route for drivers to set their initial password (link in validation emails)
   {
     path: "/set-password",
-    element: <SetPassword />
+    element: <SetPasswordProtection><SetPassword /></SetPasswordProtection>
   },
-  // this is for driver, we don't need it in the web app
-  // {
-  //   path:"/set-password",
-  //   element: <SetPassword />
-  // },
+ 
   {
     path: "/",
     element: <ProtectedRoute>  <HomepageLayout />  </ProtectedRoute>,

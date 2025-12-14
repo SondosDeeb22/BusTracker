@@ -56,6 +56,12 @@ class AuthHelper {
             sameSite: "lax",
             secure: false
         });
+        res.clearCookie(tokenName, {
+            httpOnly: true,
+            path: "/",
+            sameSite: "strict",
+            secure: false
+        });
         return null;
     }
     //===========================================================================================================================================

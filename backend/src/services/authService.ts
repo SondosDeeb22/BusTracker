@@ -201,17 +201,14 @@ class AuthService{
     //? Function that Send emails to Reset password
     // =================================================================================================================================
 
-    async sendPasswordResetEmail(req: Request, res: Response):Promise<void>{
+    async sendEmailToResetPassword(req: Request, res: Response):Promise<void>{
         try{
             const body:emailInterface = req.body;
 
             const {
                 email
             } = body;
-            // different methdo, 
-            // // Take email from the body -----------------------------
-            // const { email } = req.body as { email?: string };
-            
+
             if(!email){
                 sendResponse(res, 500, 'Enter Email address to proceed in Reset password operation');
                 return;
@@ -285,7 +282,7 @@ class AuthService{
     }
 
     // =================================================================================================================================
-    //? Function to verify reset-password token (for HEAD/GET checks)
+    //? Function to verify token (for frontend HEAD checks)
     // =================================================================================================================================
     async verifyToken(req: Request, res: Response, secretKey: string): Promise<void | string   | emailInterface>{
         try{
@@ -373,8 +370,6 @@ class AuthService{
                 return 'Error Occured. Try resetting your password again';
             }
 
-            // remove the token from the cookie
-            authHelper.removeCookieToken( res, resetPasswordToken);
 
             sendResponse(res, 200, 'Password was resetted successfully');
             return;
@@ -451,15 +446,22 @@ class AuthService{
     //? set password 
     //===================================================================================================================================
     async setPassword(req: Request, res: Response): Promise<string | void>{
-        try{ 
-            // Extract token from URL parameters (/set-password/:token) -----------------
-
-            const token = String(req.params.token || req.query.token);
-            
-            if(!token){
-                sendResponse(res, 400, "Error occured, No token were found");
-                return  "Error occured, No token were found";
+        try{
+            // ensure that JWT_RESET_PASSWORD_KEY exists in .env
+            const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
+            if (!jwtSetPasswordKey) {
+                res.sendStatus(500);
+                return  "jwt key is not defined";
             }
+
+            // ensure token was provided 
+            const userData = await this.verifyToken(req, res, jwtSetPasswordKey );
+
+            if(!userData || typeof userData === "string"){
+                sendResponse(res, 401, "Error occurred while verifying reset-password-token");
+                return;
+            }
+
 
             // get the passwords from the user input ------------------------------------------
             const body: NewPassword = req.body;
@@ -469,8 +471,7 @@ class AuthService{
                 confirmPassword
             }= body;
 
-            console.log("=============");
-            console.log(token);
+ 
             if(!newPassword || !confirmPassword){
                 sendResponse(res, 500, "Please provide a password to proceed with the Password Setting operation");
                 return "Please provide a password to proceed with the Password Setting operation";
@@ -482,29 +483,9 @@ class AuthService{
                 return "Make sure both passwords are identical";
             }
 
-            // Enuse that user is authorized to commit this action (user has valid setPasswordToken )-----------
-           
-            //check if JWT exists in .env file
-            const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
-            if (!jwtSetPasswordKey) {
-                sendResponse(res, 500, `JWT_SET_PASSWORD_KEY is not defined : ${jwtSetPasswordKey}`);
-            return;
-            }
 
-            // extract email from the token
-            const userData = jwt.verify(token, jwtSetPasswordKey) ;
-            if(!userData || typeof userData !== "object"){
-                sendResponse(res, 500, "Invalid JWT token");
-                return "Invalid JWT token";
-            }
-
-            // Validate token has email field (setPasswordToken should have email, not userID/userRole)
-            if(!userData.email){
-                sendResponse(res, 500, "Invalid token format");
-                return "Invalid token format";
-            }
         
-            // set password in the db ----------------------------------------------------------------------------------------
+            // update the password in the database ----------------------------------------------------------
 
             const hashedPassword: string = await bcrypt.hash(newPassword, 8);
 
@@ -522,7 +503,7 @@ class AuthService{
             }
 
     
-            // Clear any existing login session on this browser (e.g., if an admin session was open)
+            // Clear any existing login session on this browser 
             authHelper.removeCookieToken(res, loginToken);
 
             sendResponse(res, 200, 'Password was stored successfully');
