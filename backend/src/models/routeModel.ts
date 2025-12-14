@@ -3,6 +3,8 @@
 //======================================================================================================================
 import {Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize';
 import {sequelize} from '../config/database';
+import RouteStationModel from './routeStationModel';
+import stationModel from './stationModel';
 
 
 //importing interfaces
@@ -64,3 +66,24 @@ RouteModel.init( {
 //======================================================================================================================================
 
 export default RouteModel;
+
+// Associations (keeps station links discoverable in DB)
+RouteModel.hasMany(RouteStationModel, {
+  foreignKey: 'routeId',
+  as: 'routeStations'
+});
+
+RouteStationModel.belongsTo(RouteModel, {
+  foreignKey: 'routeId',
+  as: 'route'
+});
+
+RouteStationModel.belongsTo(stationModel, {
+  foreignKey: 'stationId',
+  as: 'station'
+});
+
+stationModel.hasMany(RouteStationModel, {
+  foreignKey: 'stationId',
+  as: 'routeStations'
+});

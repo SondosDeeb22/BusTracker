@@ -35,7 +35,32 @@ const RoutesPage = () => {
         </div>
       )
     },
-    { key: 'totalStops', label: 'Total Stops' },
+    { 
+      key: 'stations', 
+      label: 'Stations',
+      formatter: (value: any) => {
+        const list = Array.isArray(value) ? value : [];
+        return (
+          <div className="flex flex-col text-sm text-gray-700">
+            {list.length === 0 ? (
+              <span className="text-gray-400">-</span>
+            ) : (
+              list.map((s: any, idx: number) => (
+                <span key={idx}>{s.id ?? s.stationId ?? s} - {s.stationName ?? s.name ?? ''}</span>
+              ))
+            )}
+          </div>
+        );
+      }
+    },
+    { 
+      key: 'totalStops', 
+      label: 'Total Stops',
+      formatter: (_value: any, row: any) => {
+        const list = Array.isArray(row?.stations) ? row.stations : [];
+        return list.length || _value || 0;
+      }
+    },
     { 
       key: 'status', 
       label: 'Status',

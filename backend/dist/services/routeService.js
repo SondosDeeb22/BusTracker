@@ -13,6 +13,8 @@ const busEnum_1 = require("../enums/busEnum");
 //import models
 const routeModel_1 = __importDefault(require("../models/routeModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
+const routeStationModel_1 = __importDefault(require("../models/routeStationModel"));
+const stationModel_1 = __importDefault(require("../models/stationModel"));
 const userHelper_1 = require("../helpers/userHelper");
 const messageTemplate_1 = require("../exceptions/messageTemplate");
 const helper = new userHelper_1.UserHelper();
@@ -22,22 +24,53 @@ class RouteService {
     //? function to Add Route
     //===================================================================================================
     async addRoute(req, res) {
-        await helper.add(req, res, routeModel_1.default, req.body, {
-            //-----------------------------------------------------------
-            transform: async (data) => {
-                const out = { ...data };
-                if (out.title) {
-                    out.title = out.title.toLowerCase().trim();
+        try {
+            const body = req.body || {};
+            const stations = Array.isArray(body.stations) ? body.stations : [];
+            const payload = {
+                ...body,
+                totalStops: stations.length
+            };
+            await helper.add(req, res, routeModel_1.default, payload, {
+                //-----------------------------------------------------------
+                transform: async (data) => {
+                    const out = { ...data };
+                    if (out.title) {
+                        out.title = out.title.toLowerCase().trim();
+                    }
+                    // remove non-column field
+                    delete out.stations;
+                    return out;
+                },
+                //-----------------------------------------------------------
+                nonDuplicateFields: ['title'],
+                //-----------------------------------------------------------
+                enumFields: [
+                    { field: "status", enumObj: routeEnum_1.status },
+                ],
+                //-----------------------------------------------------------
+                skipResponse: true
+            });
+            // attach stations to route_stations table if provided
+            if (stations.length > 0) {
+                const createdRoute = await routeModel_1.default.findOne({
+                    where: { title: payload.title.toLowerCase().trim() },
+                    attributes: ['id']
+                });
+                if (createdRoute) {
+                    const rows = stations.map((stationId, idx) => ({
+                        routeId: createdRoute.id,
+                        stationId,
+                        orderIndex: idx
+                    }));
+                    await routeStationModel_1.default.bulkCreate(rows);
                 }
-                return out;
-            },
-            //-----------------------------------------------------------
-            nonDuplicateFields: ['title'],
-            //-----------------------------------------------------------
-            enumFields: [
-                { field: "status", enumObj: routeEnum_1.status },
-            ],
-        });
+            }
+            (0, messageTemplate_1.sendResponse)(res, 200, "route was Added successfully");
+        }
+        catch (error) {
+            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating route. ${error}`);
+        }
     }
     //===================================================================================================
     //? function to Remove Route
@@ -49,11 +82,54 @@ class RouteService {
     //? function to Update Route
     //===================================================================================================
     async updateRoute(req, res) {
-        await helper.update(req, res, routeModel_1.default, req.body, {
-            enumFields: [{ field: "status", enumObj: routeEnum_1.status },],
-            //---------------------------------------------
-            successMessage: 'Route was updated',
-        });
+        try {
+            const body = req.body || {};
+            const { id, title, color, status: routeStatusValue } = body;
+            const stations = Array.isArray(body.stations) ? body.stations : [];
+            if (!id) {
+                (0, messageTemplate_1.sendResponse)(res, 500, "Route id is required");
+                return;
+            }
+            // validate status (if provided)
+            if (routeStatusValue && !Object.values(routeEnum_1.status).includes(routeStatusValue)) {
+                (0, messageTemplate_1.sendResponse)(res, 500, "Invalid status");
+                return;
+            }
+            // normalize title
+            const normalizedTitle = title ? String(title).toLowerCase().trim() : undefined;
+            // build updates
+            const updates = {};
+            if (normalizedTitle !== undefined)
+                updates.title = normalizedTitle;
+            if (color !== undefined)
+                updates.color = color;
+            if (routeStatusValue !== undefined)
+                updates.status = routeStatusValue;
+            updates.totalStops = stations.length;
+            const [updatedCount] = await routeModel_1.default.update(updates, {
+                where: { id }
+            });
+            if (updatedCount === 0) {
+                (0, messageTemplate_1.sendResponse)(res, 500, "Route wasn't updated. Please verify the provided fields.");
+                return;
+            }
+            // replace stations list
+            await routeStationModel_1.default.destroy({
+                where: { routeId: id }
+            });
+            if (stations.length > 0) {
+                const rows = stations.map((stationId, idx) => ({
+                    routeId: id,
+                    stationId,
+                    orderIndex: idx
+                }));
+                await routeStationModel_1.default.bulkCreate(rows);
+            }
+            (0, messageTemplate_1.sendResponse)(res, 200, 'Route was updated');
+        }
+        catch (error) {
+            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while updating route. ${error}`);
+        }
     }
     //===================================================================================================
     //? function to view All routes for operating buses or only Operating(working) routes 
@@ -65,6 +141,28 @@ class RouteService {
                 routes = await routeModel_1.default.findAll({
                     attributes: ['id', 'title', 'color', 'totalStops', 'status']
                 });
+                // attach stations per route
+                for (const route of routes) {
+                    const routeStations = await routeStationModel_1.default.findAll({
+                        where: { routeId: route.id },
+                        attributes: ['stationId', 'orderIndex'],
+                        order: [['orderIndex', 'ASC']]
+                    });
+                    const stationIds = routeStations.map((rs) => rs.stationId);
+                    let stations = [];
+                    if (stationIds.length > 0) {
+                        const stationRows = await stationModel_1.default.findAll({
+                            where: { id: stationIds },
+                            attributes: ['id', 'stationName']
+                        });
+                        const stationMap = new Map(stationRows.map((st) => [st.id, st.stationName]));
+                        stations = routeStations.map((rs) => ({
+                            id: rs.stationId,
+                            stationName: stationMap.get(rs.stationId) || ''
+                        }));
+                    }
+                    route.dataValues.stations = stations;
+                }
             }
             else {
                 let routeId;

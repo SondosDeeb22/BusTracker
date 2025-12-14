@@ -10,8 +10,13 @@ interface RouteData {
   id: string;
   title: string;
   color: string;
-  totalStops: number;
   status: string;
+  stations: string[];
+}
+
+interface Station {
+  id: string;
+  stationName: string;
 }
 
 interface UpdateRouteProps {
@@ -28,11 +33,12 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
     id: routeId,
     title: '',
     color: '#000000',
-    totalStops: 0,
-    status: ''
+    status: '',
+    stations: []
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [stations, setStations] = useState<Station[]>([]);
 
   ///-------------------------------------------------------------------------
   const fetchRouteData = async () => {
@@ -47,8 +53,10 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           id: currentRoute.id,
           title: currentRoute.title,
           color: currentRoute.color,
-          totalStops: currentRoute.totalStops,
-          status: currentRoute.status
+          status: currentRoute.status,
+          stations: Array.isArray(currentRoute.stations)
+            ? currentRoute.stations.map((s: any) => s.id ?? s.stationId ?? s)
+            : []
         });
       }
     } catch (err) {
@@ -61,14 +69,41 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
       fetchRouteData();
     }
   }, [routeId]);
+
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/admin/stations/fetch', {
+          withCredentials: true
+        });
+        setStations(response.data.data || response.data || []);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to load stations');
+      }
+    };
+
+    fetchStations();
+  }, []);
   ///-------------------------------------------------------------------------
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'totalStops' ? parseInt(value) || 0 : value
+      [name]: value
     }));
+  };
+
+  const handleStationToggle = (stationId: string) => {
+    setFormData(prev => {
+      const exists = prev.stations.includes(stationId);
+      return {
+        ...prev,
+        stations: exists
+          ? prev.stations.filter(id => id !== stationId)
+          : [...prev.stations, stationId]
+      };
+    });
   };
 
   ///-------------------------------------------------------------------------
@@ -78,7 +113,12 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
     setError('');
 
     try {
-      await axios.patch('http://localhost:3001/api/admin/route/update', formData, {
+      const payload = {
+        ...formData,
+        totalStops: formData.stations.length
+      };
+
+      await axios.patch('http://localhost:3001/api/admin/route/update', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -137,17 +177,25 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Total Stops
+              Stations
             </label>
-            <input
-              type="number"
-              name="totalStops"
-              value={formData.totalStops}
-              onChange={handleChange}
-              min="0"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
+            <div className="max-h-48 overflow-y-auto border rounded p-2 space-y-2">
+              {stations.length === 0 && (
+                <p className="text-sm text-gray-500">No stations available</p>
+              )}
+              {stations.map((station) => (
+                <label key={station.id} className="flex items-center space-x-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={formData.stations.includes(station.id)}
+                    onChange={() => handleStationToggle(station.id)}
+                    className="h-4 w-4 text-blue-600"
+                  />
+                  <span>{station.id} - {station.stationName}</span>
+                </label>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Total Stops: {formData.stations.length}</p>
           </div>
 
           <div className="mb-4">
