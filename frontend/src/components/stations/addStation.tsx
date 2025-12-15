@@ -10,8 +10,8 @@ import { status as stationStatus } from '../../../../backend/src/enums/stationEn
 
 interface StationData {
   stationName: string;
-  latitude: string;
-  longitude: string;
+  latitude: number | null;
+  longitude: number | null;
   status: string;
 }
 
@@ -26,8 +26,8 @@ interface AddStationProps {
 const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState<StationData>({
     stationName: '',
-    latitude: '',
-    longitude: '',
+    latitude: null,
+    longitude: null,
     status: ''
   });
   const [loading, setLoading] = useState(false);
@@ -57,8 +57,8 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
   const handleMapClick = (lat: number, lng: number) => {
     setFormData(prev => ({
       ...prev,
-      latitude: lat.toString(),
-      longitude: lng.toString(),
+      latitude: lat,
+      longitude: lng,
     }));
   };
 
@@ -72,13 +72,13 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
   };
 
   ///-------------------------------------------------------------------------
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
     setError('');
 
     // ensure that latitude and longitude are provided 
-    if (!formData.latitude || !formData.longitude) {
+    if (!Number.isFinite(formData.latitude) || !Number.isFinite(formData.longitude)) {
       setError('Please pick a location on the map');
       setLoading(false);
       return;
@@ -160,11 +160,11 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
                 <LocationSelector /> 
 
                 {/* Verifies both values exist and are real numbers */}
-                {Number.isFinite(formData.latitude) && Number.isFinite(formData.longitude) && (
+                {Number.isFinite(Number(formData.latitude)) && Number.isFinite(Number(formData.longitude)) && (
 
                   // if above condition approved, place a marker on the map using formData values(lat, lng)
                   <Marker
-                    position={[parseFloat(formData.latitude), parseFloat(formData.longitude)]}
+                    position={[Number(formData.latitude), Number(formData.longitude)]}
                     icon={markerIcon}
                   />
                 )}

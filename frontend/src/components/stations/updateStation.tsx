@@ -1,16 +1,18 @@
 //======================================================================================
 //? Importing
 //======================================================================================
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
 import { status as stationStatus } from '../../../../backend/src/enums/stationEnum';
 
 interface StationData {
   id: string;
   stationName: string;
-  latitude: string;
-  longitude: string;
+  latitude: number | null;
+  longitude: number | null;
   status: string;
 }
 
@@ -27,12 +29,22 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
   const [formData, setFormData] = useState<StationData>({
     id: stationId,
     stationName: '',
-    latitude: '',
-    longitude: '',
+    latitude: null,
+    longitude: null,
     status: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const markerIcon = useMemo(
+    () =>
+      L.icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+      }),
+    []
+  );
 
   ///-------------------------------------------------------------------------
   const fetchStationData = async () => {
@@ -46,8 +58,8 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
         setFormData({
           id: currentStation.id,
           stationName: currentStation.stationName,
-          latitude: currentStation.latitude,
-          longitude: currentStation.longitude,
+          latitude: Number(currentStation.latitude),
+          longitude: Number(currentStation.longitude),
           status: currentStation.status
         });
       }
@@ -71,11 +83,34 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
     }));
   };
 
+  // Map interactions: update coordinates when admin clicks on map
+  const handleMapClick = (lat: number, lng: number) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+    }));
+  };
+
+  const LocationSelector = () => {
+    useMapEvents({
+      click: (event) => handleMapClick(event.latlng.lat, event.latlng.lng),
+    });
+    return null;
+  };
+
   ///-------------------------------------------------------------------------
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  ///-------------------------------------------------------------------------
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
     setError('');
+
+    if (!Number.isFinite(formData.latitude) || !Number.isFinite(formData.longitude)) {
+      setError('Please pick a location on the map');
+      setLoading(false);
+      return;
+    }
 
     try {
       await axios.patch('http://localhost:3001/api/admin/station/update', formData, {
@@ -121,33 +156,55 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
             />
           </div>
 
+          {/* location  Column   ================================================================================================= */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Latitude
+              Pick Location
             </label>
-            <input
-              type="text"
-              name="latitude"
-              value={formData.latitude}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
+            <div className="h-64 w-full rounded-md overflow-hidden border">
+              {/* Map controller: initializes map, view, and context --------------------------------------------------------------------------- */}
+              <MapContainer
+                /* Remount map when coords change so Leaflet re-centers; fallback to university coords when null */
+                key={`${formData.latitude ?? 'null'}-${formData.longitude ?? 'null'}`}
+                center={[
+                  Number.isFinite(formData.latitude) ? Number(formData.latitude) : 35.226801682469194,
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Longitude
-            </label>
-            <input
-              type="text"
-              name="longitude"
-              value={formData.longitude}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
+                  Number.isFinite(formData.longitude) ? Number(formData.longitude) : 33.319740659406264
+                ]}
+                zoom={16}
+                style={{ height: '100%', width: '100%' }}
+              >
+                {/* Load and display OpenStreetMap raster tiles as the base map layer --------------------------------- */}
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+
+                {/* Listens to map clicks -> extracts lat and long -> saves them into "formData" */}
+                <LocationSelector />
+
+                {/* Verifies both values exist and are real numbers */}
+                {Number.isFinite(formData.latitude) && Number.isFinite(formData.longitude) && (
+
+                  // if above condition approved, place a marker on the map using formData values(lat, lng)
+                  <Marker
+                    position={[Number(formData.latitude), Number(formData.longitude)]}
+                    icon={markerIcon}
+                  />
+                )}
+              </MapContainer>
+            </div>
+            <div className="mt-2 text-sm text-gray-700">
+              {formData.latitude && formData.longitude ? (
+                <span>
+                  Selected: {Number(formData.latitude).toFixed(5)}, {Number(formData.longitude).toFixed(5)}
+                </span>
+              ) : (
+                <span>Click on the map to set station location.</span>
+              )}
+            </div>
           </div>
+          {/* ================================================================================================= */}
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">

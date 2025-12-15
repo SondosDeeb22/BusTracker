@@ -42,11 +42,11 @@ stationModel.init( {
       allowNull: false
     },
     latitude: { 
-      type: DataTypes.STRING(30),
+      type: DataTypes.DOUBLE,
       allowNull: false
     },
     longitude: { 
-      type: DataTypes.STRING(30),
+      type: DataTypes.DOUBLE,
       allowNull: false
     },
     status: { 

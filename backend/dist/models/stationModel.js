@@ -26,11 +26,11 @@ stationModel.init({
         allowNull: false
     },
     latitude: {
-        type: sequelize_1.DataTypes.STRING(30),
+        type: sequelize_1.DataTypes.DOUBLE,
         allowNull: false
     },
     longitude: {
-        type: sequelize_1.DataTypes.STRING(30),
+        type: sequelize_1.DataTypes.DOUBLE,
         allowNull: false
     },
     status: {
