@@ -38,7 +38,7 @@ stationModel.init( {
       allowNull: false
     },
     stationName: { 
-       type: DataTypes.STRING(30),
+       type: DataTypes.STRING(250),
       allowNull: false
     },
     latitude: { 

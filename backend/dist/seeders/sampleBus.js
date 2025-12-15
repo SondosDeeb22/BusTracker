@@ -11,7 +11,7 @@ const buses = [
         brand: "Volvo",
         status: "operating",
         assignedRoute: "R001",
-        assignedDriver: "D001",
+        assignedDriver: "U001",
     },
     {
         id: "B002",
@@ -19,7 +19,7 @@ const buses = [
         brand: "Mercedes",
         status: "maintenance",
         assignedRoute: "R001",
-        assignedDriver: "D002",
+        assignedDriver: "U002",
     },
     {
         id: "B003",
@@ -27,7 +27,7 @@ const buses = [
         brand: "Scania",
         status: "offline",
         assignedRoute: "R002",
-        assignedDriver: "D003",
+        assignedDriver: "U003",
     },
     {
         id: "B004",
@@ -35,7 +35,7 @@ const buses = [
         brand: "MAN",
         status: "operating",
         assignedRoute: "R003",
-        assignedDriver: "D004",
+        assignedDriver: "U004",
     },
 ];
 //============================================================================================

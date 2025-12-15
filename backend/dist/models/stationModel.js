@@ -22,7 +22,7 @@ stationModel.init({
         allowNull: false
     },
     stationName: {
-        type: sequelize_1.DataTypes.STRING(30),
+        type: sequelize_1.DataTypes.STRING(250),
         allowNull: false
     },
     latitude: {
