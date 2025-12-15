@@ -1,8 +1,10 @@
 //======================================================================================
 //? Importing
 //======================================================================================
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import axios from 'axios';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
 import { status as stationStatus } from '../../../../backend/src/enums/stationEnum';
 
@@ -31,6 +33,17 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const markerIcon = useMemo(
+    () =>
+      L.icon({
+        iconUrl:
+          'https://unpkg.com/leaflet@1.7/dist/images/marker-icon.png', // location icon, for the map
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+      }),
+    []
+  );
+
   ///-------------------------------------------------------------------------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -40,11 +53,37 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
     }));
   };
 
+  //  handling map operations -----------------------------------
+  const handleMapClick = (lat: number, lng: number) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat.toString(),
+      longitude: lng.toString(),
+    }));
+  };
+
+  const LocationSelector = () => {
+    useMapEvents({
+      click: (event) => {
+        handleMapClick(event.latlng.lat, event.latlng.lng);
+      },
+    });
+    return null;
+  };
+
   ///-------------------------------------------------------------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // ensure that latitude and longitude are provided 
+    if (!formData.latitude || !formData.longitude) {
+      setError('Please pick a location on the map');
+      setLoading(false);
+      return;
+    }
+
 
     try {
       await axios.post('http://localhost:3001/api/admin/station/add', formData, {
@@ -90,32 +129,59 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
             />
           </div>
 
+          {/* location  Column   =================================================================================================
+          {/* we view map so admin can select location of the station */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Latitude
+              Pick Location
             </label>
-            <input
-              type="text"
-              name="latitude"
-              value={formData.latitude}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
+            <div className="h-72 w-full rounded-md overflow-hidden border">
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Longitude
-            </label>
-            <input
-              type="text"
-              name="longitude"
-              value={formData.longitude}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
+               {/* Map controller: initializes map, view, and context ----------------------------------------------------------------------------
+               {/*in MapContainer we define the specifications for what it viws , "cener" is pointing to near east univerity - innovation building locaiton */}
+              <MapContainer
+                center={[35.226801682469194, 33.319740659406264]} 
+                zoom={14}
+                style={{ height: '100%', width: '100%' }}
+              >
+                
+                {/* Load and display OpenStreetMap raster tiles as the base map layer --------------------------------- */}
+                
+                {/* OpenStreetMap serves map tiles as images */}
+                {/* {z}zoom level {x}tile column  {y}tile row  {s}subdomain (a, b, c) for load balancing */}
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                /> 
+                
+                {/* update the data(latitude and logntiude) ----------------------------------------------------------*/}
+                
+                {/* Listens to map clicks -> extracts lat and long -> saves them into "formData" */}
+                <LocationSelector /> 
+
+                {/* Verifies both values exist and are real numbers */}
+                {Number.isFinite(formData.latitude) && Number.isFinite(formData.longitude) && (
+
+                  // if above condition approved, place a marker on the map using formData values(lat, lng)
+                  <Marker
+                    position={[parseFloat(formData.latitude), parseFloat(formData.longitude)]}
+                    icon={markerIcon}
+                  />
+                )}
+              
+              </MapContainer>
+              {/* ================================================================================================================ */}
+            </div>
+
+            <div className="mt-2 text-sm text-gray-700">
+              {formData.latitude && formData.longitude ? (
+                <span>
+                  Selected: {Number(formData.latitude).toFixed(5)}, {Number(formData.longitude).toFixed(5)}
+                </span>
+              ) : (
+                <span>Click on the map to set station location.</span>
+              )}
+            </div>
           </div>
 
           <div className="mb-4">
