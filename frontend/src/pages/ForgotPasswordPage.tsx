@@ -8,16 +8,16 @@ import { burgundy } from '../styles/colorPalette';
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [EmailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  // function to send password reset links via gmail -------------------------------------------------------------------------------
+  const sendResetEmail = async (targetEmail: string) => {
     setError('');
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:3001/api/auth/forgot-password', 
-        { email},
+        { email: targetEmail},
         {
           headers: {
             'Content-Type': 'application/json',
@@ -25,28 +25,46 @@ const ForgotPassword = () => {
           withCredentials: true,
         }
       );
-      if(response.statusText == "OK"){
-        setIsEmailSent(true);
+      if (response.status === 200) {
+        setEmailSent(true);
       }
-
 
       console.log(response);
       console.log(response.data);
       
       
-
     } catch (error) {
-      setLoading(false);
       setError('This email is not registered in our system. Please use the email associated with your account');
       console.error('email not registered in system error:', error);
-
-
+    } finally {
+      setLoading(false);
     }
   };
+  //-------------------------------------------------------------------------------------------------------------------------
 
+  // handle logic when user submits the email form 
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // stop default behaviour of reloading the page and let react handle submit logic
+    if (!email) {
+      setError('Please enter your email to continue.');
+      return;
+    }
+    await sendResetEmail(email);
+  };
+
+  // handle logic when user asks for a Resend
+  const handleResend = async () => {
+    if (!email) {
+      setError('Please enter your email to continue.');
+      return;
+    }
+    await sendResetEmail(email);
+  };
+
+  //=====================================================================================================================================================================
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Login form ========================================================*/}
+      {/* Left side - operation ========================================================*/}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
         
         <div className="max-w-md w-full">
@@ -57,7 +75,9 @@ const ForgotPassword = () => {
             <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>Admin Login</p>
           </div>
 
-          {!isEmailSent ? (
+
+          {/* chagne the screen content accoring to the state of EmailSent--------------------------------------------------------------------------------- */}
+          {!EmailSent ? (
             
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
@@ -97,12 +117,25 @@ const ForgotPassword = () => {
             </button>
           </form>
         ) : (
+          //------------------------------------------------------------------------------
           <>
           <div className="text-center">
-            
-            <p className="text-lg font-medium text-gray-700 mt-20 mb-50">
+            <p className="text-lg font-medium text-gray-700 mb-3">
               Please check your Email, We have sent a Password Reset link.
             </p>
+            <p className="text-base font-medium text-gray-700">
+              Didn't receive an email?{' '}
+              <button
+                type="button"
+                onClick={handleResend}
+                className="font-semibold hover:underline disabled:opacity-60"
+                style={{color: burgundy}}
+                disabled={loading}
+              >
+                {loading ? 'Sending...' : 'Resend'}
+              </button>
+            </p>
+
           </div>
           </>
         )}
