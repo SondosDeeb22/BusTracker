@@ -66,11 +66,12 @@ class AuthService {
                 (0, messageTemplate_1.sendResponse)(res, 500, "Fill all Fields please");
                 return;
             }
+            const userEmail = email.trim();
             //====================================================================================================================================================
             // check if user registed in the system
             const userExists = await userModel_1.default.findOne({
                 where: {
-                    email: email
+                    email: userEmail
                 }
             });
             if (!userExists) {

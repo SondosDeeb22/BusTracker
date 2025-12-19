@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
@@ -10,6 +11,7 @@ const ForgotPassword = () => {
   const [error, setError] = useState('');
   const [EmailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // function to send password reset links via gmail -------------------------------------------------------------------------------
   const sendResetEmail = async (targetEmail: string) => {
@@ -65,7 +67,42 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - operation ========================================================*/}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
+      <div className="relative w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
+
+        {/* retunr button -----------------------------------------------------------------*/}
+        <div className="relative h-full px-0 py-10">
+          <button
+            type="button"
+            aria-label="Return to login"
+            onClick={() => navigate('/')}
+            className="
+              absolute top-6 
+              inline-flex items-center justify-center
+              w-9 h-9 rounded-full border-2
+              transition-all duration-200 ease-out
+              hover:scale-105 hover:bg-opacity-10
+              focus:outline-none focus:ring-2 focus:ring-offset-2
+            "
+            style={{ borderColor: burgundy, color: burgundy }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* -----------------------------------------------------------------*/}
         
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
@@ -74,7 +111,6 @@ const ForgotPassword = () => {
             <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Bus Tracker</h1>
             <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>Admin Login</p>
           </div>
-
 
           {/* chagne the screen content accoring to the state of EmailSent--------------------------------------------------------------------------------- */}
           {!EmailSent ? (

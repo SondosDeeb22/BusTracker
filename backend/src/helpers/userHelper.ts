@@ -221,8 +221,6 @@ export class UserHelper{
     //?==========================================================================================================
     //? function to Update data
     //==========================================================================================================
-
-    // async update( req: Request, res: Response, model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: any, values: Record<string, any>,
     
     async update( req: Request, res: Response, model: ModelStatic<Model<any, any>>, values: Record<string, any>,
         options?: {

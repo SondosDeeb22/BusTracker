@@ -57,9 +57,43 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Login form ========================================================*/}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
-        
+      {/* Left side - Login form ===========================================================================*/}
+      <div className="relative w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
+
+      {/* retunr button -----------------------------------------------------------------*/}
+     <div className="relative h-full px-0 py-10">
+          <button
+            type="button"
+            aria-label="Return to login"
+            onClick={() => navigate('/')}
+            className="
+              absolute top-6 
+              inline-flex items-center justify-center
+              w-9 h-9 rounded-full border-2
+              transition-all duration-200 ease-out
+              hover:scale-105 hover:bg-opacity-10
+              focus:outline-none focus:ring-2 focus:ring-offset-2
+            "
+            style={{ borderColor: burgundy, color: burgundy }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* -----------------------------------------------------------------*/}
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <img className='w-40 h-40 mx-auto' src={busTrackerLogo}/>

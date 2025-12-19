@@ -95,13 +95,14 @@ class AuthService{
                 sendResponse(res, 500, "Fill all Fields please");
                 return;
             }
+            const userEmail = email.trim();
 
             //====================================================================================================================================================
             // check if user registed in the system
 
             const userExists = await UserModel.findOne({
                 where:{
-                    email: email
+                    email: userEmail
                 }
             })
 

@@ -174,7 +174,6 @@ class UserHelper {
     //?==========================================================================================================
     //? function to Update data
     //==========================================================================================================
-    // async update( req: Request, res: Response, model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: any, values: Record<string, any>,
     async update(req, res, model, values, options) {
         //get the name of the model
         const modelClassName = model.name;
