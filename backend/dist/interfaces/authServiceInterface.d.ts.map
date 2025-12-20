@@ -1,1 +1,0 @@
-{"version":3,"file":"authServiceInterface.d.ts","sourceRoot":"","sources":["../../src/interfaces/authServiceInterface.ts"],"names":[],"mappings":"AAGA,MAAM,WAAW,SAAS;IACtB,KAAK,EAAE,MAAM,CAAC;IACd,QAAQ,EAAE,MAAM,CAAC;CACpB;AAMD,MAAM,WAAW,cAAc;IAC3B,KAAK,EAAE,MAAM,CAAC;CACjB;AAMD,MAAM,WAAW,WAAW;IACxB,WAAW,EAAE,MAAM,CAAC;IACpB,eAAe,EAAC,MAAM,CAAA;CACzB"}
