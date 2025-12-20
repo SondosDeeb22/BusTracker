@@ -1,0 +1,1 @@
+{"version":3,"file":"routeStationInterface.d.ts","sourceRoot":"","sources":["../../src/interfaces/routeStationInterface.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,sBAAsB;IACnC,cAAc,CAAC,EAAE,MAAM,CAAC;IACxB,OAAO,EAAE,MAAM,CAAC;IAChB,SAAS,EAAE,MAAM,CAAC;IAClB,UAAU,EAAE,MAAM,CAAC;CACtB"}
