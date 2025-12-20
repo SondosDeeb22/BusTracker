@@ -1,0 +1,1 @@
+{"version":3,"file":"stationInterface.d.ts","sourceRoot":"","sources":["../../src/interfaces/stationInterface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,sBAAsB,CAAC;AAG9C,MAAM,WAAW,iBAAiB;IAC9B,EAAE,EAAC,MAAM,CAAC;IACV,WAAW,EAAE,MAAM,CAAC;IACpB,QAAQ,EAAE,MAAM,CAAC;IACjB,SAAS,EAAE,MAAM,CAAC;IAClB,MAAM,EAAE,MAAM,OAAO,MAAM,CAAC;CAE/B"}
