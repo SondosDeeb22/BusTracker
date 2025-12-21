@@ -84,9 +84,7 @@ class _HomepageUserState extends State<HomepageUser> {
         : _routes.where((r) => r.hasLocation).toList();
 
     return Scaffold(
-      
-      backgroundColor: _bg,// Background of the whole page
-
+      backgroundColor: _bg, // Background of the whole page
       // Building Top Bar =======================================================================================
       appBar: AppBar(
         backgroundColor: _burgundy,
@@ -104,16 +102,13 @@ class _HomepageUserState extends State<HomepageUser> {
           fit: BoxFit.contain,
         ),
 
-        // Right-side icons in AppBar.
+        // Right-side icons in AppBar (setting icon)
         actions: [
           IconButton(
             // TODO: open settings screen.
             onPressed: () {
-              Navigator.of(context,).push(
-                MaterialPageRoute(
-                builder: (_) => 
-                const AccountSettingsUser()
-                )
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AccountSettingsUser()),
               );
             },
             icon: const Icon(Icons.settings, color: _bg),
@@ -353,10 +348,10 @@ class _SegmentedToggle extends StatelessWidget {
       //-------------------------------------------------------------------------------------------------------------------------------------------------
       child: Row(
         children: [
-          
           // left option (Operating) ----------------------------------------------------------------------
           Expanded(
-            child: InkWell( // InkWell is widget used to capture interaction(tap) events and provide visual effect                            
+            child: InkWell(
+              // InkWell is widget used to capture interaction(tap) events and provide visual effect
               onTap: () => onChanged(false),
 
               child: Container(
@@ -379,7 +374,7 @@ class _SegmentedToggle extends StatelessWidget {
 
           // right option (All) ---------------------------------------------------------------------
           Expanded(
-            child: InkWell(              
+            child: InkWell(
               onTap: () => onChanged(true),
 
               child: Container(
@@ -513,7 +508,7 @@ class _RouteCard extends StatelessWidget {
 
   Color _textColorFor(Color bg) {
     // Estimate brightness to pick readable text color.
-    // Dark background => white text, light background => black text.
+    // Dark background => white text, light background => black text
     final brightness = ThemeData.estimateBrightnessForColor(bg);
     return brightness == Brightness.dark ? Colors.white : Colors.black;
   }
