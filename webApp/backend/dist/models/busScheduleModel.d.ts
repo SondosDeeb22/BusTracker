@@ -1,10 +1,11 @@
 import { Model, InferAttributes, InferCreationAttributes } from 'sequelize';
 import { BusScheduleAttributes } from '../interfaces/busScheduleInterface';
-import { weekDays } from '../enums/busScheduleEnum';
+import { weekDays, shiftType } from '../enums/busScheduleEnum';
 declare class BusScheduleModel extends Model<InferAttributes<BusScheduleModel>, InferCreationAttributes<BusScheduleModel>> implements BusScheduleAttributes {
     id: string;
     date: Date;
     day: keyof typeof weekDays;
+    shiftType: keyof typeof shiftType;
     driverId: string;
     routeId: string;
     busId: string;

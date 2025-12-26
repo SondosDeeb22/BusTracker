@@ -9,7 +9,7 @@ import {sequelize} from '../config/database';
 import { BusScheduleAttributes } from '../interfaces/busScheduleInterface';
 
 //importing enums
-import {weekDays} from '../enums/busScheduleEnum';
+import {weekDays, shiftType} from '../enums/busScheduleEnum';
 
 //==============================================================================================================================================
 //? Model class
@@ -23,6 +23,7 @@ class BusScheduleModel extends Model< InferAttributes<BusScheduleModel>, InferCr
     declare id:string;
     declare date:Date;
     declare day: keyof typeof weekDays;
+    declare shiftType: keyof typeof shiftType;
     declare driverId: string;
     declare routeId: string;
     declare busId: string;
@@ -48,6 +49,11 @@ BusScheduleModel.init( {
       type: DataTypes.ENUM(...Object.values(weekDays) as string[]),
       allowNull: false
     },
+    shiftType: {
+      type: DataTypes.ENUM(...Object.values(shiftType) as string[]),
+      allowNull: false
+    },
+
 
 
     driverId: { 

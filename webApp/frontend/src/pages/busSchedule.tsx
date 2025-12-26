@@ -24,6 +24,7 @@ const BusSchedulePage = () => {
   const columnConfig = [
     { key: 'date', label: t('columns.date'), formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
     { key: 'day', label: t('columns.day') },
+    { key: 'shiftType', label: t('columns.shiftType') },
     { key: 'driverId', label: t('columns.driver'), formatter: (value:any, _columnName: string, row:any) => {return row.driver ? `${row.driver.name} - ${row.driver.id}` : value || t('unassigned');}},
     { key: 'routeId', label: t('columns.route'), formatter: (value:any, _columnName: string, row:any) => {return row.route ? `${row.route.title} - ${row.route.id}` : value || t('unassigned');}},
     { key: 'busId', label: t('columns.bus') },
@@ -33,7 +34,8 @@ const BusSchedulePage = () => {
     { key: 'createdAt', label: t('columns.createdAt'), formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
   ];
 
-  // Handle Add New
+  //=============================================================================================
+  // Handle Add New 
   const handleAddNew = () => {
     setShowAddModal(true);
   };
@@ -52,6 +54,7 @@ const BusSchedulePage = () => {
     setShowRemoveModal(true);
   };
 
+  //=============================================================================================
   // Handle Add Success
   const handleAddSuccess = () => {
     setShowAddModal(false);
@@ -79,6 +82,8 @@ const BusSchedulePage = () => {
     setTimeout(() => setSuccessMessage(''), 5000);
   };
 
+  
+  //=============================================================================================
   // Handle Close Modals
   const handleCloseAddModal = () => {
     setShowAddModal(false);

@@ -28,6 +28,10 @@ BusScheduleModel.init({
         type: sequelize_1.DataTypes.ENUM(...Object.values(busScheduleEnum_1.weekDays)),
         allowNull: false
     },
+    shiftType: {
+        type: sequelize_1.DataTypes.ENUM(...Object.values(busScheduleEnum_1.shiftType)),
+        allowNull: false
+    },
     driverId: {
         type: sequelize_1.DataTypes.STRING(4),
         allowNull: false,

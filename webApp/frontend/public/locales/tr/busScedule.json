@@ -9,6 +9,7 @@
   "columns": {
     "date": "Tarih",
     "day": "Gün",
+    "shiftType": "Vardiya Tipleri",
     "driver": "Sürücü",
     "route": "Rota",
     "bus": "Otobüs",

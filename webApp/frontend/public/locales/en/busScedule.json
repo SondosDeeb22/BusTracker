@@ -9,6 +9,7 @@
   "columns": {
     "date": "Date",
     "day": "Day",
+    "shiftType": "Shift Type",
     "driver": "Driver",
     "route": "Route",
     "bus": "Bus",

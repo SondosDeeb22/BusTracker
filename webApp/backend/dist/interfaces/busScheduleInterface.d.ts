@@ -1,8 +1,9 @@
-import { weekDays } from "../enums/busScheduleEnum";
+import { weekDays, shiftType } from "../enums/busScheduleEnum";
 export interface BusScheduleAttributes {
     id: string;
     date: Date;
     day: keyof typeof weekDays;
+    shiftType: keyof typeof shiftType;
     driverId: string;
     busId: string;
     routeId: string;
