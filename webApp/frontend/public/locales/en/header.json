@@ -1,0 +1,12 @@
+{
+  "appName": "Near East University Bus Tracker - Admin",
+  "logout": "Logout",
+  "nav": {
+    "homepage": "Homepage",
+    "drivers": "Drivers",
+    "buses": "Buses",
+    "routes": "Routes",
+    "stations": "Bus Stations",
+    "schedule": "Bus Schedule"
+  }
+}

@@ -2,6 +2,8 @@ import { COLORS } from '../styles/colorPalette';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 //importing pictures ==============================
 import BusLogoWhite from '../assets/BusLogoWhite.png';
@@ -11,6 +13,7 @@ import user from '../assets/user.png';
 import { HomeIcon, UserIcon, TruckIcon, MapIcon, CalendarDaysIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 const Header = () => {
+  const { t } = useTranslation('header');
   const [userName, setUserName] = useState('Loading...');
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
@@ -61,15 +64,14 @@ const Header = () => {
         {/* Logo -------------- */}
         <div className="flex items-center space-x-3">
             <img className="h-12 w-12" src={BusLogoWhite} alt="Bus Tracker Logo"/>
-            <p className="text-lg font-semibold text-white">Near East University Bus Tracker Admin</p>
+            <p className="text-lg font-semibold text-white">{t('appName')}</p>
         </div>
         
-        {/* username, pic and dropdown -------------- */}
-        <div className="relative">
-
-
-
-          
+        {/* language switch + username, pic and dropdown -------------- */}
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <div className="relative">
+         
             <button 
                 onClick={toggleDropdown}
                 className="flex items-center space-x-2 px-3 py-2 rounded-md text-white transition-colors duration-200"
@@ -91,10 +93,11 @@ const Header = () => {
                         className="w-full flex items-center space-x-2 px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-black transition-all duration-200 ease-in-out text-sm font-medium rounded-md active:bg-gray-200"
                     >
                         <ArrowRightOnRectangleIcon className="h-5 w-5 text-gray-600" />
-                        <span className="whitespace-nowrap">Logout</span>
+                        <span className="whitespace-nowrap">{t('logout')}</span>
                     </button>
                 </div>
             )}
+          </div>
         </div>
     </header>
 
@@ -104,32 +107,32 @@ const Header = () => {
             
             <a href="/homepage" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <HomeIcon className="h-5 w-5" />
-                <span>Homepage</span>
+                <span>{t('nav.homepage')}</span>
             </a>
 
             <a href="/drivers" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <UserIcon className="h-5 w-5" />
-                <span>Drivers</span>
+                <span>{t('nav.drivers')}</span>
             </a>
 
             <a href="/buses" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <TruckIcon className="h-5 w-5" />
-                <span>Buses</span>
+                <span>{t('nav.buses')}</span>
             </a>
 
             <a href="/routes" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <MapIcon className="h-5 w-5" />
-                <span>Routes</span>
+                <span>{t('nav.routes')}</span>
             </a>
 
             <a href="/stations" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <BuildingOfficeIcon className="h-5 w-5" />
-                <span>Bus Stations</span>
+                <span>{t('nav.stations')}</span>
             </a>
 
             <a href="/schedule" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <CalendarDaysIcon className="h-5 w-5" />
-                <span>Bus Schedule</span>
+                <span>{t('nav.schedule')}</span>
             </a>
 
             

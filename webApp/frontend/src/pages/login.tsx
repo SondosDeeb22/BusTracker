@@ -4,9 +4,13 @@ import axios from 'axios';
 import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
 import { burgundy } from '../styles/colorPalette';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
+
 
 
 const Login = () => {
+  const { t } = useTranslation('auth/loginPage');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +22,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', 
+      await axios.post('http://localhost:3001/api/auth/login', 
         { email, password },
         {
           headers: {
@@ -45,9 +49,9 @@ const Login = () => {
             { withCredentials: true }
           );
           navigate('/', { replace: true });
-          setError('Access Denied, unauthorized user');
+          setError(t('errors.unauthorized'));
          }catch(error){
-          setError('Internal server error00---')
+          setError(t('errors.internal'))
          }
        
         }else{
@@ -56,13 +60,13 @@ const Login = () => {
         }
       } catch (error) {
         console.log(error);
-        setError('Internal server error')
+        setError(t('errors.internal'))
       }
 
       
 
     } catch (error) {
-      setError('Email or Password is incorrect, Please try again');
+      setError(t('errors.invalidCredentials'));
       console.error('Login error:', error);
 
     } finally {
@@ -74,17 +78,26 @@ const Login = () => {
     // =============================================================================================================
     // =============================================================================================================
     
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex relative">
+      
       {/* Left side - Login form ========================================================*/}
       {/* <div className="w-full lg:w-1/2 flex items-center justify-center p-8"> */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
         
+        {/* button to change the language  */}
+        <div className="absolute top-4 right-4 z-50">
+          <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
+            <LanguageSwitcher />
+          </div>
+        </div>
+
+
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <img className='w-40 h-40 mx-auto' src={busTrackerLogo}/>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Near East University</h1>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Bus Tracker</h1>
-            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>Admin Login</p>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('university')}</h1>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('appName')}</h1>
+            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>{t('adminLogin')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -95,7 +108,7 @@ const Login = () => {
             )}
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                Email
+                {t('emailLabel')}
               </label>
               <input
                 id="email"
@@ -103,14 +116,14 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Enter your email"
+                placeholder={t('emailPlaceholder')}
                 required
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-semibold  text-gray-700 mb-2">
-                Password
+                {t('passwordLabel')}
               </label>
               <input
                 id="password"
@@ -118,7 +131,7 @@ const Login = () => {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Enter your password"
+                placeholder={t('passwordPlaceholder')}
                 required
               />
             </div>
@@ -126,7 +139,7 @@ const Login = () => {
             <div className="flex items-center justify-between">
            
               <a href="/forgot-password" className="text-sm font-semibold text-black transition hover:text-red-900">
-                Forgot password?
+                {t('forgotPassword')}
               </a>
             </div>
 
@@ -136,7 +149,7 @@ const Login = () => {
               style={{backgroundColor: burgundy}}
               disabled={loading}
             >
-              {loading ? 'Signing in...' : 'Login'}
+              {loading ? t('signingIn') : t('login')}
             </button>
           </form>
 

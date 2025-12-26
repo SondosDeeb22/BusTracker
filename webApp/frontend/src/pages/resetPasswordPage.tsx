@@ -4,13 +4,15 @@ import axios from 'axios';
 import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
 import { burgundy } from '../styles/colorPalette';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 import { useSearchParams } from 'react-router-dom';
 
 
 
 const ResetPassword = () => {
-//   const [email, setEmail] = useState('');
+  const { t } = useTranslation('auth/resetPasswordPage');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,10 +45,10 @@ const ResetPassword = () => {
     } catch (error: any) {
       // If 401 error, token is invalid/expired
       if (error.response?.status === 401) {
-        setError('Your reset link has expired or is invalid. Please request a new one.');
+        setError(t('errors.expired'));
         setTimeout(() => navigate('/forgot-password'), 2000);
       } else {
-        setError('Error resetting password. Please try again.');
+        setError(t('errors.generic'));
       }
       console.error('Error occurred while resetting password:', error);
 
@@ -56,10 +58,19 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+
+    <div className="min-h-screen flex relative">
+
+      {/* button to change the language  */}
+        <div className="absolute top-4 right-4 z-50">
+          <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
+            <LanguageSwitcher />
+          </div>
+        </div>
+
       {/* Left side - Login form ===========================================================================*/}
       <div className="relative w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
-
+      
       {/* retunr button -----------------------------------------------------------------*/}
      <div className="relative h-full px-0 py-10">
           <button
@@ -94,12 +105,14 @@ const ResetPassword = () => {
         </div>
 
         {/* -----------------------------------------------------------------*/}
+
+        
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <img className='w-40 h-40 mx-auto' src={busTrackerLogo}/>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Near East University</h1>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Bus Tracker</h1>
-            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>Admin Login</p>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('university')}</h1>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('appName')}</h1>
+            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>{t('adminLogin')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -109,13 +122,11 @@ const ResetPassword = () => {
               </div>
             )}
             
-            <p className="block text-sm font-semibold  text-gray-700 mb-2">
-                Please enter your New Password
-            </p>
+            <p className="block text-sm font-semibold  text-gray-700 mb-2">{t('prompt')}</p>
 
             <div>
               <label htmlFor="newPassword" className="block text-sm font-semibold  text-gray-700 mb-2">
-                New Password
+                {t('newPasswordLabel')}
               </label>
               <input
                 id="newPassword"
@@ -123,14 +134,14 @@ const ResetPassword = () => {
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Enter your new password"
+                placeholder={t('newPasswordPlaceholder')}
                 required
               />
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-semibold  text-gray-700 mb-2">
-                Confirm Password
+                {t('confirmPasswordLabel')}
               </label>
               <input
                 id="confirmPassword"
@@ -138,7 +149,7 @@ const ResetPassword = () => {
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Confirm your new password"
+                placeholder={t('confirmPasswordPlaceholder')}
                 required
               />
             </div>
@@ -150,7 +161,7 @@ const ResetPassword = () => {
               style={{backgroundColor: burgundy}}
               disabled={loading}
             >
-                Reset Password
+                {t('resetPassword')}
             </button>
           </form>
 

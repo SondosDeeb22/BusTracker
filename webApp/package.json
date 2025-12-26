@@ -4,17 +4,13 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-
     "seed": "cd backend && npx ts-node src/database/constructDatabase.ts",
-    
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"tsc -w -p backend/tsconfig.json\" \"tsc -w -p frontend/tsconfig.json\" \"nodemon backend/dist/server.js\"",
     "build:backend": "tsc -p backend/tsconfig.json",
     "build:frontend": "tsc -p frontend/tsconfig.json",
     "build": "npm run build:backend && npm run build:frontend",
     "start": "npm run build && concurrently \"nodemon backend/dist/server.js\" \"cd frontend && npm run dev\""
-
-
   },
   "keywords": [],
   "author": "",
@@ -22,6 +18,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",

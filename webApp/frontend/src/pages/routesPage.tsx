@@ -7,9 +7,11 @@ import AddRoute from '../components/routes/addRoute';
 import UpdateRoute from '../components/routes/updateRoute';
 import RemoveRoute from '../components/routes/removeRoute';
 import StatusBadge from '../components/StatusBadge';
+import { useTranslation } from 'react-i18next';
 
 //======================================================================================
 const RoutesPage = () => {
+  const { t } = useTranslation('routes');
   const [showModel, setShowModel] = useState(false);
   const [showUpdateModel, setShowUpdateModel] = useState(false);
   const [showRemoveModel, setShowRemoveModel] = useState(false);
@@ -20,11 +22,11 @@ const RoutesPage = () => {
 
   // Column configuration for routes table
   const columnConfig = [
-    { key: 'id', label: 'ID' },
-    { key: 'title', label: 'Title' },
+    { key: 'id', label: t('columns.id') },
+    { key: 'title', label: t('columns.title') },
     { 
       key: 'color', 
-      label: 'Color',
+      label: t('columns.color'),
       formatter: (value: any) => (
         <div className="flex items-center gap-2">
           <div 
@@ -37,7 +39,7 @@ const RoutesPage = () => {
     },
     { 
       key: 'stations', 
-      label: 'Stations',
+      label: t('columns.stations'),
       formatter: (value: any) => {
         const list = Array.isArray(value) ? value : [];
         return (
@@ -55,7 +57,7 @@ const RoutesPage = () => {
     },
     { 
       key: 'totalStops', 
-      label: 'Total Stops',
+      label: t('columns.totalStops'),
       formatter: (_value: any, row: any) => {
         const list = Array.isArray(row?.stations) ? row.stations : [];
         return list.length || _value || 0;
@@ -63,7 +65,7 @@ const RoutesPage = () => {
     },
     { 
       key: 'status', 
-      label: 'Status',
+      label: t('columns.status'),
       formatter: (value: any) => {
         return <StatusBadge status={value} type="route" />;
       }
@@ -96,7 +98,7 @@ const RoutesPage = () => {
   // close Model windo and show Success message. 
   const handleAddRouteSuccess = () => {
     setShowModel(false);
-    setSuccessMessage('Route was successfully added!');
+    setSuccessMessage(t('success.added'));
     setTableKey(prev => prev + 1); // Force table refresh
     
     // Clear success message after 3 seconds
@@ -108,7 +110,7 @@ const RoutesPage = () => {
   // Case: Route was Updated  ------------------------------------------------
   const handleUpdateRouteSuccess = () => {
     setShowUpdateModel(false);
-    setSuccessMessage('Route was successfully updated!');
+    setSuccessMessage(t('success.updated'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedRouteId('');
     
@@ -121,7 +123,7 @@ const RoutesPage = () => {
   // Case: Route was Removed  ------------------------------------------------
   const handleRemoveRouteSuccess = () => {
     setShowRemoveModel(false);
-    setSuccessMessage('Route was successfully removed!');
+    setSuccessMessage(t('success.removed'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedRouteId('');
     setSelectedRouteTitle('');
@@ -159,13 +161,14 @@ const RoutesPage = () => {
       )}
       <Table
         key={tableKey}
-        title="Routes"
-        subtitle="Routes"
+        title={t('title')}
+        subtitle={t('subtitle')}
         endpoint="http://localhost:3001/api/user/routes/all"
         onAddNew={handleAddNew}
         onEdit={handleEditRoute}
         onDelete={handleRemoveRoute}
         columnConfig={columnConfig}
+        actionsLabel={t('columns.actions')}
       />
       {showModel && (
         <AddRoute

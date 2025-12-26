@@ -1,0 +1,19 @@
+{
+  "title": "Sürücüler",
+  "subtitle": "Sürücüler",
+  "success": {
+    "added": "Sürücü başarıyla eklendi!",
+    "updated": "Sürücü başarıyla güncellendi!",
+    "removed": "Sürücü başarıyla silindi!"
+  },
+  "columns": {
+    "id": "ID",
+    "name": "Ad Soyad",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "licenseNumber": "Ehliyet Numarası",
+    "licenseExpiryDate": "Ehliyet Bitiş Tarihi",
+    "status": "Durum",
+    "actions": "İşlemler"
+  }
+}

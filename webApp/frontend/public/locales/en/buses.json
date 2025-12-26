@@ -1,0 +1,19 @@
+{
+  "title": "Buses",
+  "subtitle": "Buses",
+  "success": {
+    "added": "Bus was successfully added!",
+    "updated": "Bus was successfully updated!",
+    "removed": "Bus was successfully removed!"
+  },
+  "columns": {
+    "id": "ID",
+    "serialNumber": "Serial Number",
+    "brand": "Brand",
+    "status": "Status",
+    "assignedDriver": "Assigned Driver",
+    "assignedRoute": "Assigned Route",
+    "actions": "Actions"
+  },
+  "unassigned": "Unassigned"
+}

@@ -1,0 +1,12 @@
+{
+  "appName": "Yakın Doğu Üniversitesi Otobüs Takip - Yönetici",
+  "logout": "Çıkış Yap",
+  "nav": {
+    "homepage": "Ana Sayfa",
+    "drivers": "Sürücüler",
+    "buses": "Otobüsler",
+    "routes": "Rotalar",
+    "stations": "Otobüs Durakları",
+    "schedule": "Otobüs Programı"
+  }
+}

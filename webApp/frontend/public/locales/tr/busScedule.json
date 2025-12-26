@@ -1,0 +1,28 @@
+{
+  "title": "Otobüs Programı",
+  "subtitle": "kayıtlar",
+  "success": {
+    "added": "Program başarıyla eklendi!",
+    "updated": "Program başarıyla güncellendi!",
+    "removed": "Program başarıyla silindi!"
+  },
+  "columns": {
+    "date": "Tarih",
+    "day": "Gün",
+    "driver": "Sürücü",
+    "route": "Rota",
+    "bus": "Otobüs",
+    "updatedBy": "Güncelleyen",
+    "updatedAt": "Güncellenme Tarihi",
+    "createdBy": "Oluşturan",
+    "createdAt": "Oluşturulma Tarihi",
+    "actions": "İşlemler"
+  },
+  "labels": {
+    "date": "Tarih",
+    "driver": "Sürücü",
+    "route": "Rota"
+  },
+  "unassigned": "Atanmamış",
+  "na": "Yok"
+}

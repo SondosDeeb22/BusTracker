@@ -21,6 +21,7 @@ interface TableProps {
   columnConfig?: ColumnConfig[];
   customActions?: (item: TableData) => React.ReactNode;
   showActions?: boolean;
+  actionsLabel?: string;
   showAddButton?: boolean;
   loadingComponent?: React.ReactNode;
   emptyComponent?: React.ReactNode;
@@ -37,6 +38,7 @@ const Table: React.FC<TableProps> = ({
   columnConfig,
   customActions,
   showActions = true,
+  actionsLabel,
   showAddButton = true,
   loadingComponent,
   emptyComponent,
@@ -180,7 +182,7 @@ const Table: React.FC<TableProps> = ({
                 ))}
                 {showActions && (
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {actionsLabel || 'Actions'}
                   </th>
                 )}
               </tr>

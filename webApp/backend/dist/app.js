@@ -18,11 +18,15 @@ const cookie_parser_1 = __importDefault(require("cookie-parser")); //middleware 
 //===========================================================================================
 //? Enable CORS middleware
 //===========================================================================================
-// app.use(cors());
-app.use((0, cors_1.default)({
-    origin: 'http://localhost:3000',
+const corsOptions = {
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
     credentials: true,
-}));
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204
+};
+app.use((0, cors_1.default)(corsOptions));
+app.options(/.*/, (0, cors_1.default)(corsOptions));
 //===========================================================================================
 //? set up for the middleware( handle json reqestes & url & cookies)
 //===========================================================================================

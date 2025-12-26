@@ -89,6 +89,7 @@ class _HomepageUserState extends State<HomepageUser> {
       appBar: AppBar(
         backgroundColor: _burgundy,
         elevation: 0,
+        toolbarHeight: 100,
         centerTitle: true,
 
         // set "return" arrow's color
@@ -97,8 +98,8 @@ class _HomepageUserState extends State<HomepageUser> {
         // Logo in the center of AppBar.
         title: Image.asset(
           'assets/BusLogoWhite.png',
-          width: 40,
-          height: 40,
+          width: 70,
+          height: 70,
           fit: BoxFit.contain,
         ),
 

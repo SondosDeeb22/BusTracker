@@ -1,0 +1,18 @@
+{
+  "title": "Rotalar",
+  "subtitle": "Rotalar",
+  "success": {
+    "added": "Rota başarıyla eklendi!",
+    "updated": "Rota başarıyla güncellendi!",
+    "removed": "Rota başarıyla silindi!"
+  },
+  "columns": {
+    "id": "ID",
+    "title": "Başlık",
+    "color": "Renk",
+    "stations": "Duraklar",
+    "totalStops": "Toplam Durak",
+    "status": "Durum",
+    "actions": "İşlemler"
+  }
+}

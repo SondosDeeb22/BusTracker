@@ -1,0 +1,19 @@
+{
+  "title": "Drivers",
+  "subtitle": "Drivers",
+  "success": {
+    "added": "Driver was successfully added!",
+    "updated": "Driver was successfully updated!",
+    "removed": "Driver was successfully removed!"
+  },
+  "columns": {
+    "id": "ID",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "licenseNumber": "License Number",
+    "licenseExpiryDate": "License Expiry Date",
+    "status": "Status",
+    "actions": "Actions"
+  }
+}

@@ -7,9 +7,11 @@ import AddBus from '../components/buses/addBus';
 import UpdateBus from '../components/buses/updateBus';
 import RemoveBus from '../components/buses/removeBus';
 import StatusBadge from '../components/StatusBadge';
+import { useTranslation } from 'react-i18next';
 
 //======================================================================================
 const BusesPage = () => {
+  const { t } = useTranslation('buses');
   const [showModel, setShowModel] = useState(false);
   const [showUpdateModel, setShowUpdateModel] = useState(false);
   const [showRemoveModel, setShowRemoveModel] = useState(false);
@@ -20,28 +22,28 @@ const BusesPage = () => {
 
   // Column configuration for buses table
   const columnConfig = [
-    { key: 'id', label: 'ID' },
-    { key: 'serialNumber', label: 'Serial Number' },
-    { key: 'brand', label: 'Brand' },
+    { key: 'id', label: t('columns.id') },
+    { key: 'serialNumber', label: t('columns.serialNumber') },
+    { key: 'brand', label: t('columns.brand') },
     { 
       key: 'status', 
-      label: 'Status',
+      label: t('columns.status'),
       formatter: (value: any) => {
         return <StatusBadge status={value} type="bus" />;
       }
     },
     { 
       key: 'assignedDriver', 
-      label: 'Assigned Driver',
+      label: t('columns.assignedDriver'),
       formatter: (value: any, _columnName: string, row: any) => {
-        return row.driver?.name || value || 'Unassigned';
+        return row.driver?.name || value || t('unassigned');
       }
     },
     { 
       key: 'assignedRoute', 
-      label: 'Assigned Route',
+      label: t('columns.assignedRoute'),
       formatter: (value: any, _columnName: string, row: any) => {
-        return row.route?.title || value || 'Unassigned';
+        return row.route?.title || value || t('unassigned');
       }
     }
   ];
@@ -72,7 +74,7 @@ const BusesPage = () => {
   // close Model windo and show Success message. 
   const handleAddBusSuccess = () => {
     setShowModel(false);
-    setSuccessMessage('Bus was successfully added!');
+    setSuccessMessage(t('success.added'));
     setTableKey(prev => prev + 1); // Force table refresh
     
     // Clear success message after 3 seconds
@@ -84,7 +86,7 @@ const BusesPage = () => {
   // Case: Bus was Updated  ------------------------------------------------
   const handleUpdateBusSuccess = () => {
     setShowUpdateModel(false);
-    setSuccessMessage('Bus was successfully updated!');
+    setSuccessMessage(t('success.updated'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedBusId('');
     
@@ -97,7 +99,7 @@ const BusesPage = () => {
   // Case: Bus was Removed  ------------------------------------------------
   const handleRemoveBusSuccess = () => {
     setShowRemoveModel(false);
-    setSuccessMessage('Bus was successfully removed!');
+    setSuccessMessage(t('success.removed'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedBusId('');
     setSelectedBusSerialNumber('');
@@ -135,13 +137,14 @@ const BusesPage = () => {
       )}
       <Table
         key={tableKey}
-        title="Buses"
-        subtitle="Buses"
+        title={t('title')}
+        subtitle={t('subtitle')}
         endpoint="http://localhost:3001/api/admin/buses/fetch"
         onAddNew={handleAddNew}
         onEdit={handleEditBus}
         onDelete={handleRemoveBus}
         columnConfig={columnConfig}
+        actionsLabel={t('columns.actions')}
       />
       {showModel && (
         <AddBus

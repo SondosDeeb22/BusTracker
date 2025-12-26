@@ -1,0 +1,19 @@
+{
+  "title": "Otobüsler",
+  "subtitle": "Otobüsler",
+  "success": {
+    "added": "Otobüs başarıyla eklendi!",
+    "updated": "Otobüs başarıyla güncellendi!",
+    "removed": "Otobüs başarıyla silindi!"
+  },
+  "columns": {
+    "id": "ID",
+    "serialNumber": "Seri Numarası",
+    "brand": "Marka",
+    "status": "Durum",
+    "assignedDriver": "Atanan Sürücü",
+    "assignedRoute": "Atanan Rota",
+    "actions": "İşlemler"
+  },
+  "unassigned": "Atanmamış"
+}

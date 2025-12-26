@@ -1,0 +1,18 @@
+{
+  "title": "Routes",
+  "subtitle": "Routes",
+  "success": {
+    "added": "Route was successfully added!",
+    "updated": "Route was successfully updated!",
+    "removed": "Route was successfully removed!"
+  },
+  "columns": {
+    "id": "ID",
+    "title": "Title",
+    "color": "Color",
+    "stations": "Stations",
+    "totalStops": "Total Stops",
+    "status": "Status",
+    "actions": "Actions"
+  }
+}

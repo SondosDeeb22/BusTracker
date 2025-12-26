@@ -20,14 +20,16 @@ import cookieParser from 'cookie-parser';//middleware for parsing cookies in Exp
 //? Enable CORS middleware
 //===========================================================================================
 
-// app.use(cors());
-
-app.use(cors(
-  {
-  origin: 'http://localhost:3000',
+const corsOptions: cors.CorsOptions = {
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
-}
-));
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 //===========================================================================================
 //? set up for the middleware( handle json reqestes & url & cookies)

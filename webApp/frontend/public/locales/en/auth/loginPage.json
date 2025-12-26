@@ -1,0 +1,24 @@
+{
+  "university": "Near East University",
+  "appName": "Bus Tracker",
+  "adminLogin": "Admin Login",
+
+
+  "emailLabel": "Email",
+  "emailPlaceholder": "Enter your email",
+
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "Enter your password",
+
+  
+  "forgotPassword": "Forgot password?",
+  
+  "login": "Login",
+  "signingIn": "Signing in...",
+  
+  "errors": {
+    "unauthorized": "Access Denied, unauthorized user",
+    "internal": "Internal server error",
+    "invalidCredentials": "Email or Password is incorrect, Please try again"
+  }
+}

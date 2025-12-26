@@ -4,9 +4,12 @@ import axios from 'axios';
 import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
 import { burgundy } from '../styles/colorPalette';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 
 const ForgotPassword = () => {
+  const { t } = useTranslation('auth/forgot-passwordPage');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [EmailSent, setEmailSent] = useState(false);
@@ -36,7 +39,7 @@ const ForgotPassword = () => {
       
       
     } catch (error) {
-      setError('This email is not registered in our system. Please use the email associated with your account');
+      setError(t('errors.notRegistered'));
       console.error('email not registered in system error:', error);
     } finally {
       setLoading(false);
@@ -48,7 +51,7 @@ const ForgotPassword = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // stop default behaviour of reloading the page and let react handle submit logic
     if (!email) {
-      setError('Please enter your email to continue.');
+      setError(t('errors.missingEmail'));
       return;
     }
     await sendResetEmail(email);
@@ -57,7 +60,7 @@ const ForgotPassword = () => {
   // handle logic when user asks for a Resend
   const handleResend = async () => {
     if (!email) {
-      setError('Please enter your email to continue.');
+      setError(t('errors.missingEmail'));
       return;
     }
     await sendResetEmail(email);
@@ -65,10 +68,19 @@ const ForgotPassword = () => {
 
   //=====================================================================================================================================================================
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex relative">
+ 
+      {/* button to change the language  */}
+        <div className="absolute top-4 right-4 z-50">
+          <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
+            <LanguageSwitcher />
+          </div>
+        </div>
+
       {/* Left side - operation ========================================================*/}
       <div className="relative w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
 
+        
         {/* retunr button -----------------------------------------------------------------*/}
         <div className="relative h-full px-0 py-10">
           <button
@@ -104,12 +116,13 @@ const ForgotPassword = () => {
 
         {/* -----------------------------------------------------------------*/}
         
+        
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <img className='w-40 h-40 mx-auto' src={busTrackerLogo}/>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Near East University</h1>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Bus Tracker</h1>
-            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>Admin Login</p>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('university')}</h1>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('appName')}</h1>
+            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>{t('adminLogin')}</p>
           </div>
 
           {/* chagne the screen content accoring to the state of EmailSent--------------------------------------------------------------------------------- */}
@@ -122,14 +135,14 @@ const ForgotPassword = () => {
               </div>
             )}
 
-            <h1 className="block font-semibold text-black mb-2 mt-10">Forgot your Password?</h1>
-            <p className="block font-semibold text-gray-500 mb-8">No stress. Enter the email associated with your account and we'll send you a reset link to get you back on track</p>
+            <h1 className="block font-semibold text-black mb-2 mt-10">{t('heading')}</h1>
+            <p className="block font-semibold text-gray-500 mb-8">{t('subheading')}</p>
 
 
 
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                Email
+                {t('emailLabel')}
               </label>
               <input
                 id="email"
@@ -137,7 +150,7 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Enter your email"
+                placeholder={t('emailPlaceholder')}
                 required
               />
             </div>
@@ -149,7 +162,7 @@ const ForgotPassword = () => {
               style={{backgroundColor: burgundy}}
               disabled={loading}
             >
-              {loading ? 'Sending...' : 'Submit'}
+              {loading ? t('sending') : t('submit')}
             </button>
           </form>
         ) : (
@@ -157,10 +170,10 @@ const ForgotPassword = () => {
           <>
           <div className="text-center">
             <p className="text-lg font-medium text-gray-700 mb-3">
-              Please check your Email, We have sent a Password Reset link.
+              {t('checkEmail')}
             </p>
             <p className="text-base font-medium text-gray-700">
-              Didn't receive an email?{' '}
+              {t('didntReceive')}{' '}
               <button
                 type="button"
                 onClick={handleResend}
@@ -168,7 +181,7 @@ const ForgotPassword = () => {
                 style={{color: burgundy}}
                 disabled={loading}
               >
-                {loading ? 'Sending...' : 'Resend'}
+                {loading ? t('sending') : t('resend')}
               </button>
             </p>
 

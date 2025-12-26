@@ -9,12 +9,14 @@ import AddStation from '../components/stations/addStation';
 import UpdateStation from '../components/stations/updateStation';
 import RemoveStation from '../components/stations/removeStation';
 import StatusBadge from '../components/StatusBadge';
+import { useTranslation } from 'react-i18next';
 
 //======================================================================================
 //? Stations page
 //======================================================================================
 
 const StationsPage = () => {
+  const { t } = useTranslation('stations');
   const [showModel, setShowModel] = useState(false);
   const [showUpdateModel, setShowUpdateModel] = useState(false);
   const [showRemoveModel, setShowRemoveModel] = useState(false);
@@ -25,7 +27,6 @@ const StationsPage = () => {
   // 
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const [mapModalCoords, setMapModalCoords] = useState<{ lat: number; lng: number } | null>(null);
- 
 
   const markerIcon = useMemo(
     () =>
@@ -57,7 +58,7 @@ const StationsPage = () => {
           setMapModalOpen(true);
         }}
         className="h-28 w-32 rounded-md overflow-hidden border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition relative z-0"
-        title="Click to view map"
+        title={t('mapModal.previewTitle')}
       >
         {/* ------------------------------------------------------------------------------------------------------------------- */}
         <MapContainer
@@ -96,7 +97,7 @@ const StationsPage = () => {
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4">
         <div className="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden relative z-10">
           <div className="flex items-center justify-between px-4 py-3 border-b">
-            <h3 className="text-lg font-semibold text-gray-800">Station Location</h3>
+            <h3 className="text-lg font-semibold text-gray-800">{t('mapModal.title')}</h3>
             <button
               onClick={() => setMapModalOpen(false)}
               className="text-gray-500 hover:text-gray-800 focus:outline-none"
@@ -131,7 +132,7 @@ const StationsPage = () => {
 
 
           <div className="px-4 py-3 border-t text-sm text-gray-700">
-            Coordinates: {lat.toFixed(5)}, {lng.toFixed(5)}
+            {t('mapModal.coordinates')}: {lat.toFixed(5)}, {lng.toFixed(5)}
           </div>
         </div>
       </div>
@@ -141,20 +142,20 @@ const StationsPage = () => {
   //==============================================================================================================================
   // Column configuration for stations table
   const columnConfig = [
-    { key: 'id', label: 'ID' },
-    { key: 'stationName', label: 'Station Name' },
-    { key: 'latitude', label: 'Latitude' },
-    { key: 'longitude', label: 'Longitude' },
+    { key: 'id', label: t('columns.id') },
+    { key: 'stationName', label: t('columns.stationName') },
+    { key: 'latitude', label: t('columns.latitude') },
+    { key: 'longitude', label: t('columns.longitude') },
     {
       key: 'map',
-      label: 'Map',
+      label: t('columns.map'),
       formatter: (_value: any, _columnName: string, row: any) => (
         <MapPreview latitude={row.latitude} longitude={row.longitude} />
       ),
     },
     { 
       key: 'status', 
-      label: 'Status',
+      label: t('columns.status'),
       formatter: (value: any) => {
         return <StatusBadge status={value} type="station" />;
       }
@@ -187,7 +188,7 @@ const StationsPage = () => {
   // close Model windo and show Success message. 
   const handleAddStationSuccess = () => {
     setShowModel(false);
-    setSuccessMessage('Station was successfully added!');
+    setSuccessMessage(t('success.added'));
     setTableKey(prev => prev + 1); // Force table refresh
     
     // Clear success message after 3 seconds
@@ -199,7 +200,7 @@ const StationsPage = () => {
   // Case: Station was Updated  ------------------------------------------------
   const handleUpdateStationSuccess = () => {
     setShowUpdateModel(false);
-    setSuccessMessage('Station was successfully updated!');
+    setSuccessMessage(t('success.updated'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedStationId('');
     
@@ -212,7 +213,7 @@ const StationsPage = () => {
   // Case: Station was Removed  ------------------------------------------------
   const handleRemoveStationSuccess = () => {
     setShowRemoveModel(false);
-    setSuccessMessage('Station was successfully removed!');
+    setSuccessMessage(t('success.removed'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedStationId('');
     setSelectedStationName('');
@@ -231,8 +232,7 @@ const StationsPage = () => {
 
   const handleCloseUpdateModel = () => {
     setShowUpdateModel(false);
-    
-    +('');
+    setSelectedStationId('');
   };
 
   const handleCloseRemoveModel = () => {
@@ -251,13 +251,14 @@ const StationsPage = () => {
       )}
       <Table
         key={tableKey}
-        title="Stations"
-        subtitle="Stations"
+        title={t('title')}
+        subtitle={t('subtitle')}
         endpoint="http://localhost:3001/api/admin/stations/fetch"
         onAddNew={handleAddNew}
         onEdit={handleEditStation}
         onDelete={handleRemoveStation}
         columnConfig={columnConfig}
+        actionsLabel={t('columns.actions')}
       />
       <MapModal />
       {showModel && (

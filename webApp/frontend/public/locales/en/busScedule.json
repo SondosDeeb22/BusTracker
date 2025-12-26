@@ -1,0 +1,28 @@
+{
+  "title": "Bus Schedule",
+  "subtitle": "records",
+  "success": {
+    "added": "Schedule added successfully!",
+    "updated": "Schedule updated successfully!",
+    "removed": "Schedule removed successfully!"
+  },
+  "columns": {
+    "date": "Date",
+    "day": "Day",
+    "driver": "Driver",
+    "route": "Route",
+    "bus": "Bus",
+    "updatedBy": "Updated By",
+    "updatedAt": "Updated At",
+    "createdBy": "Created By",
+    "createdAt": "Created At",
+    "actions": "Actions"
+  },
+  "labels": {
+    "date": "Date",
+    "driver": "Driver",
+    "route": "Route"
+  },
+  "unassigned": "Unassigned",
+  "na": "N/A"
+}

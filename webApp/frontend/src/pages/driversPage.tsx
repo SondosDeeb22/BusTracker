@@ -3,12 +3,14 @@
 //======================================================================================
 import { useState } from 'react';
 import Table from '../components/Table';
+import { useTranslation } from 'react-i18next';
 
 import AddDriver from '../components/driver/addDriver';
 import RemoveDriver from '../components/driver/removeDriver';
 import UpdateDriver from '../components/driver/updateDriver';
 //======================================================================================
 const DriversPage = () => {
+  const { t } = useTranslation('drivers');
   const [showModel, setShowModel] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [tableKey, setTableKey] = useState(0);
@@ -16,6 +18,18 @@ const DriversPage = () => {
   const [driverToRemove, setDriverToRemove] = useState<{id: number, name: string} | null>(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [driverToUpdate, setDriverToUpdate] = useState<any>(null);
+
+
+  // Column configuration for drivers table
+  const columnConfig = [
+    { key: 'id', label: t('columns.id') },
+    { key: 'name', label: t('columns.name') },
+    { key: 'phone', label: t('columns.phone') },
+    { key: 'email', label: t('columns.email') },
+    { key: 'licenseNumber', label: t('columns.licenseNumber') },
+    { key: 'licenseExpiryDate', label: t('columns.licenseExpiryDate') },
+    { key: 'status', label: t('columns.status') }
+  ];
 
 
   // Open Model window------------------------------------------------
@@ -29,7 +43,7 @@ const DriversPage = () => {
   // close Model windo and show Success message. 
   const handleAddDriverSuccess = () => {
     setShowModel(false);
-    setSuccessMessage('Driver was successfully added!');
+    setSuccessMessage(t('success.added'));
     setTableKey(prev => prev + 1); // Force table refresh
     
     // Clear success message after 3 seconds
@@ -65,7 +79,7 @@ const DriversPage = () => {
 
   // Handle successful driver removal
   const handleRemoveSuccess = () => {
-    setSuccessMessage('Driver was successfully removed!');
+    setSuccessMessage(t('success.removed'));
     setTableKey(prev => prev + 1); // Force table refresh
     
     // Clear success message after 5 seconds
@@ -91,7 +105,7 @@ const DriversPage = () => {
 
   // Handle successful driver update
   const handleUpdateSuccess = () => {
-    setSuccessMessage('Driver was successfully updated!');
+    setSuccessMessage(t('success.updated'));
     setTableKey(prev => prev + 1); // Force table refresh
     
     // Clear success message after 5 seconds
@@ -114,12 +128,14 @@ const DriversPage = () => {
       )}
       <Table
         key={tableKey}
-        title="Drivers"
-        subtitle="Drivers"
+        title={t('title')}
+        subtitle={t('subtitle')}
         endpoint="http://localhost:3001/api/admin/drivers/fetch"
         onEdit={handleEdit}
         onDelete={handleDelete}
         onAddNew={handleAddNew}
+        columnConfig={columnConfig}
+        actionsLabel={t('columns.actions')}
       />
       {showModel && (
         <AddDriver

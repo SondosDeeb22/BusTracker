@@ -3,6 +3,7 @@
 //======================================================================================
 import { useState } from 'react';
 import Table from '../components/Table';
+import { useTranslation } from 'react-i18next';
 
 import AddSchedule from '../components/schedule/addSchedule';
 import UpdateSchedule from '../components/schedule/updateSchedule';
@@ -10,6 +11,7 @@ import RemoveSchedule from '../components/schedule/removeSchedule';
 
 //======================================================================================
 const BusSchedulePage = () => {
+  const { t } = useTranslation('busScedule');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -20,15 +22,15 @@ const BusSchedulePage = () => {
 
   // Column configuration for bus schedule table
   const columnConfig = [
-    { key: 'date', label: 'Date', formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
-    { key: 'day', label: 'Day' },
-    { key: 'driverId', label: 'Driver', formatter: (value:any, _columnName: string, row:any) => {return row.driver ? `${row.driver.name} - ${row.driver.id}` : value || 'Unassigned';}},
-    { key: 'routeId', label: 'Route', formatter: (value:any, _columnName: string, row:any) => {return row.route ? `${row.route.title} - ${row.route.id}` : value || 'Unassigned';}},
-    { key: 'busId', label: 'Bus' },
-    { key: 'updatedBy', label: 'Updated By', formatter: (value:any, _columnName: string, row:any) => {return row.updater ? `${row.updater.name} - ${row.updater.id}` : value || '-';}},
-    { key: 'updatedAt', label: 'Updated At', formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
-    { key: 'createdBy', label: 'Created By', formatter: (value:any, _columnName: string, row:any) => {return row.creator ? `${row.creator.name} - ${row.creator.id}` : value || '-';}},
-    { key: 'createdAt', label: 'Created At', formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
+    { key: 'date', label: t('columns.date'), formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
+    { key: 'day', label: t('columns.day') },
+    { key: 'driverId', label: t('columns.driver'), formatter: (value:any, _columnName: string, row:any) => {return row.driver ? `${row.driver.name} - ${row.driver.id}` : value || t('unassigned');}},
+    { key: 'routeId', label: t('columns.route'), formatter: (value:any, _columnName: string, row:any) => {return row.route ? `${row.route.title} - ${row.route.id}` : value || t('unassigned');}},
+    { key: 'busId', label: t('columns.bus') },
+    { key: 'updatedBy', label: t('columns.updatedBy'), formatter: (value:any, _columnName: string, row:any) => {return row.updater ? `${row.updater.name} - ${row.updater.id}` : value || '-';}},
+    { key: 'updatedAt', label: t('columns.updatedAt'), formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
+    { key: 'createdBy', label: t('columns.createdBy'), formatter: (value:any, _columnName: string, row:any) => {return row.creator ? `${row.creator.name} - ${row.creator.id}` : value || '-';}},
+    { key: 'createdAt', label: t('columns.createdAt'), formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
   ];
 
   // Handle Add New
@@ -45,7 +47,7 @@ const BusSchedulePage = () => {
   // Handle Remove Schedule
   const handleRemoveSchedule = (schedule: any) => {
     setSelectedScheduleId(schedule.id);
-    const scheduleInfo = `Date: ${new Date(schedule.date).toLocaleDateString()} | Driver: ${schedule.driver?.name || 'N/A'} | Route: ${schedule.route?.title || 'N/A'}`;
+    const scheduleInfo = `${t('labels.date')}: ${new Date(schedule.date).toLocaleDateString()} | ${t('labels.driver')}: ${schedule.driver?.name || t('na')} | ${t('labels.route')}: ${schedule.route?.title || t('na')}`;
     setSelectedScheduleInfo(scheduleInfo);
     setShowRemoveModal(true);
   };
@@ -53,7 +55,7 @@ const BusSchedulePage = () => {
   // Handle Add Success
   const handleAddSuccess = () => {
     setShowAddModal(false);
-    setSuccessMessage('Schedule added successfully!');
+    setSuccessMessage(t('success.added'));
     setTableKey(prev => prev + 1);
     setTimeout(() => setSuccessMessage(''), 5000);
   };
@@ -61,7 +63,7 @@ const BusSchedulePage = () => {
   // Handle Update Success
   const handleUpdateSuccess = () => {
     setShowUpdateModal(false);
-    setSuccessMessage('Schedule updated successfully!');
+    setSuccessMessage(t('success.updated'));
     setTableKey(prev => prev + 1);
     setSelectedScheduleId('');
     setTimeout(() => setSuccessMessage(''), 5000);
@@ -70,7 +72,7 @@ const BusSchedulePage = () => {
   // Handle Remove Success
   const handleRemoveSuccess = () => {
     setShowRemoveModal(false);
-    setSuccessMessage('Schedule removed successfully!');
+    setSuccessMessage(t('success.removed'));
     setTableKey(prev => prev + 1);
     setSelectedScheduleId('');
     setSelectedScheduleInfo('');
@@ -103,13 +105,14 @@ const BusSchedulePage = () => {
       )}
       <Table
         key={tableKey}
-        title="Bus Schedule"
-        subtitle="records"
+        title={t('title')}
+        subtitle={t('subtitle')}
         endpoint="http://localhost:3001/api/admin/schedule/fetch"
         onAddNew={handleAddNew}
         onEdit={handleEditSchedule}
         onDelete={handleRemoveSchedule}
         columnConfig={columnConfig}
+        actionsLabel={t('columns.actions')}
       />
 
       {showAddModal && (

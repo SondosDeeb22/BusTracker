@@ -4,6 +4,7 @@
 import  { useState, useEffect } from 'react'
 import axios from 'axios'
 import { COLORS } from '../../styles/colorPalette'
+import { useTranslation } from 'react-i18next'
 
 // interface 
 interface Route {
@@ -13,8 +14,8 @@ interface Route {
 
 //======================================================================================
 
-
 const OperatingBuses = () => {
+  const { t } = useTranslation('homepage/operatingBuses')
   const [routes, setRoutes] = useState<Route[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -37,12 +38,12 @@ const OperatingBuses = () => {
     }
 
     getOperatingRoutes()
-  }, [])
+  }, [t])
 
   if (loading) {
     return (
       <div className="bg-white rounded-lg border-2 p-6" style={{ borderColor: COLORS.burgundy }}>
-        <p className="text-gray-500">Loading operating buses...</p>
+        <p className="text-gray-500">{t('loading')}</p>
       </div>
     )
   }
@@ -50,7 +51,7 @@ const OperatingBuses = () => {
   if (error) {
     return (
       <div className="bg-white rounded-lg border-2 p-6" style={{ borderColor: COLORS.burgundy }}>
-        <p className="text-gray-500">Error: {error}</p>
+        <p className="text-gray-500">{t('errorPrefix')} {error}</p>
       </div>
     )
   }
@@ -60,7 +61,7 @@ const OperatingBuses = () => {
     <div className="flex items-center justify-start m-20 ml-40">
       <div className="bg-white rounded-lg border-2 p-6" style={{ borderColor: COLORS.navbar }}>
         <p className="text-lg text-black font-semibold mb-4">
-          {routes.length} Buses Operating
+          {routes.length} {t('busesOperating')}
         </p>
 
         {/* view the title of operating buses -----------------------------------------       */}

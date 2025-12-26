@@ -1,0 +1,22 @@
+{
+  "university": "Yakın Doğu Üniversitesi",
+  "appName": "Otobüs Takip Sistemi",
+  "adminLogin": "Yönetici Girişi",
+
+  "emailLabel": "E-posta",
+  "emailPlaceholder": "E-posta adresinizi girin",
+
+  "passwordLabel": "Şifre",
+  "passwordPlaceholder": "Şifrenizi girin",
+
+  "forgotPassword": "Şifrenizi mi unuttunuz?",
+
+  "login": "Giriş Yap",
+  "signingIn": "Giriş yapılıyor...",
+
+  "errors": {
+    "unauthorized": "Erişim reddedildi, yetkisiz kullanıcı",
+    "internal": "Sunucu içi hata",
+    "invalidCredentials": "E-posta veya şifre hatalı. Lütfen tekrar deneyin."
+  }
+}

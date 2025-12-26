@@ -1,0 +1,24 @@
+{
+  "title": "Duraklar",
+  "subtitle": "Duraklar",
+  "success": {
+    "added": "Durak başarıyla eklendi!",
+    "updated": "Durak başarıyla güncellendi!",
+    "removed": "Durak başarıyla silindi!"
+  },
+  "columns": {
+    "id": "ID",
+    "stationName": "Durak Adı",
+    "latitude": "Enlem",
+    "longitude": "Boylam",
+    "map": "Harita",
+    "status": "Durum",
+    "actions": "İşlemler"
+  },
+  "mapModal": {
+    "title": "Durak Konumu",
+    "previewTitle": "Haritayı görüntülemek için tıklayın",
+    "coordinates": "Koordinatlar",
+    "clickToSet": "Durak konumunu ayarlamak için haritaya tıklayın."
+  }
+}

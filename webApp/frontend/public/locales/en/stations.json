@@ -1,0 +1,24 @@
+{
+  "title": "Stations",
+  "subtitle": "Stations",
+  "success": {
+    "added": "Station was successfully added!",
+    "updated": "Station was successfully updated!",
+    "removed": "Station was successfully removed!"
+  },
+  "columns": {
+    "id": "ID",
+    "stationName": "Station Name",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "map": "Map",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "mapModal": {
+    "title": "Station Location",
+    "previewTitle": "Click to view map",
+    "coordinates": "Coordinates",
+    "clickToSet": "Click on the map to set station location."
+  }
+}
