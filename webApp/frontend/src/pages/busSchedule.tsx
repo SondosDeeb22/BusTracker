@@ -20,6 +20,14 @@ const BusSchedulePage = () => {
   const [selectedScheduleId, setSelectedScheduleId] = useState<string>('');
   const [selectedScheduleInfo, setSelectedScheduleInfo] = useState<string>('');
 
+  const baseEndpoint = 'http://localhost:3001/api/admin/schedule/fetch';
+  const defaultSort = { dateDir: 'desc' as 'asc' | 'desc', nameDir: 'asc' as 'asc' | 'desc' };
+  const [sortState, setSortState] = useState(defaultSort);
+
+  const buildSortParam = (s: typeof defaultSort) => {
+    return `date:${s.dateDir},name:${s.nameDir}`;
+  };
+
   // Column configuration for bus schedule table
   const columnConfig = [
     { key: 'date', label: t('columns.date'), formatter: (value: any) => value ? new Date(value).toLocaleDateString() : '-' },
@@ -108,11 +116,48 @@ const BusSchedulePage = () => {
           {successMessage}
         </div>
       )}
+
       <Table
         key={tableKey}
         title={t('title')}
         subtitle={t('subtitle')}
-        endpoint="http://localhost:3001/api/admin/schedule/fetch"
+        endpoint={`${baseEndpoint}?sort=${encodeURIComponent(buildSortParam(sortState))}`}
+        showFilterButtons={true}
+        filterButtons={
+          <div className="flex flex-wrap gap-3">
+
+            {/* by date filter ---------------------------------------------------*/}
+            <button
+              type="button"
+              className="px-5 py-2 rounded-lg border text-base font-semibold hover:bg-gray-50"
+              onClick={() => {
+                setSortState((prev) => {
+                  const next = { ...prev, dateDir: (prev.dateDir === 'desc' ? 'asc' : 'desc') as 'asc' | 'desc' };
+                  return next;
+                });
+                setTableKey((prev) => prev + 1);
+              }}
+            >
+              {sortState.dateDir === 'desc' ? 'Date: Newest first' : 'Date: Oldest first'}
+            </button>
+
+            {/* by driver filter ---------------------------------------------------*/}
+            <button
+              type="button"
+              className="px-5 py-2 rounded-lg border text-base font-semibold hover:bg-gray-50"
+              onClick={() => {
+                setSortState((prev) => {
+                  const next = { ...prev, nameDir: (prev.nameDir === 'asc' ? 'desc' : 'asc') as 'asc' | 'desc' };
+                  return next;
+                });
+                setTableKey((prev) => prev + 1);
+              }}              
+            >
+              {sortState.nameDir === 'asc' ? 'Driver: A → Z' : 'Driver: Z → A'}
+            </button>
+
+          </div>
+        }
         onAddNew={handleAddNew}
         onEdit={handleEditSchedule}
         onDelete={handleRemoveSchedule}

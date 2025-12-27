@@ -42,7 +42,9 @@ class BusScheduleService {
         const userId = jwtData.userID;
         // -------------------------------------------------------------
         await helper.add(req, res, busScheduleModel_1.default, req.body, {
-            enumFields: [{ field: "day", enumObj: busScheduleEnum_1.weekDays }],
+            // Validate enum inputs to prevent invalid day/shiftType values reaching DB.
+            // `shiftType` is required when creating a schedule.
+            enumFields: [{ field: "day", enumObj: busScheduleEnum_1.weekDays }, { field: "shiftType", enumObj: busScheduleEnum_1.shiftType }],
             transform: async (data) => {
                 // Add createdBy and createdAt
                 return {
@@ -71,7 +73,8 @@ class BusScheduleService {
         }
         const userId = jwtData.userID;
         await helper.update(req, res, busScheduleModel_1.default, req.body, {
-            enumFields: [{ field: "day", enumObj: busScheduleEnum_1.weekDays, optional: true }],
+            // On update, allow partial payloads: day/shiftType are optional but must be valid if provided.
+            enumFields: [{ field: "day", enumObj: busScheduleEnum_1.weekDays, optional: true }, { field: "shiftType", enumObj: busScheduleEnum_1.shiftType, optional: true }],
             transform: async (data) => {
                 // Add updatedBy and updatedAt
                 return {
@@ -95,23 +98,85 @@ class BusScheduleService {
     //===================================================================================================================    
     async getBusSchedule(req, res) {
         try {
+            // supports multi-field sorting via query param : date, driverName
+            const sortParam = typeof req.query.sort === 'string' ? req.query.sort.trim() : '';
+            // define the sorting schema  (take from user and format it) -------------------------------------------------------------------------------------------------
+            // this responsible for changing  sortParameters taken from admin -> "date:desc,name:asc"
+            // to this ->  [ { key: "date", dir: "DESC" }, { key: "name", dir: "ASC" } ]
+            // so we can use it later to built sequlize order
+            // strict-safe parsing (works with TS `noUncheckedIndexedAccess`)
+            const parsedSort = [];
+            if (sortParam) {
+                const parts = sortParam
+                    .split(',')
+                    .map((p) => p.trim())
+                    .filter(Boolean); //to clean the array from falsy values
+                for (const part of parts) {
+                    const segments = part.split(':').map((v) => v.trim());
+                    const key = segments[0] ?? '';
+                    if (!key)
+                        continue;
+                    const rawDir = segments[1] ?? '';
+                    const dir = rawDir.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+                    parsedSort.push({ key, dir });
+                }
+            }
+            //--------------------------------------------------------------------------------------------------
+            const order = [];
+            // functino that apply default sorting order -----------------------------------------
+            const pushDefaultOrder = () => {
+                order.push(['date', 'DESC']);
+                order.push([(0, sequelize_1.literal)("FIELD(shiftType,'Morning','Afternoon','Evening')"), 'ASC']); // literal() creates raw SQL expresesion that sequelize'll embed verbatim into the query  (becuase sequalize doesn't model this specific db sql function)
+                // enforces a domain-specific shift ordering (Morning -> Afternoon -> Evening) using raw SQL FIELD() via Sequelize literal() instead of alphabetical order.
+                order.push([{ model: userModel_1.default, as: 'driver' }, 'name', 'ASC']);
+            };
+            //--------------------------------------------------------------------------------------------------
+            // apply default order when no sort provided-----------------------------------------
+            if (parsedSort.length === 0) {
+                pushDefaultOrder();
+            }
+            else {
+                for (const { key, dir } of parsedSort) {
+                    if (key === 'date') {
+                        order.push(['date', dir]);
+                        continue;
+                    }
+                    if (key === 'shiftType') {
+                        order.push([(0, sequelize_1.literal)("FIELD(shiftType,'Morning','Afternoon','Evening')"), dir]);
+                        continue;
+                    }
+                    if (key === 'name' || key === 'driverName') {
+                        order.push([{ model: userModel_1.default, as: 'driver' }, 'name', dir]);
+                        continue;
+                    }
+                }
+                if (order.length === 0) {
+                    pushDefaultOrder();
+                }
+            }
             const busSchedule = await busScheduleModel_1.default.findAll({
                 where: {
                     date: {
                         [sequelize_1.Op.gte]: new Date().setHours(0, 0, 0, 0)
                     }
                 },
+                // needed for reliable ORDER BY on included model fields (driver.name) in Sequelize
+                subQuery: false,
+                order,
                 include: [
+                    // Driver -----------------------
                     {
                         model: userModel_1.default,
                         attributes: ['id', 'name'],
                         as: 'driver'
                     },
+                    // record crater -----------------------
                     {
                         model: userModel_1.default,
                         attributes: ['id', 'name'],
                         as: 'creator'
                     },
+                    // record Updater -----------------------
                     {
                         model: userModel_1.default,
                         attributes: ['id', 'name'],

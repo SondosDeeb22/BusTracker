@@ -153,6 +153,8 @@ export class UserHelper{
             }
             console.log(success);
             return;
+
+            
         } catch (error) {
             // if skipResponse we should rethrow so caller can handle and send response exactly once
             if (options?.skipResponse) {

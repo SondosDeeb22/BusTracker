@@ -18,6 +18,8 @@ interface TableProps {
   onEdit?: (item: TableData) => void;
   onDelete?: (item: TableData) => void;
   onAddNew?: () => void;
+  showFilterButtons?: boolean;
+  filterButtons?: React.ReactNode;
   columnConfig?: ColumnConfig[];
   customActions?: (item: TableData) => React.ReactNode;
   showActions?: boolean;
@@ -35,6 +37,8 @@ const Table: React.FC<TableProps> = ({
   onEdit,
   onDelete,
   onAddNew,
+  showFilterButtons = false,
+  filterButtons,
   columnConfig,
   customActions,
   showActions = true,
@@ -155,16 +159,19 @@ const Table: React.FC<TableProps> = ({
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-2xl font-semibold text-gray-800">{  `${data.length} ${subtitle}`}</h2>
-          {showAddButton && (
-            <button
-              onClick={onAddNew}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-              style={{ backgroundColor: COLORS.burgundy }}
-            >
-              <PlusIcon className="h-5 w-5" />
-              Add New
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {showFilterButtons && filterButtons}
+            {showAddButton && (
+              <button
+                onClick={onAddNew}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                style={{ backgroundColor: COLORS.burgundy }}
+              >
+                <PlusIcon className="h-5 w-5" />
+                Add New
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Table */}

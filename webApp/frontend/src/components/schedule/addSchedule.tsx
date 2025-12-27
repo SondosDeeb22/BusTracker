@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { weekDays } from '../../../../backend/src/enums/busScheduleEnum';
+import { shiftType, weekDays } from '../../../../backend/src/enums/busScheduleEnum';
 
 import { COLORS } from '../../styles/colorPalette';
 interface AddScheduleProps {
@@ -15,6 +15,8 @@ interface AddScheduleProps {
 
 interface ScheduleData {
   date: string;
+  day: string;
+  shiftType: string;
   driverId: string;
   routeId: string;
   busId: string;
@@ -26,6 +28,8 @@ interface ScheduleData {
 const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) => {
   const [scheduleData, setScheduleData] = useState<ScheduleData>({
     date: '',
+    day: '',
+    shiftType: '',
     driverId: '',
     routeId: '',
     busId: ''
@@ -81,6 +85,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
+     
     setScheduleData(prev => ({
       ...prev,
       [name]: value
@@ -116,7 +121,10 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error adding schedule');
+      // setError(`Error occured while adding schedule's record. \n${addingResult}`);
+      // console.error("Error occured while adding schedule's record", err);
+      const backendMessage = err?.response?.data?.message;
+      setError(backendMessage || err?.message || 'Error adding schedule');
       console.error('Error adding schedule:', err);
     } finally {
       setLoading(false);
@@ -156,6 +164,27 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+
+          {/* Shift Type Field */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Shift Type *
+            </label>
+            <select
+              name="shiftType"
+              value={scheduleData.shiftType}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select a shift</option>
+              {Object.values(shiftType).map((s) => (
+                <option key={`shift-${s}`} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
           </div>
 
 

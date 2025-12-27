@@ -96,13 +96,13 @@ Before you begin, ensure you have the following installed on your system:
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| **POST** | `/login` | ❌ | User login |
-| **POST** | `/logout` | ❌ | User logout |
-| **GET** | `/user-info` | ✅ | Get current user info |
-| **POST** | `/forgot-password` | ❌ | Request password reset |
-| **HEAD** | `/reset-password` | ✅ | Verify reset token |
-| **PATCH** | `/reset-password` | ✅ | Submit new password |
-| **PATCH** | `/set-password/:token` | ✅ | Set password (drivers) |
+| **POST** | `/login` | - | User login |
+| **POST** | `/logout` | - | User logout |
+| **GET** | `/user-info` | required | Get current user info |
+| **POST** | `/forgot-password` | - | Request password reset |
+| **HEAD** | `/reset-password` | required | Verify reset token |
+| **PATCH** | `/reset-password` | required | Submit new password |
+| **PATCH** | `/set-password/:token` | required | Set password (drivers) |
 
 ### Admin Endpoints (`/api/admin`)
 
@@ -149,12 +149,12 @@ Before you begin, ensure you have the following installed on your system:
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| **GET** | `/routes/all` | ❌ | View all routes |
-| **GET** | `/routes/operating` | ❌ | View operating routes |
-| **PATCH** | `/language` | ✅ | Change language |
-| **PATCH** | `/appearance` | ✅ | Change appearance |
-| **PATCH** | `/change-route` | ✅ | Change route (drivers) |
-| **PATCH** | `/tracking` | ✅ | Start/Stop tracking |
+| **GET** | `/routes/all` | - | View all routes |
+| **GET** | `/routes/operating` | - | View operating routes |
+| **PATCH** | `/language` | required | Change language |
+| **PATCH** | `/appearance` | required | Change appearance |
+| **PATCH** | `/change-route` | required | Change route (drivers) |
+| **PATCH** | `/tracking` | required | Start/Stop tracking |
 
 
 ## Authentication & Security
