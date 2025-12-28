@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { COLORS } from '../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
+
 interface TableData {
   [key: string]: any; // Dynamic keys based on API response
 }
@@ -48,6 +50,7 @@ const Table: React.FC<TableProps> = ({
   emptyComponent,
   errorComponent
 }) => {
+  const { t } = useTranslation('Tabele');
   const [data, setData] = useState<TableData[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,16 +126,17 @@ const Table: React.FC<TableProps> = ({
     if (loadingComponent) return loadingComponent;
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">{t('loading')}</div>
       </div>
     );
   };
 
   const renderError = () => {
-    if (errorComponent) return errorComponent(error || 'Unknown error');
+    const message = error || t('unknownError');
+    if (errorComponent) return errorComponent(message);
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-red-500">Error: {error}</div>
+        <div className="text-red-500">{t('error', { error: message })}</div>
       </div>
     );
   };
@@ -141,7 +145,7 @@ const Table: React.FC<TableProps> = ({
     if (emptyComponent) return emptyComponent;
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">No data found</div>
+        <div className="text-gray-500">{t('empty')}</div>
       </div>
     );
   };
@@ -168,7 +172,7 @@ const Table: React.FC<TableProps> = ({
                 style={{ backgroundColor: COLORS.burgundy }}
               >
                 <PlusIcon className="h-5 w-5" />
-                Add New
+                {t('addButton.label')}
               </button>
             )}
           </div>
@@ -189,7 +193,7 @@ const Table: React.FC<TableProps> = ({
                 ))}
                 {showActions && (
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {actionsLabel || 'Actions'}
+                    {actionsLabel || t('actionsHeader')}
                   </th>
                 )}
               </tr>
@@ -222,7 +226,7 @@ const Table: React.FC<TableProps> = ({
                               <button
                                 onClick={() => onEdit(row)}
                                 className="text-blue-600 hover:text-blue-900"
-                                title="Edit"
+                                title={t('editTooltip')}
                               >
                                 <PencilIcon className="h-5 w-5" />
                               </button>
@@ -231,7 +235,7 @@ const Table: React.FC<TableProps> = ({
                               <button
                                 onClick={() => onDelete(row)}
                                 className="text-red-600 hover:text-red-900"
-                                title="Delete"
+                                title={t('deleteTooltip')}
                               >
                                 <TrashIcon className="h-5 w-5" />
                               </button>

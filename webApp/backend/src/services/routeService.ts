@@ -59,7 +59,6 @@ export class RouteService{
                         { field: "status", enumObj: status },
                     ],
                     //-----------------------------------------------------------
-                    skipResponse: true
                 }
             );
 

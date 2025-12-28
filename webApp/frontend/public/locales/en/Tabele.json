@@ -1,0 +1,12 @@
+{
+  "addButton": {
+    "label": "Add New"
+  },
+  "loading": "Loading...",
+  "error": "Error: {{error}}",
+  "unknownError": "Unknown error",
+  "empty": "No data found",
+  "actionsHeader": "Actions",
+  "editTooltip": "Edit",
+  "deleteTooltip": "Delete"
+}

@@ -14,5 +14,50 @@
     "totalStops": "Toplam Durak",
     "status": "Durum",
     "actions": "İşlemler"
+  },
+
+  "addForm": {
+    "title": "Yeni Rota Ekle",
+    "titleLabel": "Başlık",
+    "color": "Renk",
+    "stations": "Duraklar",
+    "status": "Durum",
+    "selectStatus": "Durum seçin",
+    "selectStations": "Durak seçin",
+    "submit": "Rota Ekle",
+    "cancel": "İptal",
+    "loading": "Ekleniyor...",
+    "error": "Rota eklenemedi",
+    "noStations": "Kullanılabilir durak yok",
+    "stationsLoadError": "Duraklar yüklenemedi"
+  },
+
+  "updateForm": {
+    "title": "Rotayı Güncelle",
+    "titleLabel": "Başlık",
+    "color": "Renk",
+    "stations": "Duraklar",
+    "status": "Durum",
+    "selectStatus": "Durum seçin",
+    "selectStations": "Durak seçin",
+    "submit": "Rotayı Güncelle",
+    "cancel": "İptal",
+    "loading": "Güncelleniyor...",
+    "loadError": "Rota verileri yüklenemedi",
+    "error": "Rota güncellenemedi",
+    "noStations": "Kullanılabilir durak yok",
+    "totalStopsLabel": "Toplam Durak:",
+    "stationsLoadError": "Duraklar yüklenemedi"
+  },
+
+  "removeDialog": {
+    "title": "Rotayı Sil",
+    "confirmText": "Bu rotayı silmek istediğinizden emin misiniz ",
+    "warning": "? Bu işlem geri alınamaz.",
+    "defaultRouteTitle": "bu rota",
+    "cancel": "İptal",
+    "confirm": "Rotayı Sil",
+    "loading": "Siliniyor...",
+    "error": "Rota silinirken bir hata oluştu"
   }
 }

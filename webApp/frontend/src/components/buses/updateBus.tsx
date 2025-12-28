@@ -5,6 +5,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {status} from '../../../../backend/src/enums/busEnum';
 
+import { COLORS } from '../../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
+
 interface BusData{
     id: string,
     serialNumber: string,
@@ -24,6 +27,7 @@ interface UpdateBusProps {
 //? UpdateBus
 //======================================================================================
 const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
+  const { t } = useTranslation('buses');
   const [formData, setFormData] = useState<BusData>({
     id: busId,
     serialNumber: '',
@@ -75,7 +79,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       }
     } catch (err) {
       console.error('Error fetching bus data:', err);
-      setError('Failed to load bus data');
+      setError(t('updateForm.loadError'));
     } finally {
       setInitialLoading(false);
     }
@@ -119,7 +123,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update bus');
+      setError(err.response?.data?.message || t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -130,7 +134,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
     return (
       <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 w-full max-w-md">
-          <div className="text-center">Loading bus data...</div>
+          <div className="text-center">{t('updateForm.loadingData')}</div>
         </div>
       </div>
     );
@@ -139,7 +143,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Update Bus</h2>
+        <h2 className="text-xl font-bold mb-4">{t('updateForm.title')}</h2>
         
         
         {error && (
@@ -151,7 +155,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Serial Number
+              {t('updateForm.serialNumber')}
             </label>
             <input
               type="text"
@@ -166,7 +170,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Brand
+              {t('updateForm.brand')}
             </label>
             <input
               type="text"
@@ -183,11 +187,11 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Assigned Route
+              {t('updateForm.assignedRoute')}
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading routes...
+                {t('updateForm.loadingRoutes')}
               </div>
             ) : (
               <select
@@ -197,7 +201,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select a route</option>
+                <option value="">{t('updateForm.selectRoute')}</option>
                 {routes.map((route: any, index: number) => (
                   <option key={route.id || `route-${index}`} value={route.id}>
                     {route.title || route.name || `Route ${index + 1}`}
@@ -211,11 +215,11 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Assigned Driver
+              {t('updateForm.assignedDriver')}
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading drivers...
+                {t('updateForm.loadingDrivers')}
               </div>
             ) : (
               <select
@@ -225,7 +229,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select a driver</option>
+                <option value="">{t('updateForm.selectDriver')}</option>
                 {drivers.map((driver: any) => (
                   <option key={`driver-${driver.id}`} value={driver.id}>
                     {driver.name || driver.email || `Driver ${driver.id}`}
@@ -238,7 +242,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
         {/* --------------------------------------------------------------------------------------- */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Status
+              {t('updateForm.status')}
             </label>
             <select
               name="status"
@@ -246,7 +250,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select status</option>
+              <option value="">{t('updateForm.selectStatus')}</option>
               {Object.values(status).map((statusValue) => (
                 <option key={statusValue} value={statusValue}>
                   {statusValue}
@@ -262,14 +266,17 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
-              Cancel
+              {t('updateForm.cancel')}
             </button>
+
+
             <button
               type="submit"
               disabled={loading}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
+              style= {{background: COLORS.burgundy}}
             >
-              {loading ? 'Updating...' : 'Update Bus'}
+              {loading ? t('updateForm.loading') : t('updateForm.submit')}
             </button>
           </div>
         </form>

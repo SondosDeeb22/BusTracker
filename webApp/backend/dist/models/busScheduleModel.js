@@ -96,9 +96,14 @@ BusScheduleModel.init({
     timestamps: false, // it creates  createdAt / updatedAt columns
     indexes: [
         {
-            name: 'UQ_busSchedule_date_driver_bus',
+            name: 'UQ_busSchedule_date_shiftType_driver',
             unique: true,
-            fields: ['date', 'driverId', 'busId']
+            fields: ['date', 'shiftType', 'driverId']
+        },
+        {
+            name: 'UQ_busSchedule_date_shiftType_bus',
+            unique: true,
+            fields: ['date', 'shiftType', 'busId']
         }
     ],
 });

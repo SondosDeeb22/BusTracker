@@ -8,6 +8,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { shiftType, weekDays } from '../../../../backend/src/enums/busScheduleEnum';
 
 import { COLORS } from '../../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 
 interface UpdateScheduleProps {
   onClose: () => void;
@@ -30,6 +31,7 @@ interface ScheduleData {
 //=========================================================================================================
 
 const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, scheduleId }) => {
+  const { t } = useTranslation('busScedule');
   const [scheduleData, setScheduleData] = useState<ScheduleData>({
     id: scheduleId,
     date: '',
@@ -95,7 +97,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
       //=================================================================================================
     } catch (err) {
       console.error('Error fetching data:', err);
-      setError('Failed to load data');
+      setError(t('updateForm.loadError'));
     } finally {
       setLoadingDropdowns(false);
     }
@@ -141,7 +143,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
       onClose();
     //=================================================================================================
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error updating schedule');
+      setError(err.response?.data?.message || t('updateForm.error'));
       console.error('Error updating schedule:', err);
     } finally {
       setLoading(false);
@@ -154,7 +156,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Update Bus Schedule</h2>
+          <h2 className="text-xl font-bold">{t('updateForm.title')}</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -173,7 +175,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
           {/* Date Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Date
+              {t('updateForm.date')}
             </label>
             <input
               type="date"
@@ -187,7 +189,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
           {/* Day Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Day
+              {t('updateForm.day')}
             </label>
             <input
               type="text"
@@ -201,7 +203,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
           {/* Shift Type Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Shift Type
+              {t('updateForm.shiftType')}
             </label>
             <select
               name="shiftType"
@@ -209,7 +211,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select a shift</option>
+              <option value="">{t('updateForm.selectShift')}</option>
               {Object.values(shiftType).map((s) => (
                 <option key={`shift-${s}`} value={s}>
                   {s}
@@ -221,11 +223,11 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
           {/* Driver Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Driver
+              {t('updateForm.driver')}
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading drivers...
+                {t('updateForm.loadingDrivers')}
               </div>
             ) : (
               <select
@@ -234,7 +236,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select a driver</option>
+                <option value="">{t('updateForm.selectDriver')}</option>
                 {drivers.map((driver: any) => (
                   <option key={`driver-${driver.id}`} value={driver.id}>
                     {driver.name || driver.email || `Driver ${driver.id}`}
@@ -247,11 +249,11 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
           {/* Route Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Route
+              {t('updateForm.route')}
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading routes...
+                {t('updateForm.loadingRoutes')}
               </div>
             ) : (
               <select
@@ -260,7 +262,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select a route</option>
+                <option value="">{t('updateForm.selectRoute')}</option>
                 {routes.map((route: any, index: number) => (
                   <option key={route.id || `route-${index}`} value={route.id}>
                     {route.title || route.name || `Route ${index + 1}`}
@@ -273,11 +275,11 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
           {/* Bus Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Bus
+              {t('updateForm.bus')}
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading buses...
+                {t('updateForm.loadingBuses')}
               </div>
             ) : (
               <select
@@ -286,7 +288,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select a bus</option>
+                <option value="">{t('updateForm.selectBus')}</option>
                 {buses.map((bus: any) => (
                   <option key={`bus-${bus.id}`} value={bus.id}>
                     {bus.id}
@@ -303,7 +305,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
-              Cancel
+              {t('updateForm.cancel')}
             </button>
             <button
               type="submit"
@@ -311,7 +313,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ onClose, onSuccess, sch
               className="px-4 py-2 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
               style= {{background: COLORS.burgundy}}
             >
-              {loading ? 'Updating...' : 'Update Schedule'}
+              {loading ? t('updateForm.loading') : t('updateForm.submit')}
             </button>
           </div>
         </form>

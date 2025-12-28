@@ -15,5 +15,60 @@
     "assignedRoute": "Assigned Route",
     "actions": "Actions"
   },
-  "unassigned": "Unassigned"
+  "unassigned": "Unassigned",
+
+
+
+  "addForm":{
+    "title": "Add New Bus",
+    "serialNumber": "Serial Number",
+    "brand": "Brand",    
+    "assignedRoute": "Assigned Route",
+    "assignedDriver": "Assigned Driver",   
+    "status": "Status",
+    "submit": "Add Bus",
+    "cancel": "Cancel",
+
+    "selectRoute": "Select a route",
+    "selectDriver": "Select a driver",
+    "selectStatus": "Select status",
+    "loadingRoutes": "Loading routes...",
+    "loadingDrivers": "Loading drivers...",
+    "loading": "Adding...",
+    "error": "Failed to add bus"
+  },
+
+  "updateForm": {
+    "title": "Edit Bus",
+    "serialNumber": "Serial Number",
+    "brand": "Brand",
+    "status": "Status",
+    "assignedDriver": "Assigned Driver",
+    "assignedRoute": "Assigned Route",
+    "submit": "Update Bus",
+    "cancel": "Cancel",
+
+    "selectRoute": "Select a route",
+    "selectDriver": "Select a driver",
+    "selectStatus": "Select status",
+    "loadingRoutes": "Loading routes...",
+    "loadingDrivers": "Loading drivers...",
+    "loadingData": "Loading bus data...",
+    "loading": "Updating...",
+    "loadError": "Failed to load bus data",
+    "error": "Failed to update bus"
+  },
+
+  "removeDialog": {
+    "title": "Remove Bus",
+    "confirmText": "Are you sure you want to remove ",
+    "warning": "? This action cannot be undone.",
+    "defaultBusName": "this bus",
+    "cancel": "Cancel",
+    "confirm": "Remove Bus",
+    "loading": "Removing...",
+    "error": "An error occurred while removing the bus"
+  }
+
+
 }

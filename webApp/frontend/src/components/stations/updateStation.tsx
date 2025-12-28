@@ -7,6 +7,7 @@ import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
 import { status as stationStatus } from '../../../../backend/src/enums/stationEnum';
+import { useTranslation } from 'react-i18next';
 
 interface StationData {
   id: string;
@@ -26,6 +27,7 @@ interface UpdateStationProps {
 //? UpdateStation
 //======================================================================================
 const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stationId }) => {
+  const { t } = useTranslation('stations');
   const [formData, setFormData] = useState<StationData>({
     id: stationId,
     stationName: '',
@@ -64,7 +66,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
         });
       }
     } catch (err) {
-      setError('Failed to fetch station data');
+      setError(t('updateForm.loadError'));
     }
   };
 
@@ -107,7 +109,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
     setError('');
 
     if (!Number.isFinite(formData.latitude) || !Number.isFinite(formData.longitude)) {
-      setError('Please pick a location on the map');
+      setError(t('updateForm.locationRequired'));
       setLoading(false);
       return;
     }
@@ -122,7 +124,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update station');
+      setError(err.response?.data?.message || t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -133,7 +135,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Update Station</h2>
+        <h2 className="text-xl font-bold mb-4">{t('updateForm.title')}</h2>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -144,7 +146,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Station Name
+              {t('updateForm.stationName')}
             </label>
             <input
               type="text"
@@ -159,7 +161,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           {/* location  Column   ================================================================================================= */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Pick Location
+              {t('updateForm.pickLocation')}
             </label>
             <div className="h-64 w-full rounded-md overflow-hidden border">
               {/* Map controller: initializes map, view, and context --------------------------------------------------------------------------- */}
@@ -197,10 +199,10 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
             <div className="mt-2 text-sm text-gray-700">
               {formData.latitude && formData.longitude ? (
                 <span>
-                  Selected: {Number(formData.latitude).toFixed(5)}, {Number(formData.longitude).toFixed(5)}
+                  {t('updateForm.selectedPrefix')} {Number(formData.latitude).toFixed(5)}, {Number(formData.longitude).toFixed(5)}
                 </span>
               ) : (
-                <span>Click on the map to set station location.</span>
+                <span>{t('mapModal.clickToSet')}</span>
               )}
             </div>
           </div>
@@ -208,7 +210,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Status
+              {t('updateForm.status')}
             </label>
             <select
               name="status"
@@ -217,10 +219,10 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
             >
-              <option value="">Select Status</option>
+              <option value="">{t('updateForm.selectStatus')}</option>
               {(Object.values(stationStatus) as string[]).map((status) => (
                 <option key={status} value={status}>
-                  {status === 'covered' ? 'Covered' : 'Not Covered'}
+                  {status === 'covered' ? t('updateForm.statusCovered') : t('updateForm.statusNotCovered')}
                 </option>
               ))}
             </select>
@@ -233,7 +235,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
               disabled={loading}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:opacity-50"
             >
-              Cancel
+              {t('updateForm.cancel')}
             </button>
             <button
               type="submit"
@@ -241,7 +243,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
               className="px-4 py-2 text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 disabled:opacity-50"
               style={{ backgroundColor: COLORS.burgundy }}
             >
-              {loading ? 'Updating...' : 'Update Station'}
+              {loading ? t('updateForm.loading') : t('updateForm.submit')}
             </button>
           </div>
         </form>

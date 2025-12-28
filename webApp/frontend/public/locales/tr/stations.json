@@ -20,5 +20,49 @@
     "previewTitle": "Haritayı görüntülemek için tıklayın",
     "coordinates": "Koordinatlar",
     "clickToSet": "Durak konumunu ayarlamak için haritaya tıklayın."
+  },
+
+  "addForm": {
+    "title": "Yeni Durak Ekle",
+    "stationName": "Durak Adı",
+    "pickLocation": "Konum Seçin",
+    "selectedPrefix": "Seçilen:",
+    "status": "Durum",
+    "selectStatus": "Durum seçin",
+    "statusCovered": "Kapalı",
+    "statusNotCovered": "Kapalı Değil",
+    "submit": "Durak Ekle",
+    "cancel": "İptal",
+    "loading": "Ekleniyor...",
+    "error": "Durak eklenemedi",
+    "locationRequired": "Lütfen harita üzerinde bir konum seçin"
+  },
+
+  "updateForm": {
+    "title": "Durak Güncelle",
+    "stationName": "Durak Adı",
+    "pickLocation": "Konum Seçin",
+    "selectedPrefix": "Seçilen:",
+    "status": "Durum",
+    "selectStatus": "Durum seçin",
+    "statusCovered": "Kapalı",
+    "statusNotCovered": "Kapalı Değil",
+    "submit": "Durağı Güncelle",
+    "cancel": "İptal",
+    "loading": "Güncelleniyor...",
+    "loadError": "Durak verileri yüklenemedi",
+    "error": "Durak güncellenemedi",
+    "locationRequired": "Lütfen harita üzerinde bir konum seçin"
+  },
+
+  "removeDialog": {
+    "title": "Durak Sil",
+    "confirmText": "Bu durağı silmek istediğinizden emin misiniz ",
+    "warning": "? Bu işlem geri alınamaz.",
+    "defaultStationName": "bu durak",
+    "cancel": "İptal",
+    "confirm": "Durağı Sil",
+    "loading": "Siliniyor...",
+    "error": "Durak silinirken bir hata oluştu"
   }
 }

@@ -20,21 +20,6 @@ class UserHelper {
     async add(req, res, model, payload, options) {
         const modelClassName = model.name;
         const dataName = (modelClassName?.replace(/Model$/, '') || '').toLowerCase();
-        // small helper to either send a response or throw when skipResponse is set
-        const fail = (status, message) => {
-            if (options?.skipResponse) {
-                // Throw an Error object that the caller can catch.
-                // Keep message and status in the Error text so caller can inspect/log it if needed.
-                const err = new Error(message);
-                // Attach status for richer handling (optional)
-                err.status = status;
-                throw err;
-            }
-            else {
-                (0, messageTemplate_1.sendResponse)(res, status, message);
-                return;
-            }
-        };
         try {
             const body = (payload ?? req.body);
             // get required/unique from model metadata when not provided
@@ -53,9 +38,10 @@ class UserHelper {
             const requiredFields = requiredFromModel;
             for (const field of requiredFields) {
                 if (body[field] === undefined || body[field] === null || body[field] === "") {
-                    // use fail instead of sendResponse directly
-                    fail(500, `Fill all Fields please: missing ${field}`);
-                    return; // unreachable if fail throws, but keeps TS happy
+                    const status = 500;
+                    const message = `Fill all Fields please: missing ${field}`;
+                    (0, messageTemplate_1.sendResponse)(res, status, message);
+                    return;
                 }
             }
             // Enum validation
@@ -64,12 +50,16 @@ class UserHelper {
                     const value = body[rule.field];
                     if (value === undefined || value === null || value === "") {
                         if (!rule.optional) {
-                            fail(500, `Invalid ${rule.field}!`);
+                            const status = 500;
+                            const message = `Invalid ${rule.field}!`;
+                            (0, messageTemplate_1.sendResponse)(res, status, message);
                             return;
                         }
                     }
                     else if (!(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
-                        fail(500, `Invalid ${rule.field}!`);
+                        const status = 500;
+                        const message = `Invalid ${rule.field}!`;
+                        (0, messageTemplate_1.sendResponse)(res, status, message);
                         return;
                     }
                 }
@@ -102,7 +92,9 @@ class UserHelper {
                         where: { [field]: body[field] }
                     });
                     if (duplicated) {
-                        fail(500, `${dataName} was not Added, because another ${dataName} with the same ${field} already exists!`);
+                        const status = 500;
+                        const message = `${dataName} was not Added, because another ${dataName} with the same ${field} already exists!`;
+                        (0, messageTemplate_1.sendResponse)(res, status, message);
                         return;
                     }
                 }
@@ -111,22 +103,14 @@ class UserHelper {
             const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData);
             const success = `${dataName} was Added successfully`;
-            if (!options?.skipResponse) {
-                (0, messageTemplate_1.sendResponse)(res, 200, success);
-            }
+            (0, messageTemplate_1.sendResponse)(res, 200, success);
             console.log(success);
             return;
+            //==========================================================================================================
         }
         catch (error) {
-            // if skipResponse we should rethrow so caller can handle and send response exactly once
-            if (options?.skipResponse) {
-                // If error already came from fail() it will be thrown and caught here; rethrow it to be handled by caller
-                throw error;
-            }
-            else {
-                (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating ${dataName}. ${error}`);
-                return;
-            }
+            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while creating ${dataName}. ${error}`);
+            return;
         }
     }
     //?==========================================================================================================

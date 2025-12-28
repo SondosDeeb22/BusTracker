@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import AddDriver from '../components/driver/addDriver';
 import RemoveDriver from '../components/driver/removeDriver';
 import UpdateDriver from '../components/driver/updateDriver';
+
+import StatusBadge from '../components/StatusBadge';
 //======================================================================================
 const DriversPage = () => {
   const { t } = useTranslation('drivers');
@@ -28,7 +30,11 @@ const DriversPage = () => {
     { key: 'email', label: t('columns.email') },
     { key: 'licenseNumber', label: t('columns.licenseNumber') },
     { key: 'licenseExpiryDate', label: t('columns.licenseExpiryDate') },
-    { key: 'status', label: t('columns.status') }
+    { key: 'status', label: t('columns.status'),
+      formatter: (value: any) => {
+        return <StatusBadge status={value} type="driver" />;
+      }
+    }
   ];
 
 

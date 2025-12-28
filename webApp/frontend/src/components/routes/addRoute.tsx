@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { status as routeStatus } from '../../../../backend/src/enums/routeEnum';
+import { useTranslation } from 'react-i18next';
 
 interface RouteData {
   title: string;
@@ -28,6 +29,7 @@ interface AddRouteProps {
 //? AddRoute
 //======================================================================================
 const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
+  const { t } = useTranslation('routes');
   const [formData, setFormData] = useState<RouteData>({
     title: '',
     color: '#000000',
@@ -81,7 +83,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to add route');
+      setError(err.response?.data?.message || t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -96,7 +98,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
         });
         setStations(response.data.data || response.data || []);
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load stations');
+        setError(err.response?.data?.message || t('addForm.stationsLoadError'));
       }
     };
 
@@ -107,7 +109,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Add New Route</h2>
+        <h2 className="text-xl font-bold mb-4">{t('addForm.title')}</h2>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -118,7 +120,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Route Title
+              {t('addForm.titleLabel')}
             </label>
             <input
               type="text"
@@ -132,7 +134,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Color
+              {t('addForm.color')}
             </label>
             <input
               type="color"
@@ -146,11 +148,11 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Stations
+              {t('addForm.stations')}
             </label>
             <div className="max-h-48 overflow-y-auto border rounded p-2 space-y-2">
               {stations.length === 0 && (
-                <p className="text-sm text-gray-500">No stations available</p>
+                <p className="text-sm text-gray-500">{t('addForm.noStations')}</p>
               )}
               {stations.map((station) => (
                 <label key={station.id} className="flex items-center space-x-2 text-sm text-gray-700">
@@ -168,7 +170,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Status
+              {t('addForm.status')}
             </label>
             <select
               name="status"
@@ -177,7 +179,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
             >
-              <option value="">Select Status</option>
+              <option value="">{t('addForm.selectStatus')}</option>
               {(Object.values(routeStatus) as string[]).map((status) => (
                 <option key={status} value={status}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -193,7 +195,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
               disabled={loading}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:opacity-50"
             >
-              Cancel
+              {t('addForm.cancel')}
             </button>
             <button
               type="submit"
@@ -201,7 +203,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
               className="px-4 py-2 text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 disabled:opacity-50"
               style={{ backgroundColor: COLORS.burgundy }}
             >
-              {loading ? 'Adding...' : 'Add Route'}
+              {loading ? t('addForm.loading') : t('addForm.submit')}
             </button>
           </div>
         </form>

@@ -14,5 +14,50 @@
     "totalStops": "Total Stops",
     "status": "Status",
     "actions": "Actions"
+  },
+
+  "addForm": {
+    "title": "Add New Route",
+    "titleLabel": "Title",
+    "color": "Color",
+    "stations": "Stations",
+    "status": "Status",
+    "selectStatus": "Select status",
+    "selectStations": "Select stations",
+    "submit": "Add Route",
+    "cancel": "Cancel",
+    "loading": "Adding...",
+    "error": "Failed to add route",
+    "noStations": "No stations available",
+    "stationsLoadError": "Failed to load stations"
+  },
+
+  "updateForm": {
+    "title": "Update Route",
+    "titleLabel": "Title",
+    "color": "Color",
+    "stations": "Stations",
+    "status": "Status",
+    "selectStatus": "Select status",
+    "selectStations": "Select stations",
+    "submit": "Update Route",
+    "cancel": "Cancel",
+    "loading": "Updating...",
+    "loadError": "Failed to load route data",
+    "error": "Failed to update route",
+    "noStations": "No stations available",
+    "totalStopsLabel": "Total Stops:",
+    "stationsLoadError": "Failed to load stations"
+  },
+
+  "removeDialog": {
+    "title": "Remove Route",
+    "confirmText": "Are you sure you want to remove ",
+    "warning": "? This action cannot be undone.",
+    "defaultRouteTitle": "this route",
+    "cancel": "Cancel",
+    "confirm": "Remove Route",
+    "loading": "Removing...",
+    "error": "An error occurred while removing the route"
   }
 }

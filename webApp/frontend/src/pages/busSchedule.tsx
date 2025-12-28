@@ -138,7 +138,7 @@ const BusSchedulePage = () => {
                 setTableKey((prev) => prev + 1);
               }}
             >
-              {sortState.dateDir === 'desc' ? 'Date: Newest first' : 'Date: Oldest first'}
+              {sortState.dateDir === 'desc' ? t('filters.dateNewestFirst') : t('filters.dateOldestFirst')}
             </button>
 
             {/* by driver filter ---------------------------------------------------*/}
@@ -153,7 +153,7 @@ const BusSchedulePage = () => {
                 setTableKey((prev) => prev + 1);
               }}              
             >
-              {sortState.nameDir === 'asc' ? 'Driver: A → Z' : 'Driver: Z → A'}
+              {sortState.nameDir === 'asc' ? t('filters.driverAZ') : t('filters.driverZA')}
             </button>
 
           </div>

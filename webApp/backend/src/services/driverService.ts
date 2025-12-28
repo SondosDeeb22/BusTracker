@@ -46,7 +46,6 @@ export class DriverService{
                 if (!out.status) out.status = status.active;
                 return out;
             },
-            skipResponse: true
         });
 
         // Send validation email

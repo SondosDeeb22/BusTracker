@@ -49,7 +49,6 @@ class RouteService {
                     { field: "status", enumObj: routeEnum_1.status },
                 ],
                 //-----------------------------------------------------------
-                skipResponse: true
             });
             // attach stations to route_stations table if provided
             if (stations.length > 0) {

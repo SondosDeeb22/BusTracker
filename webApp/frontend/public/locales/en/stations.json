@@ -20,5 +20,49 @@
     "previewTitle": "Click to view map",
     "coordinates": "Coordinates",
     "clickToSet": "Click on the map to set station location."
+  },
+
+  "addForm": {
+    "title": "Add New Station",
+    "stationName": "Station Name",
+    "pickLocation": "Pick Location",
+    "selectedPrefix": "Selected:",
+    "status": "Status",
+    "selectStatus": "Select status",
+    "statusCovered": "Covered",
+    "statusNotCovered": "Not Covered",
+    "submit": "Add Station",
+    "cancel": "Cancel",
+    "loading": "Adding...",
+    "error": "Failed to add station",
+    "locationRequired": "Please pick a location on the map"
+  },
+
+  "updateForm": {
+    "title": "Update Station",
+    "stationName": "Station Name",
+    "pickLocation": "Pick Location",
+    "selectedPrefix": "Selected:",
+    "status": "Status",
+    "selectStatus": "Select status",
+    "statusCovered": "Covered",
+    "statusNotCovered": "Not Covered",
+    "submit": "Update Station",
+    "cancel": "Cancel",
+    "loading": "Updating...",
+    "loadError": "Failed to fetch station data",
+    "error": "Failed to update station",
+    "locationRequired": "Please pick a location on the map"
+  },
+
+  "removeDialog": {
+    "title": "Remove Station",
+    "confirmText": "Are you sure you want to remove ",
+    "warning": "? This action cannot be undone.",
+    "defaultStationName": "this station",
+    "cancel": "Cancel",
+    "confirm": "Remove Station",
+    "loading": "Removing...",
+    "error": "An error occurred while removing the station"
   }
 }

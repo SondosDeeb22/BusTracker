@@ -8,6 +8,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { shiftType, weekDays } from '../../../../backend/src/enums/busScheduleEnum';
 
 import { COLORS } from '../../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 interface AddScheduleProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -26,6 +27,7 @@ interface ScheduleData {
 //====================================================================================================================================
 
 const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) => {
+  const { t } = useTranslation('busScedule');
   const [scheduleData, setScheduleData] = useState<ScheduleData>({
     date: '',
     day: '',
@@ -76,7 +78,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
       //===================================================================================
     } catch (err) {
       console.error('Error fetching dropdown data:', err);
-      setError('Failed to load dropdown data');
+      setError(t('addForm.dropdownLoadError'));
     } finally {
       setLoadingDropdowns(false);
     }
@@ -121,10 +123,8 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
       onSuccess();
       onClose();
     } catch (err: any) {
-      // setError(`Error occured while adding schedule's record. \n${addingResult}`);
-      // console.error("Error occured while adding schedule's record", err);
       const backendMessage = err?.response?.data?.message;
-      setError(backendMessage || err?.message || 'Error adding schedule');
+      setError(backendMessage || err?.message || t('addForm.error'));
       console.error('Error adding schedule:', err);
     } finally {
       setLoading(false);
@@ -135,7 +135,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Add Bus Schedule</h2>
+          <h2 className="text-xl font-bold">{t('addForm.title')}</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -154,7 +154,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
           {/* Date Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Date *
+              {t('addForm.date')}  
             </label>
             <input
               type="date"
@@ -169,7 +169,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
           {/* Shift Type Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Shift Type *
+              {t('addForm.shiftType')}  
             </label>
             <select
               name="shiftType"
@@ -178,7 +178,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select a shift</option>
+              <option value="">{t('addForm.selectShift')}</option>
               {Object.values(shiftType).map((s) => (
                 <option key={`shift-${s}`} value={s}>
                   {s}
@@ -191,11 +191,11 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
           {/* Driver Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Driver *
+              {t('addForm.driver')}  
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading drivers...
+                {t('addForm.loadingDrivers')}
               </div>
             ) : (
               <select
@@ -205,7 +205,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select a driver</option>
+                <option value="">{t('addForm.selectDriver')}</option>
                 {drivers.map((driver: any) => (
                   <option key={`driver-${driver.id}`} value={driver.id}>
                     {driver.name || driver.email || `Driver ${driver.id}`}
@@ -218,11 +218,11 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
           {/* Route Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Route *
+              {t('addForm.route')}  
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading routes...
+                {t('addForm.loadingRoutes')}
               </div>
             ) : (
               <select
@@ -232,7 +232,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select a route</option>
+                <option value="">{t('addForm.selectRoute')}</option>
                 {routes.map((route: any, index: number) => (
                   <option key={route.id || `route-${index}`} value={route.id}>
                     {route.title || route.name || `Route ${index + 1}`}
@@ -245,11 +245,11 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
           {/* Bus Field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Bus *
+              {t('addForm.bus')}  
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                Loading buses...
+                {t('addForm.loadingBuses')}
               </div>
             ) : (
               <select
@@ -259,7 +259,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select a bus</option>
+                <option value="">{t('addForm.selectBus')}</option>
                 {buses.map((bus: any) => (
                   <option key={`bus-${bus.id}`} value={bus.id}>
                     {bus.id}
@@ -276,7 +276,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
-              Cancel
+              {t('addForm.cancel')}
             </button>
             <button
               type="submit"
@@ -284,7 +284,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
               className="px-4 py-2 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
               style= {{background: COLORS.burgundy}}
             >
-              {loading ? 'Adding...' : 'Add Schedule'}
+              {loading ? t('addForm.loading') : t('addForm.submit')}
             </button>
           </div>
         </form>

@@ -7,7 +7,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 
 import {role, gender, status} from '../../../../backend/src/enums/userEnum';
 import { COLORS } from '../../styles/colorPalette';
-
+import { useTranslation } from 'react-i18next';
 
 //====================================================================================================================================
 interface AddDriverProps {
@@ -33,6 +33,7 @@ interface DriverData{
 //=======================================================================================
 
 const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
+  const { t } = useTranslation('drivers');
   const [driverData, setDriverData] = useState<DriverData>({
     name: '',
     gender: '',
@@ -81,7 +82,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
       onClose(); //close the model
       //-----------------------------------------------
     } catch (error:any) {
-      setError(error.response.data.message || 'Error Occured while adding driver, Please try again!');
+      setError(error.response?.data?.message || t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -92,7 +93,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Add New Driver</h2>
+          <h2 className="text-xl font-semibold text-gray-800">{t('addForm.title')}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -110,7 +111,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name *
+              {t('addForm.name')}
             </label>
             <input
               type="text"
@@ -124,7 +125,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender *
+              {t('addForm.gender')}
             </label>
             <select
               name="gender"
@@ -133,7 +134,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select Gender</option>
+              <option value="">{t('addForm.selectGender')}</option>
               {
                 Object.values(gender).map((statusValue)=>(
                   <option key={statusValue} value={statusValue}>
@@ -148,7 +149,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone *
+              {t('addForm.phone')}
             </label>
             <input
               type="tel"
@@ -162,7 +163,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email *
+              {t('addForm.email')}
             </label>
             <input
               type="email"
@@ -176,7 +177,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Birth Date *
+              {t('addForm.birthDate')}
             </label>
             <input
               type="date"
@@ -190,7 +191,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              License Number *
+              {t('addForm.licenseNumber')}
             </label>
             <input
               type="text"
@@ -204,7 +205,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              License Expiry Date *
+              {t('addForm.licenseExpiryDate')}
             </label>
             <input
               type="date"
@@ -218,7 +219,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status *
+              {t('addForm.status')}
             </label>
             <select
               name="status"
@@ -227,7 +228,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select Status</option>
+              <option value="">{t('addForm.selectStatus')}</option>
               {
                 Object.values(status).map((statusValue)=>(
                   <option key={statusValue} value={statusValue}>
@@ -244,16 +245,18 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('addForm.cancel')}
             </button>
+
             <button
               type="submit"
               disabled={loading}
               className="flex-1 px-4 py-2  text-white rounded-md hover:bg-red-600 transition-colors disabled:opacity-50"
               style= {{background: COLORS.burgundy}}
             >
-              {loading ? 'Adding...' : 'Add Driver'}
+              {loading ? t('addForm.loading') : t('addForm.submit')}
             </button>
+
           </div>
         </form>
       </div>

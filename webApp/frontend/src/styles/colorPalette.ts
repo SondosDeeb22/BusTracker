@@ -46,6 +46,8 @@ export const statusConfig = {
       priority: 'medium'
     }
   },
+
+  
   driver: {
     [userStatus.active]: { 
       color: 'bg-green-100 text-green-800', 
@@ -58,6 +60,8 @@ export const statusConfig = {
       priority: 'low'
     }
   },
+
+
   route: {
     [routeStatus.covered]: { 
       color: 'bg-green-100 text-green-800', 

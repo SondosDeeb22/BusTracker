@@ -38,7 +38,6 @@ class DriverService {
                         out.status = userEnum_1.status.active;
                     return out;
                 },
-                skipResponse: true
             });
             // Send validation email
             await authService.sendValidateEmail(res, req.body.email);

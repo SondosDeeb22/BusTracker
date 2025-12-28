@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 
 interface RemoveStationProps {
   stationId: string;
@@ -17,12 +18,15 @@ interface RemoveStationProps {
 //======================================================================================
 const RemoveStation: React.FC<RemoveStationProps> = ({ 
   stationId, 
-  stationName = 'this station', 
+  stationName, 
   onClose, 
   onSuccess 
 }) => {
+  const { t } = useTranslation('stations');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const displayStationName = stationName || t('removeDialog.defaultStationName');
 
   ///-------------------------------------------------------------------------
   const handleRemove = async () => {
@@ -38,7 +42,7 @@ const RemoveStation: React.FC<RemoveStationProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while removing the station');
+      setError(err instanceof Error ? err.message : t('removeDialog.error'));
     } finally {
       setIsLoading(false);
     }
@@ -50,11 +54,11 @@ const RemoveStation: React.FC<RemoveStationProps> = ({
     <div className="fixed inset-0 bg-black/80  flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Remove Station
+          {t('removeDialog.title')}
         </h2>
         
         <p className="text-gray-600 mb-6">
-          Are you sure you want to remove <strong>{stationName}</strong>? This action cannot be undone.
+          {t('removeDialog.confirmText')}<strong>{displayStationName}</strong>{t('removeDialog.warning')}
         </p>
 
         {error && (
@@ -69,7 +73,7 @@ const RemoveStation: React.FC<RemoveStationProps> = ({
             disabled={isLoading}
             className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:opacity-50"
           >
-            Cancel
+            {t('removeDialog.cancel')}
           </button>
           <button
             onClick={handleRemove}
@@ -77,7 +81,7 @@ const RemoveStation: React.FC<RemoveStationProps> = ({
             className="px-4 py-2  text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
             style={{background: COLORS.burgundy}}
           >
-            {isLoading ? 'Removing...' : 'Remove Station'}
+            {isLoading ? t('removeDialog.loading') : t('removeDialog.confirm')}
           </button>
         </div>
       </div>

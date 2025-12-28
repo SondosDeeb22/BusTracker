@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { status as routeStatus } from '../../../../backend/src/enums/routeEnum';
+import { useTranslation } from 'react-i18next';
 
 interface RouteData {
   id: string;
@@ -29,6 +30,7 @@ interface UpdateRouteProps {
 //? UpdateRoute
 //======================================================================================
 const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }) => {
+  const { t } = useTranslation('routes');
   const [formData, setFormData] = useState<RouteData>({
     id: routeId,
     title: '',
@@ -60,7 +62,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
         });
       }
     } catch (err) {
-      setError('Failed to fetch route data');
+      setError(t('updateForm.loadError'));
     }
   };
 
@@ -78,7 +80,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
         });
         setStations(response.data.data || response.data || []);
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load stations');
+        setError(err.response?.data?.message || t('updateForm.stationsLoadError'));
       }
     };
 
@@ -127,7 +129,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update route');
+      setError(err.response?.data?.message || t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -138,7 +140,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Update Route</h2>
+        <h2 className="text-xl font-bold mb-4">{t('updateForm.title')}</h2>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -149,7 +151,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Route Title
+              {t('updateForm.titleLabel')}
             </label>
             <input
               type="text"
@@ -163,7 +165,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Color
+              {t('updateForm.color')}
             </label>
             <input
               type="color"
@@ -177,11 +179,11 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Stations
+              {t('updateForm.stations')}
             </label>
             <div className="max-h-48 overflow-y-auto border rounded p-2 space-y-2">
               {stations.length === 0 && (
-                <p className="text-sm text-gray-500">No stations available</p>
+                <p className="text-sm text-gray-500">{t('updateForm.noStations')}</p>
               )}
               {stations.map((station) => (
                 <label key={station.id} className="flex items-center space-x-2 text-sm text-gray-700">
@@ -195,12 +197,12 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
                 </label>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Total Stops: {formData.stations.length}</p>
+            <p className="text-xs text-gray-500 mt-1">{t('updateForm.totalStopsLabel')} {formData.stations.length}</p>
           </div>
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Status
+              {t('updateForm.status')}
             </label>
             <select
               name="status"
@@ -209,7 +211,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
             >
-              <option value="">Select Status</option>
+              <option value="">{t('updateForm.selectStatus')}</option>
               {(Object.values(routeStatus) as string[]).map((status) => (
                 <option key={status} value={status}>
                   {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -225,7 +227,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
               disabled={loading}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:opacity-50"
             >
-              Cancel
+              {t('updateForm.cancel')}
             </button>
             <button
               type="submit"
@@ -233,7 +235,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
               className="px-4 py-2 text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-900 disabled:opacity-50"
               style={{ backgroundColor: COLORS.burgundy }}
             >
-              {loading ? 'Updating...' : 'Update Route'}
+              {loading ? t('updateForm.loading') : t('updateForm.submit')}
             </button>
           </div>
         </form>

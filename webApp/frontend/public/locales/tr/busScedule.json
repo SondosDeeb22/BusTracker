@@ -25,5 +25,64 @@
     "route": "Rota"
   },
   "unassigned": "Atanmamış",
-  "na": "Yok"
+  "na": "Yok",
+
+  "filters": {
+    "dateNewestFirst": "Tarih: En yeni önce",
+    "dateOldestFirst": "Tarih: En eski önce",
+    "driverAZ": "Sürücü: A'dan Z'ye",
+    "driverZA": "Sürücü: Z'den A'ya"
+  },
+
+  "addForm": {
+    "title": "Yeni Otobüs Programı Ekle",
+    "date": "Tarih",
+    "shiftType": "Vardiya Tipi",
+    "driver": "Sürücü",
+    "route": "Rota",
+    "bus": "Otobüs",
+    "selectShift": "Bir vardiya seçin",
+    "selectDriver": "Bir sürücü seçin",
+    "selectRoute": "Bir rota seçin",
+    "selectBus": "Bir otobüs seçin",
+    "loadingDrivers": "Sürücüler yükleniyor...",
+    "loadingRoutes": "Rotalar yükleniyor...",
+    "loadingBuses": "Otobüsler yükleniyor...",
+    "dropdownLoadError": "Açılır menü verileri yüklenemedi",
+    "submit": "Program Ekle",
+    "cancel": "İptal",
+    "loading": "Ekleniyor...",
+    "error": "Program eklenirken bir hata oluştu"
+  },
+
+  "updateForm": {
+    "title": "Otobüs Programını Güncelle",
+    "date": "Tarih",
+    "day": "Gün",
+    "shiftType": "Vardiya Tipi",
+    "driver": "Sürücü",
+    "route": "Rota",
+    "bus": "Otobüs",
+    "selectShift": "Bir vardiya seçin",
+    "selectDriver": "Bir sürücü seçin",
+    "selectRoute": "Bir rota seçin",
+    "selectBus": "Bir otobüs seçin",
+    "loadingDrivers": "Sürücüler yükleniyor...",
+    "loadingRoutes": "Rotalar yükleniyor...",
+    "loadingBuses": "Otobüsler yükleniyor...",
+    "loadError": "Veriler yüklenemedi",
+    "submit": "Programı Güncelle",
+    "cancel": "İptal",
+    "loading": "Güncelleniyor...",
+    "error": "Program güncellenirken bir hata oluştu"
+  },
+
+  "removeDialog": {
+    "title": "Programı Sil",
+    "confirmText": "Bu programı silmek istediğinizden emin misiniz?",
+    "cancel": "İptal",
+    "confirm": "Sil",
+    "loading": "Siliniyor...",
+    "error": "Program silinirken bir hata oluştu"
+  }
 }

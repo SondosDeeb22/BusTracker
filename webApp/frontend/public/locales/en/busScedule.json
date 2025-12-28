@@ -25,5 +25,64 @@
     "route": "Route"
   },
   "unassigned": "Unassigned",
-  "na": "N/A"
+  "na": "N/A",
+
+  "filters": {
+    "dateNewestFirst": "Date: Newest first",
+    "dateOldestFirst": "Date: Oldest first",
+    "driverAZ": "Driver: A → Z",
+    "driverZA": "Driver: Z → A"
+  },
+
+  "addForm": {
+    "title": "Add Bus Schedule",
+    "date": "Date",
+    "shiftType": "Shift Type",
+    "driver": "Driver",
+    "route": "Route",
+    "bus": "Bus",
+    "selectShift": "Select a shift",
+    "selectDriver": "Select a driver",
+    "selectRoute": "Select a route",
+    "selectBus": "Select a bus",
+    "loadingDrivers": "Loading drivers...",
+    "loadingRoutes": "Loading routes...",
+    "loadingBuses": "Loading buses...",
+    "dropdownLoadError": "Failed to load dropdown data",
+    "submit": "Add Schedule",
+    "cancel": "Cancel",
+    "loading": "Adding...",
+    "error": "Error adding schedule"
+  },
+
+  "updateForm": {
+    "title": "Update Bus Schedule",
+    "date": "Date",
+    "day": "Day",
+    "shiftType": "Shift Type",
+    "driver": "Driver",
+    "route": "Route",
+    "bus": "Bus",
+    "selectShift": "Select a shift",
+    "selectDriver": "Select a driver",
+    "selectRoute": "Select a route",
+    "selectBus": "Select a bus",
+    "loadingDrivers": "Loading drivers...",
+    "loadingRoutes": "Loading routes...",
+    "loadingBuses": "Loading buses...",
+    "loadError": "Failed to load data",
+    "submit": "Update Schedule",
+    "cancel": "Cancel",
+    "loading": "Updating...",
+    "error": "Error updating schedule"
+  },
+
+  "removeDialog": {
+    "title": "Remove Schedule",
+    "confirmText": "Are you sure you want to remove this schedule?",
+    "cancel": "Cancel",
+    "confirm": "Remove",
+    "loading": "Removing...",
+    "error": "Error removing schedule"
+  }
 }

@@ -15,5 +15,61 @@
     "assignedRoute": "Atanan Rota",
     "actions": "İşlemler"
   },
-  "unassigned": "Atanmamış"
+  "unassigned": "Atanmamış",
+
+  "addForm": {
+    "title": "Yeni Otobüs Ekle",
+    "serialNumber": "Seri Numarası",
+    "brand": "Marka",
+    "assignedRoute": "Atanan Güzergâh",
+    "assignedDriver": "Atanan Sürücü",
+    "status": "Durum",
+    "submit": "Otobüs Ekle",
+    "cancel": "İptal",
+
+    "selectRoute": "Bir rota seçin",
+    "selectDriver": "Bir sürücü seçin",
+    "selectStatus": "Durum seçin",
+    "loadingRoutes": "Rotalar yükleniyor...",
+    "loadingDrivers": "Sürücüler yükleniyor...",
+    "loading": "Ekleniyor...",
+    "error": "Otobüs eklenemedi"
+
+  },
+
+  "updateForm": {
+    "title": "Otobüsü Düzenle",
+    "serialNumber": "Seri Numarası",
+    "brand": "Marka",
+    "status": "Durum",
+    "assignedDriver": "Atanan Sürücü",
+    "assignedRoute": "Atanan Güzergâh",
+    "submit": "Güncelle",
+    "cancel": "İptal",
+
+    "selectRoute": "Bir rota seçin",
+    "selectDriver": "Bir sürücü seçin",
+    "selectStatus": "Durum seçin",
+    "loadingRoutes": "Rotalar yükleniyor...",
+    "loadingDrivers": "Sürücüler yükleniyor...",
+    "loadingData": "Otobüs verileri yükleniyor...",
+    "loading": "Güncelleniyor...",
+    "loadError": "Otobüs verileri yüklenemedi",
+    "error": "Otobüs güncellenemedi"
+  },
+
+  "removeDialog": {
+    "title": "Otobüsü Sil",
+    "confirmText": "Bu otobüsü silmek istediğinizden emin misiniz ",
+    "warning": "? Bu işlem geri alınamaz.",
+    "defaultBusName": "bu otobüs",
+    "cancel": "İptal",
+    "confirm": "Otobüsü Sil",
+    "loading": "Siliniyor...",
+    "error": "Otobüs silinirken bir hata oluştu"
+  }
+
+
+
+  
 }

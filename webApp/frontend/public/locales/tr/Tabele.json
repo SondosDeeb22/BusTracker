@@ -1,0 +1,12 @@
+{
+  "addButton": {
+    "label": "Yeni Ekle"
+  },
+  "loading": "Yükleniyor...",
+  "error": "Hata: {{error}}",
+  "unknownError": "Bilinmeyen hata",
+  "empty": "Veri bulunamadı",
+  "actionsHeader": "İşlemler",
+  "editTooltip": "Düzenle",
+  "deleteTooltip": "Sil"
+}

@@ -15,5 +15,52 @@
     "licenseExpiryDate": "Ehliyet Bitiş Tarihi",
     "status": "Durum",
     "actions": "İşlemler"
+  },
+
+  "addForm": {
+    "title": "Yeni Sürücü Ekle",
+    "name": "Ad Soyad",
+    "gender": "Cinsiyet",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "birthDate": "Doğum Tarihi",
+    "licenseNumber": "Ehliyet Numarası",
+    "licenseExpiryDate": "Ehliyet Bitiş Tarihi",
+    "status": "Durum",
+    "selectGender": "Cinsiyet seçin",
+    "selectStatus": "Durum seçin",
+    "submit": "Sürücü Ekle",
+    "cancel": "İptal",
+    "loading": "Ekleniyor...",
+    "error": "Sürücü eklenirken bir hata oluştu, lütfen tekrar deneyin!"
+  },
+
+  "updateForm": {
+    "title": "Sürücüyü Güncelle",
+    "name": "Ad Soyad",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "licenseNumber": "Ehliyet Numarası",
+    "licenseExpiryDate": "Ehliyet Bitiş Tarihi",
+    "status": "Durum",
+    "submit": "Sürücüyü Güncelle",
+    "cancel": "İptal",
+    "loading": "Güncelleniyor...",
+    "error": "Sürücü güncellenirken bir hata oluştu",
+    "confirmTitle": "Güncellemeyi Onayla",
+    "confirmMessage": "Sürücü bilgilerini güncellemek istediğinizden emin misiniz?",
+    "confirmCancel": "İptal",
+    "confirmProceed": "Güncelle"
+  },
+
+  "removeDialog": {
+    "title": "Sürücüyü Sil",
+    "confirmText": "Bu sürücüyü silmek istediğinizden emin misiniz ",
+    "warning": "? Bu işlem geri alınamaz.",
+    "defaultDriverName": "bu sürücü",
+    "cancel": "İptal",
+    "confirm": "Sürücüyü Sil",
+    "loading": "Siliniyor...",
+    "error": "Sürücü silinirken bir hata oluştu"
   }
 }

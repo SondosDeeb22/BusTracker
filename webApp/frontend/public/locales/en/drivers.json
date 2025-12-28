@@ -15,5 +15,52 @@
     "licenseExpiryDate": "License Expiry Date",
     "status": "Status",
     "actions": "Actions"
+  },
+
+  "addForm": {
+    "title": "Add New Driver",
+    "name": "Name",
+    "gender": "Gender",
+    "phone": "Phone",
+    "email": "Email",
+    "birthDate": "Birth Date",
+    "licenseNumber": "License Number",
+    "licenseExpiryDate": "License Expiry Date",
+    "status": "Status",
+    "selectGender": "Select gender",
+    "selectStatus": "Select status",
+    "submit": "Add Driver",
+    "cancel": "Cancel",
+    "loading": "Adding...",
+    "error": "Error occurred while adding driver, please try again!"
+  },
+
+  "updateForm": {
+    "title": "Update Driver",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "licenseNumber": "License Number",
+    "licenseExpiryDate": "License Expiry Date",
+    "status": "Status",
+    "submit": "Update Driver",
+    "cancel": "Cancel",
+    "loading": "Updating...",
+    "error": "An error occurred while updating the driver",
+    "confirmTitle": "Confirm Update",
+    "confirmMessage": "Are you sure you want to update the driver information?",
+    "confirmCancel": "Cancel",
+    "confirmProceed": "Update"
+  },
+
+  "removeDialog": {
+    "title": "Remove Driver",
+    "confirmText": "Are you sure you want to remove ",
+    "warning": "? This action cannot be undone.",
+    "defaultDriverName": "this driver",
+    "cancel": "Cancel",
+    "confirm": "Remove Driver",
+    "loading": "Removing...",
+    "error": "An error occurred while removing the driver"
   }
 }

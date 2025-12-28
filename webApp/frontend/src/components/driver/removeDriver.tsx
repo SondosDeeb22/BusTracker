@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 
 interface RemoveDriverProps {
   driverId: number;
@@ -11,12 +12,15 @@ interface RemoveDriverProps {
 
 const RemoveDriver: React.FC<RemoveDriverProps> = ({ 
   driverId, 
-  driverName = 'this driver', 
+  driverName, 
   onClose, 
   onSuccess 
 }) => {
+  const { t } = useTranslation('drivers');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const displayDriverName = driverName || t('removeDialog.defaultDriverName');
 
   const handleRemove = async () => {
     setIsLoading(true);
@@ -31,7 +35,7 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while removing the driver');
+      setError(err instanceof Error ? err.message : t('removeDialog.error'));
     } finally {
       setIsLoading(false);
     }
@@ -41,11 +45,11 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
     <div className="fixed inset-0 bg-black/80  flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Remove Driver
+          {t('removeDialog.title')}
         </h2>
         
         <p className="text-gray-600 mb-6">
-          Are you sure you want to remove <strong>{driverName}</strong>? This action cannot be undone.
+          {t('removeDialog.confirmText')}<strong>{displayDriverName}</strong>{t('removeDialog.warning')}
         </p>
 
         {error && (
@@ -60,7 +64,7 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
             disabled={isLoading}
             className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:opacity-50"
           >
-            Cancel
+            {t('removeDialog.cancel')}
           </button>
           <button
             onClick={handleRemove}
@@ -68,7 +72,7 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
             className="px-4 py-2  text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
             style={{background: COLORS.burgundy}}
           >
-            {isLoading ? 'Removing...' : 'Remove Driver'}
+            {isLoading ? t('removeDialog.loading') : t('removeDialog.confirm')}
           </button>
         </div>
       </div>

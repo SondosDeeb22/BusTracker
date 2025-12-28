@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 
 //interfaces
 interface UpdateDriverProps {
@@ -14,8 +15,8 @@ interface UpdateDriverProps {
 
 
 //================================================================================
-
 const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess }) => {
+  const { t } = useTranslation('drivers');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -64,7 +65,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
       const errorMessage = err.response?.data?.message || 
                           err.response?.data?.error || 
                           err.message || 
-                          'An error occurred while updating the driver';
+                          t('updateForm.error');
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -94,7 +95,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
       {!showConfirmModal && (
         <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Update Driver</h2>
+            <h2 className="text-xl font-semibold text-gray-800">{t('updateForm.title')}</h2>
             
           </div>
 
@@ -107,7 +108,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Name
+                {t('updateForm.name')}
               </label>
               <input
                 type="text"
@@ -121,7 +122,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
   
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
+                {t('updateForm.phone')}
               </label>
               <input
                 type="tel"
@@ -134,7 +135,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+                {t('updateForm.email')}
               </label>
               <input
                 type="email"
@@ -147,7 +148,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                License Number
+                {t('updateForm.licenseNumber')}
               </label>
               <input
                 type="text"
@@ -160,7 +161,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                License Expiry Date
+                {t('updateForm.licenseExpiryDate')}
               </label>
               <input
                 type="date"
@@ -173,7 +174,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
+                {t('updateForm.status')}
               </label>
               <select
                 name="status"
@@ -192,7 +193,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
                 onClick={onClose}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                {t('updateForm.cancel')}
               </button>
               <button
                 type="button"
@@ -201,7 +202,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
                 className="flex-1 px-4 py-2 text-white rounded-md hover:bg-red-600 transition-colors disabled:opacity-50"
                 style={{ background: COLORS.burgundy }}
               >
-                {isLoading ? 'Updating...' : 'Update'}
+                {isLoading ? t('updateForm.loading') : t('updateForm.submit')}
               </button>
             </div>
           </div>
@@ -212,11 +213,11 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
       {showConfirmModal && (
         <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
-            Confirm Update
+            {t('updateForm.confirmTitle')}
           </h2>
           
           <p className="text-gray-600 mb-6">
-            Are you sure you want to update the driver information?
+            {t('updateForm.confirmMessage')}
           </p>
 
           <div className="flex justify-end space-x-3">
@@ -225,7 +226,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
               disabled={isLoading}
               className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 disabled:opacity-50"
             >
-              Cancel
+              {t('updateForm.confirmCancel')}
             </button>
             <button
               onClick={handleProceedUpdate}
@@ -233,7 +234,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
               className="px-4 py-2 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
               style={{ background: COLORS.burgundy }}
             >
-              {isLoading ? 'Updating...' : 'Update'}
+              {isLoading ? t('updateForm.loading') : t('updateForm.confirmProceed')}
             </button>
           </div>
         </div>

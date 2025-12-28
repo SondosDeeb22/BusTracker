@@ -41,6 +41,29 @@ class BusScheduleService {
         }
         const userId = jwtData.userID;
         // -------------------------------------------------------------
+        const scheduleDate = new Date(req.body.date);
+        const driverConflict = await busScheduleModel_1.default.findOne({
+            where: {
+                date: scheduleDate,
+                shiftType: req.body.shiftType,
+                driverId: req.body.driverId,
+            },
+            attributes: ['id'],
+        });
+        if (driverConflict) {
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'This driver already has a schedule for the selected date and shift.');
+        }
+        const busConflict = await busScheduleModel_1.default.findOne({
+            where: {
+                date: scheduleDate,
+                shiftType: req.body.shiftType,
+                busId: req.body.busId,
+            },
+            attributes: ['id'],
+        });
+        if (busConflict) {
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'This bus is already assigned for the selected date and shift.');
+        }
         await helper.add(req, res, busScheduleModel_1.default, req.body, {
             // Validate enum inputs to prevent invalid day/shiftType values reaching DB.
             // `shiftType` is required when creating a schedule.
@@ -72,6 +95,45 @@ class BusScheduleService {
             return (0, messageTemplate_1.sendResponse)(res, 401, jwtData);
         }
         const userId = jwtData.userID;
+        const scheduleId = req.body?.id;
+        if (!scheduleId) {
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'No schedule id were found');
+        }
+        const current = await busScheduleModel_1.default.findOne({
+            where: { id: scheduleId },
+            attributes: ['id', 'date', 'shiftType', 'driverId', 'busId'],
+        });
+        if (!current) {
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'No schedule found with this id!');
+        }
+        const nextDate = req.body?.date ? new Date(req.body.date) : current.date;
+        const nextShiftType = req.body?.shiftType ?? current.shiftType;
+        const nextDriverId = req.body?.driverId ?? current.driverId;
+        const nextBusId = req.body?.busId ?? current.busId;
+        const driverConflict = await busScheduleModel_1.default.findOne({
+            where: {
+                date: nextDate,
+                shiftType: nextShiftType,
+                driverId: nextDriverId,
+                id: { [sequelize_1.Op.ne]: scheduleId },
+            },
+            attributes: ['id'],
+        });
+        if (driverConflict) {
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'This driver already has a schedule for the selected date and shift.');
+        }
+        const busConflict = await busScheduleModel_1.default.findOne({
+            where: {
+                date: nextDate,
+                shiftType: nextShiftType,
+                busId: nextBusId,
+                id: { [sequelize_1.Op.ne]: scheduleId },
+            },
+            attributes: ['id'],
+        });
+        if (busConflict) {
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'This bus is already assigned for the selected date and shift.');
+        }
         await helper.update(req, res, busScheduleModel_1.default, req.body, {
             // On update, allow partial payloads: day/shiftType are optional but must be valid if provided.
             enumFields: [{ field: "day", enumObj: busScheduleEnum_1.weekDays, optional: true }, { field: "shiftType", enumObj: busScheduleEnum_1.shiftType, optional: true }],
