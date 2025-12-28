@@ -36,73 +36,94 @@ export class BusScheduleService {
     //===================================================================================================
 
     async addScheduleRecord(req: Request, res: Response) {
-        // Extract JWT data to get user ID and name
-        //check if JWT exists in .env file
-        const jwtLoginKey = process.env.JWT_LOGIN_KEY;
-        if (!jwtLoginKey) {
-            sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
-        return;
-        }
-        const jwtData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
-        
-        if (typeof jwtData === "string") {
-            return sendResponse(res, 401, jwtData);
-        }
-
-        const userId = jwtData.userID;
-        
-        // -------------------------------------------------------------
-
-        const scheduleDate = new Date(req.body.date);
-
-        const driverConflict = await BusScheduleModel.findOne({
-            where: {
-                date: scheduleDate,
-                shiftType: req.body.shiftType,
-                driverId: req.body.driverId,
-            },
-            attributes: ['id'],
-        });
-
-        if (driverConflict) {
-            return sendResponse(
-                res,
-                500,
-                'This driver already has a schedule for the selected date and shift.'
-            );
-        }
-
-        const busConflict = await BusScheduleModel.findOne({
-            where: {
-                date: scheduleDate,
-                shiftType: req.body.shiftType,
-                busId: req.body.busId,
-            },
-            attributes: ['id'],
-        });
-
-        if (busConflict) {
-            return sendResponse(
-                res,
-                500,
-                'This bus is already assigned for the selected date and shift.'
-            );
-        }
-        
-        await helper.add(req, res, BusScheduleModel, req.body, {
-            // Validate enum inputs to prevent invalid day/shiftType values reaching DB.
-            // `shiftType` is required when creating a schedule.
-            enumFields: [{ field: "day", enumObj: weekDays }, { field: "shiftType", enumObj: shiftType }],
-            transform: async (data: any) => {
-                // Add createdBy and createdAt
-                return {
-                    ...data,
-                    date: new Date(data.date),
-                    createdAt: new Date(),
-                    createdBy: userId
-                };
+        try{
+            // Extract JWT data to get user ID and name
+            //check if JWT exists in .env file
+            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
+            if (!jwtLoginKey) {
+                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            return;
             }
-        });
+            const jwtData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
+            
+            if (typeof jwtData === "string") {
+                return sendResponse(res, 401, jwtData);
+            }
+
+            const userId = jwtData.userID;
+            
+            // ensure no clashes case will occure -----------------------------------------------------------------------
+            //- no driver assigned to two buses at the same shift in the same date
+            //- the bus is not assingned to more than one driver and route during the same shift of the day 
+
+            const scheduleDate = new Date(req.body.date);
+
+            const driverConflict = await BusScheduleModel.findOne({
+                where: {
+                    date: scheduleDate,
+                    shiftType: req.body.shiftType,
+                    driverId: req.body.driverId,
+                },
+                attributes: ['id'],
+            });
+
+            if (driverConflict) {
+                return sendResponse(
+                    res,
+                    500,
+                    'This driver already has a schedule for the selected date and shift.'
+                );
+            }
+
+            //-------------------
+            
+            const busConflict = await BusScheduleModel.findOne({
+                where: {
+                    date: scheduleDate,
+                    shiftType: req.body.shiftType,
+                    busId: req.body.busId,
+                },
+                attributes: ['id'],
+            });
+
+            if (busConflict) {
+                return sendResponse(
+                    res,
+                    500,
+                    'This bus is already assigned for the selected date and shift.'
+                );
+            }
+
+            // add the record-------------------------------------------------------------     
+
+            await helper.add(req, res, BusScheduleModel, req.body, {
+                // Validate enum inputs to prevent invalid day/shiftType values reaching DB.
+                // `shiftType` is required when creating a schedule.
+                enumFields: [{ field: "day", enumObj: weekDays }, { field: "shiftType", enumObj: shiftType }],
+                transform: async (data: any) => {
+                    // Add createdBy and createdAt
+                    return {
+                        ...data,
+                        date: new Date(data.date),
+                        createdAt: new Date(),
+                        createdBy: userId
+                    };
+                }
+            });
+
+        // -------------------------------------------------------------
+        } catch (error) {
+            console.error("Error Found while adding schedule's record", error);
+            return sendResponse(res, 500, "Error Found while adding schedule's record");
+        }
+    }
+
+    //===================================================================================================
+    //? function to Remove Bus Schedule
+    //===================================================================================================
+
+    async removeSchedulRecord(req: Request, res: Response) {
+        await helper.remove(req, res, BusScheduleModel, 'id', req.body.id);
     }
 
     //===================================================================================================
@@ -112,13 +133,14 @@ export class BusScheduleService {
     async updateScheduleRecord(req: Request, res: Response) {
         // Extract JWT data to get user ID and name
 
-        //check if JWT exists in .env file
+        //check if JWT exists in .env file ---------------------------------------------
         const jwtLoginKey = process.env.JWT_LOGIN_KEY;
         if (!jwtLoginKey) {
             sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
         return;
-        }
-
+        }      
+        
+        // Extract user info from JWT --------------------------------------------------------------------------------
         const jwtData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey );
         
         if (typeof jwtData === "string") {
@@ -127,6 +149,7 @@ export class BusScheduleService {
         
         const userId = jwtData.userID;
 
+        // get the schedule Id and verify it exists -------------------------------------------------------------------------------
         const scheduleId = req.body?.id;
         if (!scheduleId) {
             return sendResponse(res, 500, 'No schedule id were found');
@@ -146,6 +169,8 @@ export class BusScheduleService {
         const nextDriverId = req.body?.driverId ?? (current as any).driverId;
         const nextBusId = req.body?.busId ?? (current as any).busId;
 
+        
+        // check for driver conflict ----------------------------------------------------------------------------------------------------------------
         const driverConflict = await BusScheduleModel.findOne({
             where: {
                 date: nextDate,
@@ -157,12 +182,10 @@ export class BusScheduleService {
         });
 
         if (driverConflict) {
-            return sendResponse(
-                res,
-                500,
-                'This driver already has a schedule for the selected date and shift.'
-            );
+            return sendResponse(res,500,'This driver already has a schedule for the selected date and shift');
         }
+
+        //-------------------------------
 
         const busConflict = await BusScheduleModel.findOne({
             where: {
@@ -175,13 +198,11 @@ export class BusScheduleService {
         });
 
         if (busConflict) {
-            return sendResponse(
-                res,
-                500,
-                'This bus is already assigned for the selected date and shift.'
-            );
+            return sendResponse(res, 500, 'This bus is already assigned for the selected date and shift');
         }
         
+        //--------------------------------------------------------------------------------------------
+
         await helper.update(req, res, BusScheduleModel, req.body, {
             // On update, allow partial payloads: day/shiftType are optional but must be valid if provided.
             enumFields: [{ field: "day", enumObj: weekDays, optional: true }, { field: "shiftType", enumObj: shiftType, optional: true }],
@@ -193,18 +214,10 @@ export class BusScheduleService {
                     updatedAt: new Date(),
                     updatedBy: userId
                 };
-            },
-            successMessage: 'Schedule was updated successfully'
+            }
         });
     }
 
-    //===================================================================================================
-    //? function to Remove Bus Schedule
-    //===================================================================================================
-
-    async removeSchedulRecord(req: Request, res: Response) {
-        await helper.remove(req, res, BusScheduleModel, 'id', req.body.id);
-    }
 
 
     // =================================================================================================================================

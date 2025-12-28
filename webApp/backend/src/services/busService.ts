@@ -17,6 +17,9 @@ import { UserHelper } from "../helpers/userHelper";
 const helper = new UserHelper();
 
 
+import { sendResponse } from '../exceptions/messageTemplate';
+
+
 //===================================================================================================================================================
 
 
@@ -29,12 +32,19 @@ export class BusService{
     async addBus(req: Request, res: Response){
 
         
-        await helper.add(req, res, BusModel, req.body, 
-        {
-            nonDuplicateFields: ['serialNumber'],
-            enumFields: [{ field: "status", enumObj: status }],
-        }
-        );
+        try{
+            await helper.add(req, res, BusModel, req.body,{
+                nonDuplicateFields: ['serialNumber'],
+                enumFields: [{ field: "status", enumObj: status }],
+            }
+           );
+
+           sendResponse(res, 200, "Bus was Added successfully");
+        //----------------------------------------------------------------
+       }catch(error){
+            console.error("Error Found while creating bus", error);
+           sendResponse(res, 500, `Error Found while creating bus ${error}`);
+       }
     }
 
     //===================================================================================================
@@ -52,9 +62,7 @@ export class BusService{
     async updateBus(req: Request, res: Response){
         await helper.update(req, res, BusModel, req.body, 
             {
-                enumFields: [{ field: "status", enumObj: status }],
-                //---------------------------------------------
-                successMessage: 'Bus was updated',
+                enumFields: [{ field: "status", enumObj: status }]
             }
         );
     }

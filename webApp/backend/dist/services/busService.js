@@ -15,16 +15,25 @@ const routeModel_1 = __importDefault(require("../models/routeModel"));
 const busEnum_1 = require("../enums/busEnum");
 const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
+const messageTemplate_1 = require("../exceptions/messageTemplate");
 //===================================================================================================================================================
 class BusService {
     //===================================================================================================
     //? function to Add Bus
     //===================================================================================================
     async addBus(req, res) {
-        await helper.add(req, res, busModel_1.default, req.body, {
-            nonDuplicateFields: ['serialNumber'],
-            enumFields: [{ field: "status", enumObj: busEnum_1.status }],
-        });
+        try {
+            await helper.add(req, res, busModel_1.default, req.body, {
+                nonDuplicateFields: ['serialNumber'],
+                enumFields: [{ field: "status", enumObj: busEnum_1.status }],
+            });
+            (0, messageTemplate_1.sendResponse)(res, 200, "Bus was Added successfully");
+            //----------------------------------------------------------------
+        }
+        catch (error) {
+            console.error("Error Found while creating bus", error);
+            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating bus ${error}`);
+        }
     }
     //===================================================================================================
     //? function to Remove Bus

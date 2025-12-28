@@ -33,7 +33,7 @@ export class DriverService{
 
     async addDriver(req: Request, res: Response) {
     try {
-        const driver = await helper.add(req, res, UserModel, req.body, {
+        await helper.add(req, res, UserModel, req.body, {
             nonDuplicateFields: ['email'],
             enumFields: [
                 { field: "status", enumObj: status },
@@ -54,7 +54,9 @@ export class DriverService{
         return sendResponse(res, 200, "Driver added successfully. Validation email sent.");
     }
     catch (error) {
-        return sendResponse(res, 500, `${error}`);
+        console.log("Error Found while adding driver", error);
+        return sendResponse(res, 500, `Error Found while adding driver 
+            ${error}`);
     }
 }
 
@@ -77,9 +79,7 @@ export class DriverService{
                 enumFields: [{ field: "status", enumObj: status },
                     { field: "role", enumObj: role }, 
                     { field: "gender", enumObj: gender }
-                ],
-                //---------------------------------------------
-                successMessage: 'Driver was updated',
+                ]
             }
         );
     }

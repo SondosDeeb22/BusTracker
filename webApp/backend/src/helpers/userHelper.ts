@@ -38,6 +38,8 @@ export class UserHelper{
             transform?: (data: any) => Promise<any> | any;
         }
     ): Promise<void> {
+        //----------------------------------------------------------------
+
         const modelClassName = model.name;
         const dataName = (modelClassName?.replace(/Model$/,'') || '').toLowerCase();
 
@@ -92,7 +94,8 @@ export class UserHelper{
                 }
             }
 
-            // Primary Key settings
+            // Primary Key settings --------------------------------------------------------------------------------
+
             const pkEntry = Object.entries(attrs).find(([_, a]) => (a as any).primaryKey === true);
 
             if (pkEntry) {
@@ -117,8 +120,9 @@ export class UserHelper{
                     body[pkName] = finalId;
                 }
             }
+            //-----------------------------------------------------------------------------------------------------
 
-            // non-duplicate checks
+            // non-duplicate checks -----------------------------------------------------------------------------
             if (options?.nonDuplicateFields && options.nonDuplicateFields.length > 0) {
                 for (const field of options.nonDuplicateFields) {
                     const duplicated = await model.findOne({
@@ -133,19 +137,23 @@ export class UserHelper{
                     }
                 }
             }
+            //-----------------------------------------------------------------------------------------------------
 
-            // transform and create
+            // apply transform (if existed) and create
             const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData as any);
 
             const success = `${dataName} was Added successfully`;
+
             sendResponse(res, 200, success);
             console.log(success);
+
             return;
 
         //==========================================================================================================
-        } catch (error) {
-            sendResponse(res, 500, `Error occured while creating ${dataName}. ${error}`);
+        } catch (error) {sendResponse
+            (res, 500, `Error occured while creating ${dataName}. ${error}`);
+            console.log( `Error occured while creating ${dataName}. ${error}`)
             return;
         }
     }
@@ -212,7 +220,6 @@ export class UserHelper{
             enumFields?: Array<{ field: string; enumObj: object; optional?: boolean }>;
             disallowFields?: string[];
             transform?: (vals: any) => Promise<any> | any;
-            successMessage?: string;
         }
     ):Promise<void>{
         

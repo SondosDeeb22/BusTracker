@@ -13,6 +13,8 @@ import {status } from '../enums/stationEnum';
 import { UserHelper } from "../helpers/userHelper";
 const helper = new UserHelper();
 
+import { sendResponse } from '../exceptions/messageTemplate';
+
 
 
 //===================================================================================================
@@ -26,26 +28,34 @@ export class StationService{
     //===================================================================================================
 
     async addStation(req: Request, res: Response){
-        await helper.add(req, res, stationModel, req.body, {
+        try{
+            await helper.add(req, res, stationModel, req.body, {
 
-            nonDuplicateFields: ['stationName'],
-            //----------------------------------------------------------------
-            transform: async(data) => {
-                const out = {...data};
+                nonDuplicateFields: ['stationName'],
+                //----------------------------------------------------------------
+                transform: async(data) => {
+                    const out = {...data};
 
-                if(out.stationName){
-                    out.stationName = data.stationName.toLowerCase().trim();
-                }
+                    if(out.stationName){
+                        out.stationName = data.stationName.toLowerCase().trim();
+                    }
 
-                return out;
-                
-            },
-            //----------------------------------------------------------------
-            enumFields: [
-                { field: "status", enumObj: status },
-            ],            
+                    return out;
+                    
+                },
+                //----------------------------------------------------------------
+                enumFields: [
+                    { field: "status", enumObj: status },
+                ],            
+              }
+            );
+
+            sendResponse(res, 200, "station was Added successfully");
+        
+        }catch(error){
+            sendResponse(res, 500, `Error Found while creating station. ${error}`);
         }
-        );
+        
     }
 
     //===================================================================================================
@@ -61,9 +71,7 @@ export class StationService{
     async updateStation(req: Request, res: Response){
         await helper.update(req, res, stationModel, req.body, 
             {
-                enumFields: [{ field: "status", enumObj: status }, ],
-                //---------------------------------------------
-                successMessage: 'Station was updated',
+                enumFields: [{ field: "status", enumObj: status }, ]
             }
         );
     }

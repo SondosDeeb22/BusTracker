@@ -18,6 +18,7 @@ class UserHelper {
     //? function to ADD data
     //==========================================================================================================
     async add(req, res, model, payload, options) {
+        //----------------------------------------------------------------
         const modelClassName = model.name;
         const dataName = (modelClassName?.replace(/Model$/, '') || '').toLowerCase();
         try {
@@ -64,7 +65,7 @@ class UserHelper {
                     }
                 }
             }
-            // Primary Key settings
+            // Primary Key settings --------------------------------------------------------------------------------
             const pkEntry = Object.entries(attrs).find(([_, a]) => a.primaryKey === true);
             if (pkEntry) {
                 const [pkName, pkAttr] = pkEntry;
@@ -85,7 +86,8 @@ class UserHelper {
                     body[pkName] = finalId;
                 }
             }
-            // non-duplicate checks
+            //-----------------------------------------------------------------------------------------------------
+            // non-duplicate checks -----------------------------------------------------------------------------
             if (options?.nonDuplicateFields && options.nonDuplicateFields.length > 0) {
                 for (const field of options.nonDuplicateFields) {
                     const duplicated = await model.findOne({
@@ -99,7 +101,8 @@ class UserHelper {
                     }
                 }
             }
-            // transform and create
+            //-----------------------------------------------------------------------------------------------------
+            // apply transform (if existed) and create
             const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData);
             const success = `${dataName} was Added successfully`;
@@ -110,6 +113,7 @@ class UserHelper {
         }
         catch (error) {
             (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while creating ${dataName}. ${error}`);
+            console.log(`Error occured while creating ${dataName}. ${error}`);
             return;
         }
     }

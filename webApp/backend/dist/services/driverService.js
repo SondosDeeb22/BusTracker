@@ -23,7 +23,7 @@ const helper = new userHelper_1.UserHelper();
 class DriverService {
     async addDriver(req, res) {
         try {
-            const driver = await helper.add(req, res, userModel_1.default, req.body, {
+            await helper.add(req, res, userModel_1.default, req.body, {
                 nonDuplicateFields: ['email'],
                 enumFields: [
                     { field: "status", enumObj: userEnum_1.status },
@@ -44,7 +44,9 @@ class DriverService {
             return (0, messageTemplate_1.sendResponse)(res, 200, "Driver added successfully. Validation email sent.");
         }
         catch (error) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, `${error}`);
+            console.log("Error Found while adding driver", error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while adding driver 
+            ${error}`);
         }
     }
     //===================================================================================================

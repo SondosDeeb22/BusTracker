@@ -80,6 +80,7 @@ export class RouteService{
             }
 
             sendResponse(res, 200, "route was Added successfully");
+        
         }catch(error){
             sendResponse(res, 500, `Error Found while creating route. ${error}`);
         }

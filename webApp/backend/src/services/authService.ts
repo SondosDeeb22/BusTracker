@@ -71,7 +71,7 @@ class AuthService{
             return;
             
         } catch (error) {
-            sendResponse(res, 500, `Error retrieving user data. ${error}`);
+            sendResponse(res, 500, `Error retrieving user data ${error}`);
             return;
         }
 
