@@ -1,0 +1,19 @@
+{
+  "protectedRoute": {
+    "loading": "Loading..."
+  },
+  "resetProtection": {
+    "loading": "Verifying reset token...",
+    "invalidTitle": "Invalid Reset Link",
+    "invalidMessage": "Your reset link has expired or is invalid.",
+    "help": "Please request a new password reset link.",
+    "requestNewLink": "Request New Reset Link"
+  },
+  "setProtection": {
+    "loading": "Verifying setup token...",
+    "invalidTitle": "Invalid Setup Link",
+    "invalidMessage": "Your setup link has expired or is invalid.",
+    "help": "Please request a new password setup link.",
+    "requestNewLink": "Request New Setup Link"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "protectedRoute": {
+    "loading": "Yükleniyor..."
+  },
+  "resetProtection": {
+    "loading": "Sıfırlama jetonu doğrulanıyor...",
+    "invalidTitle": "Geçersiz Sıfırlama Bağlantısı",
+    "invalidMessage": "Şifre sıfırlama bağlantınızın süresi dolmuş veya geçersiz.",
+    "help": "Lütfen yeni bir şifre sıfırlama bağlantısı isteyin.",
+    "requestNewLink": "Yeni Sıfırlama Bağlantısı İste"
+  },
+  "setProtection": {
+    "loading": "Kurulum jetonu doğrulanıyor...",
+    "invalidTitle": "Geçersiz Kurulum Bağlantısı",
+    "invalidMessage": "Kurulum bağlantınızın süresi dolmuş veya geçersiz.",
+    "help": "Lütfen yeni bir şifre belirleme bağlantısı isteyin.",
+    "requestNewLink": "Yeni Kurulum Bağlantısı İste"
+  }
+}

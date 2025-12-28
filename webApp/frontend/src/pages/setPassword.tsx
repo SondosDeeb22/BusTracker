@@ -4,6 +4,7 @@ import axios from 'axios';
 import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
 import { burgundy } from '../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -13,6 +14,7 @@ const SetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation('auth/setPasswordPage');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -23,10 +25,9 @@ const SetPassword = () => {
     event.preventDefault();
     setError('');
     setLoading(true);
-    let response: "" | void = "";
     try {
       
-      response = await axios.patch(`http://localhost:3001/api/auth/set-password/${token}`, 
+      await axios.patch(`http://localhost:3001/api/auth/set-password/${token}`, 
         { newPassword, confirmPassword },
         {
           headers: {
@@ -41,7 +42,7 @@ const SetPassword = () => {
       return;
 
     } catch (error: any) {
-      setError(error.response.data.message || 'Invalid Password, Try Again');
+      setError(error?.response?.data?.message || t('errors.invalidPassword'));
       console.error('Error occured while Setting Password:', error);
 
     } finally {
@@ -57,9 +58,9 @@ const SetPassword = () => {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <img className='w-40 h-40 mx-auto' src={busTrackerLogo}/>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Near East University</h1>
-            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>Bus Tracker</h1>
-            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>Admin Login</p>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('university')}</h1>
+            <h1 className="text-4xl font-bold mb-2" style={{color: burgundy}}>{t('appName')}</h1>
+            <p className="text-2xl font-bold mb-2 mt-5" style={{color: burgundy}}>{t('adminLogin')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -72,7 +73,7 @@ const SetPassword = () => {
 
             <div>
               <label htmlFor="newPassword" className="block text-sm font-semibold  text-gray-700 mb-2">
-                Password
+                {t('passwordLabel')}
               </label>
               <input
                 id="newPassword"
@@ -80,14 +81,14 @@ const SetPassword = () => {
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Enter your new password"
+                placeholder={t('passwordPlaceholder')}
                 required
               />
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-semibold  text-gray-700 mb-2">
-                Confirm Password
+                {t('confirmPasswordLabel')}
               </label>
               <input
                 id="confirmPassword"
@@ -95,7 +96,7 @@ const SetPassword = () => {
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent outline-none transition focus:ring-red-900"
-                placeholder="Confirm your new password"
+                placeholder={t('confirmPasswordPlaceholder')}
                 required
               />
             </div>
@@ -107,7 +108,7 @@ const SetPassword = () => {
               style={{backgroundColor: burgundy}}
               disabled={loading}
             >
-                Set Password
+                {t('submit')}
             </button>
           </form>
 

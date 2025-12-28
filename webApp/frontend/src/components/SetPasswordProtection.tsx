@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { COLORS } from '../styles/colorPalette';
+import { useTranslation } from 'react-i18next';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation('auth/common');
   
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -62,7 +64,7 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-burgundy mx-auto mb-4"></div>
-          <p className="text-gray-600">Verifying reset token...</p>
+          <p className="text-gray-600">{t('setProtection.loading')}</p>
         </div>
       </div>
     );
@@ -77,20 +79,20 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
             className="text-2xl font-bold mb-4"
             style={{color: COLORS.burgundy}}
           >
-            Invalid Setup Link
+            {t('setProtection.invalidTitle')}
           </h1>
           <p className="text-gray-600 mb-6">
-            Your Setup link has expired or is invalid.
+            {t('setProtection.invalidMessage')}
           </p>
           <p className="text-sm text-gray-500 mb-6">
-            Please request a new password setting link.
+            {t('setProtection.help')}
           </p>
           <a 
             href="/forgot-password" 
             className="inline-block px-6 py-2 text-white rounded-md hover:bg-red-900"
             style={{backgroundColor: COLORS.burgundy}}
           >
-            Request New Setup Link
+            {t('setProtection.requestNewLink')}
           </a>
         </div>
       </div>
