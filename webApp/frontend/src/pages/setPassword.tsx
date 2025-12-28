@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import loginPicture from '../assets/loginPicture.png';
 import busTrackerLogo from '../assets/busTrackerlogo.png';
+
+import LanguageSwitcher from '../components/LanguageSwitcher';
+
 import { burgundy } from '../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
@@ -52,6 +55,14 @@ const SetPassword = () => {
 
   return (
     <div className="min-h-screen flex">
+
+      {/* button to change the language  */}
+        <div className="absolute top-4 right-4 z-50">
+          <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
+            <LanguageSwitcher />
+          </div>
+        </div>
+
       {/* Left side - Login form ========================================================*/}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8" style={{marginTop:'-20px'}}>
         

@@ -63,9 +63,7 @@ class DriverService {
             enumFields: [{ field: "status", enumObj: userEnum_1.status },
                 { field: "role", enumObj: userEnum_1.role },
                 { field: "gender", enumObj: userEnum_1.gender }
-            ],
-            //---------------------------------------------
-            successMessage: 'Driver was updated',
+            ]
         });
     }
     //===================================================================================================

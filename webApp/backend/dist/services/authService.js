@@ -49,7 +49,7 @@ class AuthService {
             return;
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error retrieving user data. ${error}`);
+            (0, messageTemplate_1.sendResponse)(res, 500, `Error retrieving user data ${error}`);
             return;
         }
     }

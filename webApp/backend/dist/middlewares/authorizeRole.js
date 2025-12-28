@@ -36,8 +36,7 @@ const authorizeRole = (role) => {
         }
         // check the user role
         if (tokenData.userRole !== role) {
-            console.log("Access Denied!");
-            res.status(500).json({ message: "Access Denied!" });
+            (0, messageTemplate_1.sendResponse)(res, 500, 'Access Denied!');
             return;
         }
         next();

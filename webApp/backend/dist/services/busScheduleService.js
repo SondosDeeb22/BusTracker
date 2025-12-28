@@ -113,7 +113,7 @@ class BusScheduleService {
             return (0, messageTemplate_1.sendResponse)(res, 401, jwtData);
         }
         const userId = jwtData.userID;
-        // -------------------------------------------------------------------------------
+        // get the schedule Id and verify it exists -------------------------------------------------------------------------------
         const scheduleId = req.body?.id;
         if (!scheduleId) {
             return (0, messageTemplate_1.sendResponse)(res, 500, 'No schedule id were found');
@@ -167,8 +167,7 @@ class BusScheduleService {
                     updatedAt: new Date(),
                     updatedBy: userId
                 };
-            },
-            successMessage: 'Schedule was updated successfully'
+            }
         });
     }
     // =================================================================================================================================

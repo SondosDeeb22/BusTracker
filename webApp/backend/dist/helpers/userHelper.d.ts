@@ -19,7 +19,6 @@ export declare class UserHelper {
         }>;
         disallowFields?: string[];
         transform?: (vals: any) => Promise<any> | any;
-        successMessage?: string;
     }): Promise<void>;
 }
 //# sourceMappingURL=userHelper.d.ts.map

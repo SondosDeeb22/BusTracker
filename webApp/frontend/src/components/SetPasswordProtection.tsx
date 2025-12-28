@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { COLORS } from '../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
+import { burgundy } from '../styles/colorPalette';
+
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -73,7 +76,18 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
   // Show error if token is invalid =========================================================================
   if (!isValid) {
     return (
+
+      
       <div className="flex items-center justify-center min-h-screen">
+
+        {/* button to change the language  */}
+        <div className="absolute top-4 right-4 z-50">
+          <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
+            <LanguageSwitcher />
+          </div>
+        </div>
+        {/* ---------------------------------------------------------------------------------------- */}
+
         <div className="text-center">
           <h1 
             className="text-2xl font-bold mb-4"

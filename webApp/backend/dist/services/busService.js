@@ -46,9 +46,7 @@ class BusService {
     //===================================================================================================
     async updateBus(req, res) {
         await helper.update(req, res, busModel_1.default, req.body, {
-            enumFields: [{ field: "status", enumObj: busEnum_1.status }],
-            //---------------------------------------------
-            successMessage: 'Bus was updated',
+            enumFields: [{ field: "status", enumObj: busEnum_1.status }]
         });
     }
     //===================================================================================================

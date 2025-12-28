@@ -22,10 +22,6 @@ class AuthHelper {
     //===========================================================================================================================================
     createJWTtoken(res, tokenName, secretKey, components, maximumAge, storeCookie) {
         //create token ------------------------------------------------------------------------------------
-        // const JWTkey = process.env.key;
-        // if(!JWTkey){
-        //     throw new Error("Error in fetching JWT secret key");
-        // }
         const token = jsonwebtoken_1.default.sign(components, secretKey, { expiresIn: maximumAge / 1000 });
         // Only set cookie if explicitly requested------------------------------------------------------------------------------------
         if (storeCookie) {
@@ -74,10 +70,6 @@ class AuthHelper {
             if (!token) {
                 return "Session expired, Please log in again";
             }
-            // const JWT_key = process.env.key;
-            // if(!JWT_key){
-            //     return "Internal Error! missing token key in environment file";
-            // }
             const user_data = jsonwebtoken_1.default.verify(token, secretKey);
             if (!user_data || typeof user_data !== "object") {
                 return "Invalid JWT token";
@@ -95,9 +87,6 @@ class AuthHelper {
     getIPaddressAndUserLocation = async (req) => {
         try {
             const ip = req.ip;
-            //values for testing locally: 
-            // const ip = "212.108.136.143";
-            // const ip = "8.8.8.8";
             //--------------------------------------------------------------------
             //get the location from the IP address
             const response = await fetch(`http://ip-api.com/json/${ip}`); // using third party tool ip-api.com website

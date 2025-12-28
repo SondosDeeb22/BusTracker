@@ -54,9 +54,7 @@ class StationService {
     //===================================================================================================
     async updateStation(req, res) {
         await helper.update(req, res, stationModel_1.default, req.body, {
-            enumFields: [{ field: "status", enumObj: stationEnum_1.status },],
-            //---------------------------------------------
-            successMessage: 'Station was updated',
+            enumFields: [{ field: "status", enumObj: stationEnum_1.status },]
         });
     }
     //===================================================================================================
