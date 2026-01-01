@@ -7,92 +7,87 @@ A comprehensive web application for managing and tracking university buses in re
 - [Overview](#overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
-- [Setup your environment](#setup-your-environment)
 - [Database](#database)
 - [API Documentation](#API-documentation)
 - [Authentication & Security](#authentication--security)
+- [Execution Instructions](#execution-instructions)
 
 
 ## Overview
 
-The Bus Tracker system is designed to streamline university transportation management. It enables administrators to manage drivers, buses, routes, and schedules efficiently, while providing real-time tracking capabilities for students and staff. The application is built with a modern tech stack ensuring scalability, security, and excellent user experience.
+Near East University Bus Tracker system is designed to streamline university transportation management. It enables administrators to manage drivers, buses, routes, stations and schedules efficiently, while providing real-time tracking capabilities for students and staff. The application is built with a modern tech stack ensuring scalability, security, and excellent user experience.
 
 ## Features
 
 ### Administrator Capabilities
 - **Driver Management** - Complete CRUD operations for driver profiles and assignments
-- **Bus Fleet Management** - Manage vehicle inventory, capacity, and operational status
+- **Bus Management** - Manage buses inventory, capacity, and operational status
 - **Route Configuration** - Define and maintain bus routes with stations and distances
-- **Station Management** - Manage pickup and drop-off locations across campus
-- **Schedule Management** - Create and manage bus schedules with departure and arrival times
-- **Administrative Dashboard** - Centralized view of all system operations and analytics
+- **Station Management** - Manage pickup and drop-off locations 
+- **Schedule Management** - Create and manage bus schedules 
+- **Administrative Dashboard** - Provide view on currenlty operating buses and the routes they are following
+- **change language** - choose language between turkish and english
+
 
 ### User Capabilities
-- **Route Discovery** - Browse all available bus routes and schedules
-- **Real-time Bus Tracking** - Track active buses and their current locations
-- **Secure Authentication** - JWT-based authentication with role-based access
-- **User Preferences** - Customize language and interface appearance
-- **Account Management** - Secure password reset and account settings
+- **Route Discovery** - Browse all available bus routes
+- **Real-time Bus Tracking** - View live-tracking of active buses and their current locations
+
+
+### Driver Capabilities
+- **Route Discovery** - Browse assigned routes and buses for every week
+- **change Route** - Update and switch currently followed routes
 
 ### Security & Compliance
-- **JWT Token Authentication** - Industry-standard token-based authentication
-- **Role-Based Access Control** - Granular permission management for Admin and Driver roles
-- **Secure Cookie Storage** - HTTP-only cookies prevent XSS attacks
-- **Token Verification Middleware** - Automatic validation on all protected endpoints
-- **Email-Based Password Recovery** - Secure password reset with token verification
+- **JWT Authentication** - applied JWT authentication to secure API endpoints
+- **Role-Based Access Control** - implemented role-based access control for Admin protected endpoints
+- **Token Verification Middleware** - validates JWT for authenticated routes
+- **Email-Based Password Recovery** - secured password reset operation and password set operation with token verification 
 
 
-## Technology Stack
+## Development Stack
 
-### Frontend Architecture
-- **React 18** - Modern UI library with hooks and functional components
-- **TypeScript** - Static type checking for enhanced code reliability
-- **Vite** - Lightning-fast build tool with Hot Module Replacement (HMR)
-- **Tailwind CSS** - Utility-first CSS framework for responsive design
-- **React Router v6** - Client-side routing and navigation
-- **Axios** - Promise-based HTTP client for API communication
-- **Heroicons** - Professional SVG icon library
+### Frontend technologies 
+- **React** 
+- **TypeScript**
+- **Vite** 
+- **Tailwind CSS**
 
-### Backend Architecture
-- **Node.js** - JavaScript runtime for server-side execution
-- **Express.js** - Lightweight and flexible web application framework
-- **TypeScript** - Type-safe backend development
-- **MySQL** - Reliable relational database management system
-- **JWT (JSON Web Tokens)** - Stateless authentication mechanism
-- **Nodemailer** - SMTP-based email service for password recovery
-- **Bcrypt** - Industry-standard password hashing algorithm
+
+### Backend technologies 
+- **Node.js** 
+- **Express.js** 
+- **TypeScript** 
+
+- **MySQL**
+- **Sequelize** 
+
 
 ### Development Tools
-- **Git** - Version control system
-- **npm** - JavaScript package manager
-- **ESLint & Prettier** - Code quality and formatting
+- **Git**
+- **npm** 
+- **Prettier**
 
-
-
-### Setup your environment
-
-Before you begin, ensure you have the following installed on your system:
-
-- **Node.js** v16.0.0 or higher
-- **npm** v7.0.0 or higher (or yarn)
-- **MySQL** v12.0 or higher
-- **Git** v2.0 or higher
 
 ## Database
 
 ### Schema Overview
 
-#### Users Table
-#### Drivers Table
-#### Buses Table
-#### Routes Table
-#### Stations Table
-#### Bus Schedules Table
-#### Contributing
+users table
+buses table
+routes table
+stations table
+route_stations table
+bus_schedules table
+login_attempts table 
+
+
 
 ## API Documentation
 
 ### Authentication Endpoints (`/api/auth`)
+
+Auth required: for this endpoins, authentication applied on some of the endpoints, and the required token varies for each endpoint
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
@@ -100,11 +95,14 @@ Before you begin, ensure you have the following installed on your system:
 | **POST** | `/logout` | - | User logout |
 | **GET** | `/user-info` | required | Get current user info |
 | **POST** | `/forgot-password` | - | Request password reset |
-| **HEAD** | `/reset-password` | required | Verify reset token |
-| **PATCH** | `/reset-password` | required | Submit new password |
+| **HEAD** | `/reset-password/:token` | required | Verify reset password token |
+| **PATCH** | `/reset-password/:token` | required | Submit new password |
+| **HEAD** | `/reset-password/:token` | required | Verify set passwordtoken |
 | **PATCH** | `/set-password/:token` | required | Set password (drivers) |
 
 ### Admin Endpoints (`/api/admin`)
+
+Access is explicit for Admins only, authorization layer is applied on these routes
 
 #### Driver Management
 | Method | Endpoint | Description |
@@ -137,7 +135,7 @@ Before you begin, ensure you have the following installed on your system:
 | **PATCH** | `/station/update` | Update station |
 | **GET** | `/stations/fetch` | Fetch all stations |
 
-#### Schedule Management
+#### Bus Schedule Management
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | **POST** | `/schedule/add` | Add new schedule |
@@ -146,6 +144,8 @@ Before you begin, ensure you have the following installed on your system:
 | **GET** | `/schedule/fetch` | Fetch all schedules |
 
 ### User Endpoints (`/api/user`)
+
+Auth required: implies that a valied login token is mandatory for endpoint with "required" Auth 
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
@@ -161,14 +161,13 @@ Before you begin, ensure you have the following installed on your system:
 
 ### JWT Authentication Flow
 
-The application uses JWT (JSON Web Tokens) for stateless authentication:
+The application uses JWT (JSON Web Tokens) for authentication:
 
-1. **User Login**: User submits credentials to `/api/auth/login`
-2. **Token Generation**: Backend validates credentials and generates a JWT token
-3. **Cookie Storage**: Token is stored in an HTTP-only, secure cookie
-4. **Automatic Transmission**: Token is automatically included in all subsequent requests
-5. **Token Validation**: Middleware validates the token on protected endpoints
-6. **Session Expiry**: Token expires after the configured duration (default: 7 days)
+**Token Generation**: Backend validates credentials and generates a JWT token
+**Cookie Storage**: Token is stored in an HTTP-only, secure cookie
+**Automatic Transmission**: Token is automatically included in all subsequent requests
+**Token Validation**: Middleware validates the token on protected endpoints
+**Session Expiry**: Token expires after the configured duration 
 
 ### Token Types and Purposes
 
@@ -181,17 +180,56 @@ The application uses JWT (JSON Web Tokens) for stateless authentication:
 
 ### Security Measures
 
-- **HTTP-Only Cookies**: Tokens stored in HTTP-only cookies prevent XSS attacks
-- **Secure Flag**: Cookies transmitted only over HTTPS in production
 - **Token Validation**: Every protected endpoint validates token before processing
-- **Role-Based Access**: Endpoints enforce role-based permissions (Admin/Driver)
-- **Password Hashing**: User passwords hashed with bcrypt (salt rounds: 10)
+- **Role-Based Access**: Endpoints enforce role-based permissions for protected routes
+- **Password Hashing**: User passwords hashed with bcrypt 
 - **Email Verification**: Password reset requires email verification
 
-### Protected Routes
 
-All administrative routes require:
-- Valid JWT token in cookie
-- Admin role authorization
-- Additional role-specific permissions
+
+## Execution Instructions
+
+To run the Near East University Bus Tracker system, follow these steps:
+
+1. **Prerequisites**
+   - Node.js (version 22.19.0)
+   - npm (version 10.9.3)
+   - MySQL (version 8.0.43 for Win64 on x86_64)
+
+2. **Installation**
+   - Clone the repository
+   - Navigate to the project directory
+
+3. **Configuration**
+   - Set up environment variables in a `.env` file
+   - Configure database connection string
+   - Set up JWT secret 
+   - **3.1. Web application (`codebase/webApp`) dependencies**
+     - From `codebase/webApp` run `npm install` to install backend and tooling dependencies (like : Express, Sequelize, JWT (`jsonwebtoken`), bcrypt, Nodemailer, Socket.IO, cookie-parser, cors, dotenv, mysql2, ejs, uuidv4, nodemon, etc.)
+
+     - From `codebase/webApp/frontend` run `npm install` to install frontend/tooling dependencies (like: React, React DOM, React Router, React Redux, Axios, Leaflet, React-Leaflet, Tailwind CSS, i18next, react-i18next, i18next-browser-languagedetector, i18next-http-backend, Heroicons, Vite, TypeScript, ESLint, etc.)
+
+   - **3.2. Mobile application (`codebase/mobile_app`) dependencies**
+     - Ensure Flutter SDK (with Dart SDK compatible with `sdk: ^3.9.2` in `pubspec.yaml`) is installed and configured
+     - From `codebase/mobile_app` run `flutter pub get` to install Flutter packages
+
+4. **Database Setup**
+   - use the modeules to initialize the database schema
+   - run "/codebase/webApp/backend/src/database/constructDatbase.ts" file to build database and seed the mock up data
+
+5. **Run the Application**
+    5.1. Web Application: 
+
+   - start the development server with `npm run start` 
+   - the web application will be available at `http://localhost:3000`
+
+   **5.2. Mobile Application:** 
+
+      **5.2.1. User version:**
+        - Navigate to `codebase/mobile_app` 
+        - Run `flutter run` to start the mobile application 
+      
+      **5.2.2. Driver version:**
+        - Navigate to `codebase/mobile_app` 
+        - Run `flutter run lib/driver_main.dart` to start the driver mobile application 
 
