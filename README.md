@@ -73,13 +73,15 @@ Near East University Bus Tracker system is designed to streamline university tra
 
 ### Schema Overview
 
-users table
-buses table
-routes table
-stations table
-route_stations table
-bus_schedules table
-login_attempts table 
+- **users table** 
+- **buses table** 
+- **routes table** 
+- **stations table** 
+- **route_stations table** 
+- **bus_schedules table** 
+- **login_attempts table** 
+
+check models folder in /backend/src to have cloer look on the tables details
 
 
 
