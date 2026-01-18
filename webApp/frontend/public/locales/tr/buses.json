@@ -8,9 +8,9 @@
   },
   "columns": {
     "id": "ID",
-    "serialNumber": "Seri Numarası",
     "brand": "Marka",
     "status": "Durum",
+    "plate": "Plaka",
     "assignedDriver": "Atanan Sürücü",
     "assignedRoute": "Atanan Rota",
     "actions": "İşlemler"
@@ -19,7 +19,7 @@
 
   "addForm": {
     "title": "Yeni Otobüs Ekle",
-    "serialNumber": "Seri Numarası",
+    "plate": "Plaka",
     "brand": "Marka",
     "assignedRoute": "Atanan Güzergâh",
     "assignedDriver": "Atanan Sürücü",
@@ -39,7 +39,7 @@
 
   "updateForm": {
     "title": "Otobüsü Düzenle",
-    "serialNumber": "Seri Numarası",
+    "plate": "Plaka",
     "brand": "Marka",
     "status": "Durum",
     "assignedDriver": "Atanan Sürücü",

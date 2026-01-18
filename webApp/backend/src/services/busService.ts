@@ -34,7 +34,7 @@ export class BusService{
         
         try{
             await helper.add(req, res, BusModel, req.body,{
-                nonDuplicateFields: ['serialNumber'],
+                nonDuplicateFields: ['plate'],
                 enumFields: [{ field: "status", enumObj: status }],
             }
            );
@@ -74,7 +74,7 @@ export class BusService{
     async fetchAllBuses(req: Request, res: Response){
         try {
             const buses = await BusModel.findAll({
-                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
+                attributes: ['id', 'plate', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
                 include: [
                     {
                         model: UserModel,

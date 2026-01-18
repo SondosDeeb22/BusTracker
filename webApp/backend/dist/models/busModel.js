@@ -21,8 +21,10 @@ BusModel.init({
         primaryKey: true,
         allowNull: false
     },
-    serialNumber: { type: sequelize_1.DataTypes.STRING(30),
-        allowNull: false
+    plate: {
+        type: sequelize_1.DataTypes.STRING(10),
+        allowNull: false,
+        unique: true
     },
     brand: {
         type: sequelize_1.DataTypes.STRING(15),

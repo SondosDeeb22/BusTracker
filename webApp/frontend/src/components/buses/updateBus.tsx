@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 interface BusData{
     id: string,
-    serialNumber: string,
+    plate: string,
     brand: string, 
     status : keyof typeof status | '',
     assignedRoute: string,
@@ -30,7 +30,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
   const { t } = useTranslation('buses');
   const [formData, setFormData] = useState<BusData>({
     id: busId,
-    serialNumber: '',
+    plate: '',
     brand: '',
     status: '',
     assignedRoute: '',
@@ -70,7 +70,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       if (currentBus) {
         setFormData({
           id: currentBus.id,
-          serialNumber: currentBus.serialNumber,
+          plate: currentBus.plate,
           brand: currentBus.brand,
           status: currentBus.status,
           assignedRoute: currentBus.assignedRoute,
@@ -155,12 +155,12 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('updateForm.serialNumber')}
+              {t('updateForm.plate')}
             </label>
             <input
               type="text"
-              name="serialNumber"
-              value={formData.serialNumber}
+              name="plate"
+              value={formData.plate}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required

@@ -18,12 +18,12 @@ const BusesPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [tableKey, setTableKey] = useState(0);
   const [selectedBusId, setSelectedBusId] = useState<string>('');
-  const [selectedBusSerialNumber, setSelectedBusSerialNumber] = useState<string>('');
+  const [selectedBusPlate, setselectedBusPlate] = useState<string>('');
 
   // Column configuration for buses table
   const columnConfig = [
     { key: 'id', label: t('columns.id') },
-    { key: 'serialNumber', label: t('columns.serialNumber') },
+    { key: 'plate', label: t('columns.plate') },
     { key: 'brand', label: t('columns.brand') },
     { 
       key: 'status', 
@@ -65,7 +65,7 @@ const BusesPage = () => {
   const handleRemoveBus = (bus: any) => {
     console.log('Remove bus:', bus);
     setSelectedBusId(bus.id);
-    setSelectedBusSerialNumber(bus.serialNumber);
+    setselectedBusPlate(bus.serialNumber);
     setShowRemoveModel(true);
   };
 
@@ -102,7 +102,7 @@ const BusesPage = () => {
     setSuccessMessage(t('success.removed'));
     setTableKey(prev => prev + 1); // Force table refresh
     setSelectedBusId('');
-    setSelectedBusSerialNumber('');
+    setselectedBusPlate('');
     
     // Clear success message after 3 seconds
     setTimeout(() => {
@@ -124,7 +124,7 @@ const BusesPage = () => {
   const handleCloseRemoveModel = () => {
     setShowRemoveModel(false);
     setSelectedBusId('');
-    setSelectedBusSerialNumber('');
+    setselectedBusPlate('');
   };
 
   //======================================================================================
@@ -164,7 +164,7 @@ const BusesPage = () => {
           onClose={handleCloseRemoveModel}
           onSuccess={handleRemoveBusSuccess}
           busId={selectedBusId}
-          busSerialNumber={selectedBusSerialNumber}
+          busSerialNumber={selectedBusPlate}
         />
       )}
     </>

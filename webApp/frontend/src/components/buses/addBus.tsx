@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 
 interface BusData{
-    serialNumber: string,
-    brand: string, 
+    brand: string,
+    plate: string, 
     status : keyof typeof status | '',
     assignedRoute: string,
     assignedDriver: string
@@ -22,7 +22,7 @@ interface BusData{
 const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) => {
   const { t } = useTranslation('buses');
   const [formData, setFormData] = useState<BusData>({
-    serialNumber: '',
+    plate: '',
     brand: '',
     status: '',
     assignedRoute: '',
@@ -110,12 +110,12 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('addForm.serialNumber')}
+              {t('addForm.plate')}
             </label>
             <input
               type="text"
-              name="serialNumber"
-              value={formData.serialNumber}
+              name="plate"
+              value={formData.plate}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required

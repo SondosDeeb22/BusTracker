@@ -10,6 +10,7 @@
     "id": "ID",
     "serialNumber": "Serial Number",
     "brand": "Brand",
+    "plate": "Plate",
     "status": "Status",
     "assignedDriver": "Assigned Driver",
     "assignedRoute": "Assigned Route",
@@ -21,7 +22,7 @@
 
   "addForm":{
     "title": "Add New Bus",
-    "serialNumber": "Serial Number",
+    "plate": "Plate",
     "brand": "Brand",    
     "assignedRoute": "Assigned Route",
     "assignedDriver": "Assigned Driver",   
@@ -40,7 +41,7 @@
 
   "updateForm": {
     "title": "Edit Bus",
-    "serialNumber": "Serial Number",
+    "plate": "Plate",
     "brand": "Brand",
     "status": "Status",
     "assignedDriver": "Assigned Driver",

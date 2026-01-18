@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const buses = [
     {
         id: "B001",
-        serialNumber: "SN-0001",
+        plate: "P-0001",
         brand: "Volvo",
         status: "operating",
         assignedRoute: "R001",
@@ -15,7 +15,7 @@ const buses = [
     },
     {
         id: "B002",
-        serialNumber: "SN-0002",
+        plate: "P-0002",
         brand: "Mercedes",
         status: "maintenance",
         assignedRoute: "R001",
@@ -23,7 +23,7 @@ const buses = [
     },
     {
         id: "B003",
-        serialNumber: "SN-0003",
+        plate: "P-0003",
         brand: "Scania",
         status: "offline",
         assignedRoute: "R002",
@@ -31,7 +31,7 @@ const buses = [
     },
     {
         id: "B004",
-        serialNumber: "SN-0004",
+        plate: "P-0004",
         brand: "MAN",
         status: "operating",
         assignedRoute: "R003",

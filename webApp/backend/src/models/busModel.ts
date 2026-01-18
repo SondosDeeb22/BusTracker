@@ -21,7 +21,7 @@ class BusModel extends Model< InferAttributes<BusModel>, InferCreationAttributes
 
 
     declare id: string;
-    declare serialNumber: string;
+    declare plate: string;
     declare brand: string;
     declare status: keyof typeof status;
     declare assignedRoute: string;
@@ -37,9 +37,11 @@ BusModel.init( {
       primaryKey: true,
       allowNull: false
     },
-    serialNumber: { type: DataTypes.STRING(30),
-      allowNull: false
-    },
+    plate: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      unique: true
+    },    
     brand: {
       type: DataTypes.STRING(15),
       allowNull: false
@@ -68,6 +70,7 @@ BusModel.init( {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
+
 
   },
   {

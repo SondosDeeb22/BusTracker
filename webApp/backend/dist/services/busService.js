@@ -24,7 +24,7 @@ class BusService {
     async addBus(req, res) {
         try {
             await helper.add(req, res, busModel_1.default, req.body, {
-                nonDuplicateFields: ['serialNumber'],
+                nonDuplicateFields: ['plate'],
                 enumFields: [{ field: "status", enumObj: busEnum_1.status }],
             });
             (0, messageTemplate_1.sendResponse)(res, 200, "Bus was Added successfully");
@@ -55,7 +55,7 @@ class BusService {
     async fetchAllBuses(req, res) {
         try {
             const buses = await busModel_1.default.findAll({
-                attributes: ['id', 'serialNumber', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
+                attributes: ['id', 'plate', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
                 include: [
                     {
                         model: userModel_1.default,
