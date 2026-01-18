@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //======================================================================================================================
 //?  Imports
 //======================================================================================================================
+// import {Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize';
 const sequelize_1 = require("sequelize");
 const database_1 = require("../config/database");
 //importing enums
@@ -35,8 +36,8 @@ BusModel.init({
         allowNull: false
     },
     assignedRoute: {
-        type: sequelize_1.DataTypes.STRING(4),
-        allowNull: false,
+        type: sequelize_1.DataTypes.STRING(4) || null,
+        allowNull: true,
         references: {
             model: 'routes',
             key: 'id',
@@ -45,8 +46,8 @@ BusModel.init({
         onUpdate: 'CASCADE',
     },
     assignedDriver: {
-        type: sequelize_1.DataTypes.STRING(4),
-        allowNull: false,
+        type: sequelize_1.DataTypes.STRING(4) || null,
+        allowNull: true,
         references: {
             model: 'users',
             key: 'id',

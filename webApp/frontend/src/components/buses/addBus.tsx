@@ -154,7 +154,6 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
                 value={formData.assignedRoute}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               >
                 <option value="">{t('addForm.selectRoute')}</option>
                 {routes.map((route: any, index: number) => (
@@ -182,7 +181,6 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
                 value={formData.assignedDriver}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               >
                 <option value="">{t('addForm.selectDriver')}</option>
                 {drivers.map((driver: any) => (

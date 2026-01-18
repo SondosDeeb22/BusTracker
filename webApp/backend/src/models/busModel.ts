@@ -1,7 +1,9 @@
 //======================================================================================================================
 //?  Imports
 //======================================================================================================================
-import {Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize';
+// import {Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize';
+import {Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
+
 import {sequelize} from '../config/database';
 
 
@@ -24,8 +26,10 @@ class BusModel extends Model< InferAttributes<BusModel>, InferCreationAttributes
     declare plate: string;
     declare brand: string;
     declare status: keyof typeof status;
-    declare assignedRoute: string;
-    declare assignedDriver: string;
+    declare assignedRoute: CreationOptional<string | null>;
+    declare assignedDriver: CreationOptional<string | null>;
+    // declare assignedRoute: string;
+    // declare assignedDriver: string;
 }
 
 //======================================================================================================================
@@ -50,9 +54,11 @@ BusModel.init( {
       type: DataTypes.ENUM(...Object.values(status) as string[]),
       allowNull: false
     },
+
+
     assignedRoute: {
-      type: DataTypes.STRING(4),
-      allowNull: false,
+      type: DataTypes.STRING(4) || null,
+      allowNull: true,
       references: {
         model: 'routes',
         key: 'id',
@@ -61,8 +67,8 @@ BusModel.init( {
       onUpdate: 'CASCADE',
     },
     assignedDriver: {
-      type: DataTypes.STRING(4),
-      allowNull: false,
+      type: DataTypes.STRING(4)|| null,
+      allowNull: true,
       references: {
         model: 'users',
         key: 'id',

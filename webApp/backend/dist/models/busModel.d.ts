@@ -1,4 +1,4 @@
-import { Model, InferAttributes, InferCreationAttributes } from 'sequelize';
+import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { BusAttributes } from '../interfaces/busInterface';
 import { status } from '../enums/busEnum';
 declare class BusModel extends Model<InferAttributes<BusModel>, InferCreationAttributes<BusModel>> implements BusAttributes {
@@ -6,8 +6,8 @@ declare class BusModel extends Model<InferAttributes<BusModel>, InferCreationAtt
     plate: string;
     brand: string;
     status: keyof typeof status;
-    assignedRoute: string;
-    assignedDriver: string;
+    assignedRoute: CreationOptional<string | null>;
+    assignedDriver: CreationOptional<string | null>;
 }
 export default BusModel;
 //# sourceMappingURL=busModel.d.ts.map

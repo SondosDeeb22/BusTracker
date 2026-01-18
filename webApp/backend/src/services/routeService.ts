@@ -200,9 +200,13 @@ export class RouteService{
                 })
 
                 for(let i = 0; i< routeId.length; i++){
+                    const assignedRouteId = routeId[i]?.assignedRoute;
+                    if (!assignedRouteId) {
+                        continue;
+                    }
                     let route = await RouteModel.findOne({
                         where: {
-                            id: routeId[i]?.assignedRoute
+                            id: assignedRouteId
                         },
                         attributes: ['id', 'title', 'color', 'totalStops', 'status']
                     });

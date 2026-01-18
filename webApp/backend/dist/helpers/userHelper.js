@@ -45,6 +45,12 @@ class UserHelper {
                     return;
                 }
             }
+            // normalize empty strings to null for nullable columns
+            for (const field in body) {
+                if (!requiredFields.includes(field) && body[field] === "") { // to ensure column field is optional and it's empty string, so we make it Null
+                    body[field] = null;
+                }
+            }
             // Enum validation
             if (options?.enumFields && options.enumFields.length > 0) {
                 for (const rule of options.enumFields) {
@@ -179,6 +185,15 @@ class UserHelper {
             if (!values || Object.keys(values).length === 0) {
                 (0, messageTemplate_1.sendResponse)(res, 500, "Please provide the data!");
                 return;
+            }
+            // normalize empty strings to null for nullable columns -------------------------------------
+            const attrs = model.getAttributes();
+            for (const [name, attr] of Object.entries(attrs)) {
+                const allowNull = attr.allowNull === true;
+                const value = values[name];
+                if (allowNull && typeof value === 'string' && value.trim() === '') {
+                    values[name] = null;
+                }
             }
             // Enum validation --------------------------------------------------------------------------
             if (options?.enumFields && options.enumFields.length > 0) {

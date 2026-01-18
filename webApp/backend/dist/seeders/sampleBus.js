@@ -37,6 +37,18 @@ const buses = [
         assignedRoute: "R003",
         assignedDriver: "U004",
     },
+    {
+        id: "B005",
+        plate: "PSWE-0005",
+        brand: "MAN",
+        status: "offline",
+    },
+    {
+        id: "B006",
+        plate: "SDFG-1706",
+        brand: "MAN",
+        status: "maintenance",
+    },
 ];
 //============================================================================================
 exports.default = buses;
