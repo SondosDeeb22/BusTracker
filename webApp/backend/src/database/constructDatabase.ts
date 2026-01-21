@@ -14,6 +14,11 @@ import stationModel from '../models/stationModel';
 import RouteStationModel from '../models/routeStationModel';
 import loginAttemptModel from '../models/loginAttempModel';
 
+import ScheduledTripsModel from '../models/scheduledTripsModel';
+import ServicePatternModel from '../models/servicePatternModel';
+import OperatingHoursModel from '../models/operatingHoursModel';
+import TripModel from '../models/scheduledTripsModel';
+
 //import the association 
 import '../models/association';
 
@@ -26,6 +31,11 @@ import busStations from '../seeders/sampleBusStation';
 import routeStation from '../seeders/sampleRouteStation';
 import loginAttempts from '../seeders/sampleLoginAttempt';
 
+import operatingHours from '../seeders/sampleOperatingHours';
+import servicePatterns from '../seeders/sampleServicePattern';
+import trips from '../seeders/sampleScheduledTrips';
+import schedules from '../seeders/sampleSchedule';
+import ScheduleModel from '../models/scheduleModel';
 //==============================================================================================
 //? build all the table
 //==============================================================================================
@@ -56,6 +66,12 @@ const seedData = async () => {
     await RouteModel.destroy({where: {}});
     await loginAttemptModel.destroy({where: {}});
 
+    await TripModel.destroy({where: {}});
+    await ScheduleModel.destroy({where: {}});
+    await OperatingHoursModel.destroy({where: {}});
+    await ServicePatternModel.destroy({where: {}});
+
+
 
     // 2- Insert sample data
     await UserModel.bulkCreate(users, {
@@ -83,6 +99,24 @@ const seedData = async () => {
     });
     
     await loginAttemptModel.bulkCreate(loginAttempts, {
+      returning: true 
+    });
+
+
+
+    await ServicePatternModel.bulkCreate(servicePatterns, {
+      returning: true 
+    });
+
+    await OperatingHoursModel.bulkCreate(operatingHours, {
+      returning: true 
+    });
+
+    await ScheduleModel.bulkCreate(schedules, {
+      returning: true 
+    });
+
+    await TripModel.bulkCreate(trips, {
       returning: true 
     });
 

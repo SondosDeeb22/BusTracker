@@ -8,16 +8,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //==============================================================================
 const userModel_1 = __importDefault(require("./userModel"));
 const busModel_1 = __importDefault(require("./busModel"));
-const busScheduleModel_1 = __importDefault(require("./busScheduleModel"));
 const routeModel_1 = __importDefault(require("./routeModel"));
 const stationModel_1 = __importDefault(require("./stationModel"));
 const routeStationModel_1 = __importDefault(require("./routeStationModel"));
+const servicePatternModel_1 = __importDefault(require("./servicePatternModel"));
+const operatingHoursModel_1 = __importDefault(require("./operatingHoursModel"));
+const scheduleModel_1 = __importDefault(require("./scheduleModel"));
+const scheduledTripsModel_1 = __importDefault(require("./scheduledTripsModel"));
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? Buses Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
 busModel_1.default.belongsTo(userModel_1.default, {
     foreignKey: 'assignedDriver',
-    as: 'driver', // I don't feel we need it, lets see 26/10/2025
+    as: 'driver',
     onDelete: 'CASCADE',
 });
 userModel_1.default.hasOne(busModel_1.default, {
@@ -48,48 +51,113 @@ stationModel_1.default.belongsToMany(routeModel_1.default, {
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? BusSchedule Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
-// Route Model ---------------------------------------------------------------------------------
-busScheduleModel_1.default.belongsTo(routeModel_1.default, {
+// // Route Model ---------------------------------------------------------------------------------
+// BusScheduleModel.belongsTo(RouteModel,{
+//     foreignKey: 'routeId',
+//     as: 'route',
+//     onDelete: 'CASCADE',
+// });
+// RouteModel.hasMany(BusScheduleModel,{
+//     foreignKey: 'routeId',
+// });
+// // User Model (creator) ---------------------------------------------------------------------------------
+// BusScheduleModel.belongsTo(UserModel, {
+//     foreignKey: 'createdBy',
+//     as: 'creator',
+//     onDelete: 'CASCADE',
+// });
+// UserModel.hasOne(BusScheduleModel,{
+//     foreignKey: 'createdBy',
+// });
+// // User Model (updater) ---------------------------------------------------------------------------------
+// BusScheduleModel.belongsTo(UserModel,{
+//     foreignKey: 'updatedBy',
+//     as: 'updater',
+//     onDelete: 'CASCADE',
+// });
+// UserModel.hasMany(BusScheduleModel,{
+//     foreignKey: 'updatedBy',
+// });
+// // User Model (driver) ---------------------------------------------------------------------------------
+// BusScheduleModel.belongsTo(UserModel, {
+//   foreignKey: 'driverId',
+//   as: 'driver',
+//   onDelete: 'RESTRICT',
+// });
+// UserModel.hasMany(BusScheduleModel, {
+//   foreignKey: 'driverId',
+// });
+// // Bus Model ---------------------------------------------------------------------------------
+// BusScheduleModel.belongsTo(BusModel, {
+//     foreignKey: 'busId',
+//     onDelete: 'RESTRICT',
+// });
+// BusModel.hasMany(BusScheduleModel, {
+//     foreignKey: 'busId',
+// });
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Service Pattern Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Operating Hours Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+operatingHoursModel_1.default.belongsTo(servicePatternModel_1.default, {
+    foreignKey: 'servicePatternId',
+    as: 'servicePattern',
+    onDelete: 'CASCADE',
+});
+servicePatternModel_1.default.hasMany(operatingHoursModel_1.default, {
+    foreignKey: 'servicePatternId',
+    as: 'operatingHours'
+});
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Schedule Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+scheduleModel_1.default.belongsTo(servicePatternModel_1.default, {
+    foreignKey: 'servicePatternId',
+    as: 'servicePattern',
+    onDelete: 'CASCADE',
+});
+servicePatternModel_1.default.hasMany(scheduleModel_1.default, {
+    foreignKey: 'servicePatternId',
+    as: 'schedules'
+});
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Scheduled Trips Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+scheduledTripsModel_1.default.belongsTo(scheduleModel_1.default, {
+    foreignKey: 'scheduleId',
+    as: 'schedule'
+});
+scheduleModel_1.default.hasMany(scheduledTripsModel_1.default, {
+    foreignKey: 'scheduleId',
+    as: 'trips'
+});
+//---------------------------------------------------------
+scheduledTripsModel_1.default.belongsTo(routeModel_1.default, {
     foreignKey: 'routeId',
     as: 'route',
     onDelete: 'CASCADE',
 });
-routeModel_1.default.hasMany(busScheduleModel_1.default, {
+routeModel_1.default.hasMany(scheduledTripsModel_1.default, {
     foreignKey: 'routeId',
 });
-// User Model (creator) ---------------------------------------------------------------------------------
-busScheduleModel_1.default.belongsTo(userModel_1.default, {
-    foreignKey: 'createdBy',
-    as: 'creator',
-    onDelete: 'CASCADE',
-});
-userModel_1.default.hasOne(busScheduleModel_1.default, {
-    foreignKey: 'createdBy',
-});
-// User Model (updater) ---------------------------------------------------------------------------------
-busScheduleModel_1.default.belongsTo(userModel_1.default, {
-    foreignKey: 'updatedBy',
-    as: 'updater',
-    onDelete: 'CASCADE',
-});
-userModel_1.default.hasMany(busScheduleModel_1.default, {
-    foreignKey: 'updatedBy',
-});
-// User Model (driver) ---------------------------------------------------------------------------------
-busScheduleModel_1.default.belongsTo(userModel_1.default, {
+//---------------------------------------------------------
+scheduledTripsModel_1.default.belongsTo(userModel_1.default, {
     foreignKey: 'driverId',
     as: 'driver',
-    onDelete: 'RESTRICT',
+    onDelete: 'CASCADE',
 });
-userModel_1.default.hasMany(busScheduleModel_1.default, {
+userModel_1.default.hasMany(scheduledTripsModel_1.default, {
     foreignKey: 'driverId',
 });
-// Bus Model ---------------------------------------------------------------------------------
-busScheduleModel_1.default.belongsTo(busModel_1.default, {
+//---------------------------------------------------------
+scheduledTripsModel_1.default.belongsTo(busModel_1.default, {
     foreignKey: 'busId',
-    onDelete: 'RESTRICT',
+    as: 'bus',
+    onDelete: 'CASCADE',
 });
-busModel_1.default.hasMany(busScheduleModel_1.default, {
+busModel_1.default.hasMany(scheduledTripsModel_1.default, {
     foreignKey: 'busId',
 });
 //# sourceMappingURL=association.js.map

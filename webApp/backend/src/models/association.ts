@@ -8,14 +8,17 @@ import RouteModel from './routeModel';
 import stationModel from './stationModel';
 import RouteStationModel from './routeStationModel';
 
-
+import ServicePatternModel from './servicePatternModel';
+import OperatingHoursModel from './operatingHoursModel';
+import ScheduleModel from './scheduleModel';
+import ScheduledTripsModel from './scheduledTripsModel';
 
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? Buses Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
 BusModel.belongsTo(UserModel,{
     foreignKey: 'assignedDriver',
-    as: 'driver', // I don't feel we need it, lets see 26/10/2025
+    as: 'driver', 
     onDelete: 'CASCADE',
 });
 
@@ -58,64 +61,155 @@ stationModel.belongsToMany(RouteModel, {
 //? BusSchedule Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
 
-// Route Model ---------------------------------------------------------------------------------
+// // Route Model ---------------------------------------------------------------------------------
 
-BusScheduleModel.belongsTo(RouteModel,{
+// BusScheduleModel.belongsTo(RouteModel,{
+//     foreignKey: 'routeId',
+//     as: 'route',
+//     onDelete: 'CASCADE',
+// });
+
+// RouteModel.hasMany(BusScheduleModel,{
+//     foreignKey: 'routeId',
+// });
+
+// // User Model (creator) ---------------------------------------------------------------------------------
+
+
+// BusScheduleModel.belongsTo(UserModel, {
+//     foreignKey: 'createdBy',
+//     as: 'creator',
+//     onDelete: 'CASCADE',
+// });
+
+// UserModel.hasOne(BusScheduleModel,{
+//     foreignKey: 'createdBy',
+// });
+
+// // User Model (updater) ---------------------------------------------------------------------------------
+
+
+// BusScheduleModel.belongsTo(UserModel,{
+//     foreignKey: 'updatedBy',
+//     as: 'updater',
+//     onDelete: 'CASCADE',
+// });
+
+// UserModel.hasMany(BusScheduleModel,{
+//     foreignKey: 'updatedBy',
+// });
+
+// // User Model (driver) ---------------------------------------------------------------------------------
+
+// BusScheduleModel.belongsTo(UserModel, {
+//   foreignKey: 'driverId',
+//   as: 'driver',
+//   onDelete: 'RESTRICT',
+// });
+// UserModel.hasMany(BusScheduleModel, {
+//   foreignKey: 'driverId',
+// });
+
+
+// // Bus Model ---------------------------------------------------------------------------------
+
+
+// BusScheduleModel.belongsTo(BusModel, {
+//     foreignKey: 'busId',
+//     onDelete: 'RESTRICT',
+// });
+
+// BusModel.hasMany(BusScheduleModel, {
+//     foreignKey: 'busId',
+// });
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Service Pattern Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Operating Hours Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+OperatingHoursModel.belongsTo(ServicePatternModel,{
+    foreignKey: 'servicePatternId',
+    as: 'servicePattern',
+    onDelete: 'CASCADE',
+});
+
+ServicePatternModel.hasMany(OperatingHoursModel,{
+    foreignKey: 'servicePatternId',
+    as: 'operatingHours'
+});
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Schedule Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+ScheduleModel.belongsTo(ServicePatternModel,{
+    foreignKey: 'servicePatternId',
+    as: 'servicePattern', 
+    onDelete: 'CASCADE',
+});
+
+ServicePatternModel.hasMany(ScheduleModel,{
+    foreignKey: 'servicePatternId',
+    as: 'schedules'
+});
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Scheduled Trips Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+ScheduledTripsModel.belongsTo(ScheduleModel,{
+    foreignKey: 'scheduleId',
+    as: 'schedule'
+});
+
+ScheduleModel.hasMany(ScheduledTripsModel,{
+    foreignKey: 'scheduleId',
+    as: 'trips'
+});
+
+//---------------------------------------------------------
+
+ScheduledTripsModel.belongsTo(RouteModel,{
     foreignKey: 'routeId',
     as: 'route',
     onDelete: 'CASCADE',
 });
 
-RouteModel.hasMany(BusScheduleModel,{
+RouteModel.hasMany(ScheduledTripsModel,{
     foreignKey: 'routeId',
 });
 
-// User Model (creator) ---------------------------------------------------------------------------------
+//---------------------------------------------------------
 
-
-BusScheduleModel.belongsTo(UserModel, {
-    foreignKey: 'createdBy',
-    as: 'creator',
+ScheduledTripsModel.belongsTo(UserModel,{
+    foreignKey: 'driverId',
+    as: 'driver',
     onDelete: 'CASCADE',
 });
 
-UserModel.hasOne(BusScheduleModel,{
-    foreignKey: 'createdBy',
+UserModel.hasMany(ScheduledTripsModel,{
+    foreignKey: 'driverId',
 });
 
-// User Model (updater) ---------------------------------------------------------------------------------
+//---------------------------------------------------------
 
-
-BusScheduleModel.belongsTo(UserModel,{
-    foreignKey: 'updatedBy',
-    as: 'updater',
+ScheduledTripsModel.belongsTo(BusModel,{
+    foreignKey: 'busId',
+    as: 'bus',
     onDelete: 'CASCADE',
 });
 
-UserModel.hasMany(BusScheduleModel,{
-    foreignKey: 'updatedBy',
-});
-
-// User Model (driver) ---------------------------------------------------------------------------------
-
-BusScheduleModel.belongsTo(UserModel, {
-  foreignKey: 'driverId',
-  as: 'driver',
-  onDelete: 'RESTRICT',
-});
-UserModel.hasMany(BusScheduleModel, {
-  foreignKey: 'driverId',
-});
-
-
-// Bus Model ---------------------------------------------------------------------------------
-
-
-BusScheduleModel.belongsTo(BusModel, {
-    foreignKey: 'busId',
-    onDelete: 'RESTRICT',
-});
-
-BusModel.hasMany(BusScheduleModel, {
+BusModel.hasMany(ScheduledTripsModel,{
     foreignKey: 'busId',
 });
+
+

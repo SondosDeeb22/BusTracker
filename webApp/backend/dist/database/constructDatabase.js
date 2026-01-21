@@ -17,6 +17,9 @@ const routeModel_1 = __importDefault(require("../models/routeModel"));
 const stationModel_1 = __importDefault(require("../models/stationModel"));
 const routeStationModel_1 = __importDefault(require("../models/routeStationModel"));
 const loginAttempModel_1 = __importDefault(require("../models/loginAttempModel"));
+const servicePatternModel_1 = __importDefault(require("../models/servicePatternModel"));
+const operatingHoursModel_1 = __importDefault(require("../models/operatingHoursModel"));
+const scheduledTripsModel_1 = __importDefault(require("../models/scheduledTripsModel"));
 //import the association 
 require("../models/association");
 //import the seeders
@@ -27,6 +30,11 @@ const sampleRoute_1 = __importDefault(require("../seeders/sampleRoute"));
 const sampleBusStation_1 = __importDefault(require("../seeders/sampleBusStation"));
 const sampleRouteStation_1 = __importDefault(require("../seeders/sampleRouteStation"));
 const sampleLoginAttempt_1 = __importDefault(require("../seeders/sampleLoginAttempt"));
+const sampleOperatingHours_1 = __importDefault(require("../seeders/sampleOperatingHours"));
+const sampleServicePattern_1 = __importDefault(require("../seeders/sampleServicePattern"));
+const sampleScheduledTrips_1 = __importDefault(require("../seeders/sampleScheduledTrips"));
+const sampleSchedule_1 = __importDefault(require("../seeders/sampleSchedule"));
+const scheduleModel_1 = __importDefault(require("../models/scheduleModel"));
 //==============================================================================================
 //? build all the table
 //==============================================================================================
@@ -53,6 +61,10 @@ const seedData = async () => {
         await stationModel_1.default.destroy({ where: {} });
         await routeModel_1.default.destroy({ where: {} });
         await loginAttempModel_1.default.destroy({ where: {} });
+        await scheduledTripsModel_1.default.destroy({ where: {} });
+        await scheduleModel_1.default.destroy({ where: {} });
+        await operatingHoursModel_1.default.destroy({ where: {} });
+        await servicePatternModel_1.default.destroy({ where: {} });
         // 2- Insert sample data
         await userModel_1.default.bulkCreate(sampleUser_1.default, {
             returning: true
@@ -73,6 +85,18 @@ const seedData = async () => {
             returning: true
         });
         await loginAttempModel_1.default.bulkCreate(sampleLoginAttempt_1.default, {
+            returning: true
+        });
+        await servicePatternModel_1.default.bulkCreate(sampleServicePattern_1.default, {
+            returning: true
+        });
+        await operatingHoursModel_1.default.bulkCreate(sampleOperatingHours_1.default, {
+            returning: true
+        });
+        await scheduleModel_1.default.bulkCreate(sampleSchedule_1.default, {
+            returning: true
+        });
+        await scheduledTripsModel_1.default.bulkCreate(sampleScheduledTrips_1.default, {
             returning: true
         });
         console.log('Data seeded successfully');
