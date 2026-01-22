@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { shiftType, weekDays } from '../../../../backend/src/enums/busScheduleEnum';
+import { shiftType, weekDays } from '../../enums/scheduleEnums';
 
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
@@ -97,8 +97,8 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
     if (name === 'date' && value) {
       const selectedDate = new Date(value);
       const dayIndex = selectedDate.getDay();
-      const dayNames = Object.values(weekDays);
-      const dayName = dayNames[(dayIndex + 6) % 7]; // Adjust for Monday start
+      const dayNames = Object.values(weekDays) as string[];
+      const dayName = String(dayNames[(dayIndex + 6) % 7]); // Adjust for Monday start
       setScheduleData(prev => ({
         ...prev,
         day: dayName
@@ -179,7 +179,7 @@ const AddScheduleRecord: React.FC<AddScheduleProps> = ({ onClose, onSuccess }) =
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">{t('addForm.selectShift')}</option>
-              {Object.values(shiftType).map((s) => (
+              {(Object.values(shiftType) as string[]).map((s) => (
                 <option key={`shift-${s}`} value={s}>
                   {s}
                 </option>

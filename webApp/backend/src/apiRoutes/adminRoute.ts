@@ -35,6 +35,12 @@ const userController = new UserController();
  
 import {BusScheduleController} from "../controllers/busScheduleController";
 const busScheduleController = new BusScheduleController();
+
+import { ScheduleController } from "../controllers/scheduleController";
+const scheduleController = new ScheduleController();
+
+import { ServicePatternController } from "../controllers/servicePatternController";
+const servicePatternController = new ServicePatternController();
 //import  Middlewares -------------------------------------
 import { accessRequireToken } from '../middlewares/tokenRequired'; // for authentication
 
@@ -93,5 +99,11 @@ router.get('/buses/fetch', accessRequireToken(loginToken), authorizeRole(role.ad
 router.get('/stations/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.fetchAllStations);
 
 router.get('/schedule/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), busScheduleController.getSchedules);
+
+// fetch schedules with their operating hours timeline and scheduled trips
+router.get('/schedule', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.getSchedule);
+
+// fetch service patterns with their operating hours
+router.get('/service-patterns', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.getServicePatterns);
 //===========================================================================================================================
 export default router;

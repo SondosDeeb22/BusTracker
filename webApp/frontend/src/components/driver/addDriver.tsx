@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-import {role, gender, status} from '../../../../backend/src/enums/userEnum';
+import { userGender, userRole, userStatus } from '../../enums/statusEnums';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
@@ -17,14 +17,14 @@ interface AddDriverProps {
 
 interface DriverData{
   name: string,
-  gender: keyof typeof gender | '';
-  role: keyof typeof role | '';
+  gender: keyof typeof userGender | '';
+  role: keyof typeof userRole | '';
   phone: string;
   email: string;
   birthDate: string;
   licenseNumber: string;
   licenseExpiryDate: string;
-  status: keyof typeof status | '';
+  status: keyof typeof userStatus | '';
 
   
 }
@@ -136,7 +136,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             >
               <option value="">{t('addForm.selectGender')}</option>
               {
-                Object.values(gender).map((statusValue)=>(
+                Object.values(userGender).map((statusValue)=>(
                   <option key={statusValue} value={statusValue}>
                     {statusValue}
                   </option>
@@ -230,7 +230,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
             >
               <option value="">{t('addForm.selectStatus')}</option>
               {
-                Object.values(status).map((statusValue)=>(
+                Object.values(userStatus).map((statusValue)=>(
                   <option key={statusValue} value={statusValue}>
                     {statusValue}
                   </option>

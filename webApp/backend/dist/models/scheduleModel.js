@@ -27,8 +27,8 @@ ScheduleModel.init({
         type: sequelize_1.DataTypes.DATEONLY,
         allowNull: false,
     },
-    time: {
-        type: sequelize_1.DataTypes.TIME,
+    day: {
+        type: sequelize_1.DataTypes.STRING(10),
         allowNull: false,
     },
     servicePatternId: {

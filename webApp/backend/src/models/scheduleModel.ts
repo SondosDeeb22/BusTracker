@@ -11,7 +11,7 @@ import ServicePatternModel from './servicePatternModel';
 class ScheduleModel extends Model<InferAttributes<ScheduleModel>, InferCreationAttributes<ScheduleModel>> {
   declare scheduleId: string;
   declare date: Date;
-  declare time: string;
+  declare day: string;
   declare servicePatternId: string;
 }
 
@@ -29,8 +29,8 @@ ScheduleModel.init(
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    time: {
-      type: DataTypes.TIME,
+    day: {
+      type: DataTypes.STRING(10),
       allowNull: false,
     },
     servicePatternId: {

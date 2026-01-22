@@ -1,7 +1,7 @@
 declare const schedules: {
     scheduleId: string;
     date: Date;
-    time: string;
+    day: string;
     servicePatternId: string;
 }[];
 export default schedules;

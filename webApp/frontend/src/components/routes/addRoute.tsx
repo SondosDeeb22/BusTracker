@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
-import { status as routeStatus } from '../../../../backend/src/enums/routeEnum';
+import { routeStatus } from '../../enums/statusEnums';
 import { useTranslation } from 'react-i18next';
 
 interface RouteData {

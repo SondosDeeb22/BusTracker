@@ -40,7 +40,6 @@ router.get('/routes/operating', routeController.viewOperatingRoutes);
 router.patch('/language', accessRequireToken(loginToken), userController.changeLanguage);
 router.patch('/appearance', accessRequireToken(loginToken), userController.changeAppearance);
 
-
 // change the route (by admin)
 router.patch('/change-route', accessRequireToken(loginToken), authorizeRole(role.driver),  userController.changeRoute);
 

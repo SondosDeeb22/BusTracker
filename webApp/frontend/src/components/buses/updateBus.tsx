@@ -3,7 +3,7 @@
 //======================================================================================
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import {status} from '../../../../backend/src/enums/busEnum';
+import { busStatus } from '../../enums/statusEnums';
 
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ interface BusData{
     id: string,
     plate: string,
     brand: string, 
-    status : keyof typeof status | '',
+    status : keyof typeof busStatus | '',
     assignedRoute: string,
     assignedDriver: string
 }
@@ -251,7 +251,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">{t('updateForm.selectStatus')}</option>
-              {Object.values(status).map((statusValue) => (
+              {Object.values(busStatus).map((statusValue) => (
                 <option key={statusValue} value={statusValue}>
                   {statusValue}
                 </option>

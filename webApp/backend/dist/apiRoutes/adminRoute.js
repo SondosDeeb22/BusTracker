@@ -27,6 +27,10 @@ const userController_1 = require("../controllers/userController");
 const userController = new userController_1.UserController();
 const busScheduleController_1 = require("../controllers/busScheduleController");
 const busScheduleController = new busScheduleController_1.BusScheduleController();
+const scheduleController_1 = require("../controllers/scheduleController");
+const scheduleController = new scheduleController_1.ScheduleController();
+const servicePatternController_1 = require("../controllers/servicePatternController");
+const servicePatternController = new servicePatternController_1.ServicePatternController();
 //import  Middlewares -------------------------------------
 const tokenRequired_1 = require("../middlewares/tokenRequired"); // for authentication
 const authorizeRole_1 = require("../middlewares/authorizeRole"); // for authorization
@@ -56,6 +60,10 @@ router.get('/drivers/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEn
 router.get('/buses/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchAllBuses);
 router.get('/stations/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.fetchAllStations);
 router.get('/schedule/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busScheduleController.getSchedules);
+// fetch schedules with their operating hours timeline and scheduled trips
+router.get('/schedule', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), scheduleController.getSchedule);
+// fetch service patterns with their operating hours
+router.get('/service-patterns', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), servicePatternController.getServicePatterns);
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=adminRoute.js.map

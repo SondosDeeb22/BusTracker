@@ -7,11 +7,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const servicePatterns = [
     {
         servicePatternId: "SP01",
-        title: "Weekday",
+        title: "Weekdays",
     },
     {
         servicePatternId: "SP02",
-        title: "Weekend",
+        title: "Weekend(saturday)",
+    },
+    {
+        servicePatternId: "SP03",
+        title: "Weekend(sunday)",
+    },
+    {
+        servicePatternId: "SP04",
+        title: "Public Holiday",
     },
 ];
 //============================================================================================

@@ -6,7 +6,7 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
-import { status as stationStatus } from '../../../../backend/src/enums/stationEnum';
+import { stationStatus } from '../../enums/statusEnums';
 import { useTranslation } from 'react-i18next';
 
 interface StationData {

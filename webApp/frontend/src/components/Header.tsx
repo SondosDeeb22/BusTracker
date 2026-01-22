@@ -10,7 +10,7 @@ import BusLogoWhite from '../assets/BusLogoWhite.png';
 import user from '../assets/user.png';
 
 //importing icons ==============================
-import { HomeIcon, UserIcon, TruckIcon, MapIcon, CalendarDaysIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserIcon, TruckIcon, MapIcon, CalendarDaysIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
 
 const Header = () => {
   const { t } = useTranslation('header');
@@ -130,10 +130,18 @@ const Header = () => {
                 <span>{t('nav.stations')}</span>
             </a>
 
+            <a href="/service-patterns" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
+                <RectangleStackIcon className="h-5 w-5" />
+                <span>{t('nav.servicePatterns')}</span>
+            </a>
+
+            
             <a href="/schedule" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <CalendarDaysIcon className="h-5 w-5" />
                 <span>{t('nav.schedule')}</span>
             </a>
+
+
 
             
         </div>

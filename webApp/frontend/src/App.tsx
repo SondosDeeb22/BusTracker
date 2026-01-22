@@ -15,7 +15,7 @@ import BusesPage from "./pages/busesPage";
 import RoutesPage from "./pages/routesPage";
 import StationsPage from "./pages/stationsPage";
 import BusSchedule from './pages/busSchedule';
-
+import ServicePatterns from './pages/servicePatterns';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
@@ -70,9 +70,14 @@ const router = createBrowserRouter([
         element: <StationsPage />
       },
       {
+        path: "service-patterns",
+        element: <ServicePatterns />
+      },
+      {
         path: "schedule",
         element: <BusSchedule />
-      }
+      },
+      
     ]
   }
 ]);

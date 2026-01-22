@@ -19,10 +19,7 @@ export const {
 //======================================================================================
 //? Import Backend Enums
 //======================================================================================
-import { status as busStatus } from '../../../backend/src/enums/busEnum';
-import { status as userStatus } from '../../../backend/src/enums/userEnum';
-import { status as routeStatus } from '../../../backend/src/enums/routeEnum';
-import { status as stationStatus } from '../../../backend/src/enums/stationEnum';
+import { busStatus, routeStatus, stationStatus, userStatus } from '../enums/statusEnums';
 
 //======================================================================================
 //? Status Configuration
