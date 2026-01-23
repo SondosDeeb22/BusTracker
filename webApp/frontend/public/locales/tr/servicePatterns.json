@@ -1,0 +1,68 @@
+{
+  "page": {
+    "title": "Servis Desenleri",
+    "subtitle": "Servis desenleri, önceden tanımlı programa göre otobüs servisinin operasyonel davranışını belirler",
+    "loading": "Yükleniyor...",
+    "empty": "Servis deseni bulunamadı",
+    "operatingHoursTitle": "Çalışma saatleri",
+    "hoursCount": "{{count}} saat",
+    "actions": {
+      "addNew": "+ Yeni Ekle",
+      "edit": "Düzenle",
+      "delete": "Sil"
+    },
+    "errors": {
+      "failedToLoad": "Servis desenleri yüklenemedi"
+    }
+  },
+  "success": {
+    "added": "Servis deseni başarıyla eklendi!",
+    "updated": "Servis deseni başarıyla güncellendi!",
+    "removed": "Servis deseni başarıyla silindi!"
+  },
+  "addForm": {
+    "title": "Servis Deseni Ekle",
+    "patternTitle": "Başlık",
+    "titlePlaceholder": "örn. Hafta içi",
+    "coveredHours": "Kapsanan saatler",
+    "hoursHint": "06:45 ile 23:15 arasında seçin",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "createdFallback": "Başarıyla oluşturuldu",
+    "validation": {
+      "enterTitle": "Lütfen bir başlık girin",
+      "selectHour": "Lütfen en az bir saat seçin",
+      "invalidHours": "Lütfen {{startTime}} ile {{endTime}} arasındaki geçerli saatleri seçin"
+    },
+    "errors": {
+      "failed": "Servis deseni oluşturulamadı"
+    }
+  },
+  "updateForm": {
+    "title": "Servis Desenini Güncelle",
+    "patternTitle": "Başlık",
+    "titlePlaceholder": "örn. Hafta içi",
+    "coveredHours": "Kapsanan saatler",
+    "hoursHint": "06:45 ile 23:15 arasında seçin",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "updatedFallback": "Başarıyla güncellendi",
+    "validation": {
+      "enterTitle": "Lütfen bir başlık girin",
+      "selectHour": "Lütfen en az bir saat seçin",
+      "invalidHours": "Lütfen {{startTime}} ile {{endTime}} arasındaki geçerli saatleri seçin"
+    },
+    "errors": {
+      "failed": "Servis deseni güncellenemedi"
+    }
+  },
+  "removeDialog": {
+    "title": "Servis Desenini Sil",
+    "confirm": "Sil",
+    "cancel": "İptal",
+    "confirmText": "{{label}} kaydını silmek istediğinizden emin misiniz?",
+    "deletedFallback": "Başarıyla silindi"
+  }
+}

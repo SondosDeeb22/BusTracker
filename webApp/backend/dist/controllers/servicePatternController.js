@@ -16,6 +16,24 @@ class ServicePatternController {
     async getServicePatterns(req, res) {
         return servicePatternService.getServicePatterns(req, res);
     }
+    //==================================================================================================================
+    //? Add service pattern with operating hours
+    //==================================================================================================================
+    async addServicePattern(req, res) {
+        return servicePatternService.addServicePattern(req, res);
+    }
+    //==================================================================================================================
+    //? Update service pattern with operating hours
+    //==================================================================================================================
+    async updateServicePattern(req, res) {
+        return servicePatternService.updateServicePattern(req, res);
+    }
+    //==================================================================================================================
+    //? Delete service pattern with operating hours
+    //==================================================================================================================
+    async deleteServicePattern(req, res) {
+        return servicePatternService.deleteServicePattern(req, res);
+    }
 }
 exports.ServicePatternController = ServicePatternController;
 //# sourceMappingURL=servicePatternController.js.map

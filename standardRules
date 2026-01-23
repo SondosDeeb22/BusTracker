@@ -1,0 +1,43 @@
+Standard Development Rules (SDR):
+Here's set of rules that you must consider while developing this project
+
+Style and Decoration:
+- use line of "=" to seperate distict logic areas 
+- use line of "-" to seperate sections of the same logic area
+
+- follow my comments style, adding ? mark to make some lines blue. add the comments to explain the main idea of a block of code 
+
+
+
+Naming Conventions
+
+- Avoid introducing randomness or unexplained variability
+
+- Use descriptive, domain-driven names
+
+- Avoid abbreviations unless universally understood
+
+- Match existing naming conventions in the repository
+
+
+
+
+
+Backend Rules:
+
+- Respect layered architecture (service → controller → routes → app → server )
+
+
+TypeScript Usage
+
+- Avoid "any" as type
+
+
+
+
+Documentation Rules:
+
+- Update documentation(ReadMe file) when behavior changes
+
+
+

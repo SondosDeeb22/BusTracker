@@ -1,0 +1,68 @@
+{
+  "page": {
+    "title": "Service Patterns",
+    "subtitle": "Service Patterns define the operational behavior of the bus service based on predefined schedule",
+    "loading": "Loading...",
+    "empty": "No service patterns found",
+    "operatingHoursTitle": "Operating hours",
+    "hoursCount": "{{count}} hours",
+    "actions": {
+      "addNew": "+ Add New",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "errors": {
+      "failedToLoad": "Failed to load service patterns"
+    }
+  },
+  "success": {
+    "added": "Service Pattern was successfully added!",
+    "updated": "Service Pattern was successfully updated!",
+    "removed": "Service Pattern was successfully removed!"
+  },
+  "addForm": {
+    "title": "Add Service Pattern",
+    "patternTitle": "Title",
+    "titlePlaceholder": "e.g. Weekdays",
+    "coveredHours": "Covered hours",
+    "hoursHint": "Select from 06:45 to 23:15",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "createdFallback": "Created successfully",
+    "validation": {
+      "enterTitle": "Please enter a title",
+      "selectHour": "Please select at least one hour",
+      "invalidHours": "Please select valid hours between {{startTime}} and {{endTime}}"
+    },
+    "errors": {
+      "failed": "Failed to create service pattern"
+    }
+  },
+  "updateForm": {
+    "title": "Update Service Pattern",
+    "patternTitle": "Title",
+    "titlePlaceholder": "e.g. Weekdays",
+    "coveredHours": "Covered hours",
+    "hoursHint": "Select from 06:45 to 23:15",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "updatedFallback": "Updated successfully",
+    "validation": {
+      "enterTitle": "Please enter a title",
+      "selectHour": "Please select at least one hour",
+      "invalidHours": "Please select valid hours between {{startTime}} and {{endTime}}"
+    },
+    "errors": {
+      "failed": "Failed to update service pattern"
+    }
+  },
+  "removeDialog": {
+    "title": "Delete Service Pattern",
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "confirmText": "Are you sure you want to delete {{label}}?",
+    "deletedFallback": "Deleted successfully"
+  }
+}

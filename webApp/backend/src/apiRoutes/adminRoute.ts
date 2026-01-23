@@ -33,8 +33,6 @@ const stationController = new StationController();
 import { UserController } from "../controllers/userController";
 const userController = new UserController();
  
-import {BusScheduleController} from "../controllers/busScheduleController";
-const busScheduleController = new BusScheduleController();
 
 import { ScheduleController } from "../controllers/scheduleController";
 const scheduleController = new ScheduleController();
@@ -61,7 +59,9 @@ router.post('/route/add', accessRequireToken(loginToken), authorizeRole(role.adm
 
 router.post('/station/add', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.addStation);
 
-router.post('/schedule/add', accessRequireToken(loginToken), authorizeRole(role.admin), busScheduleController.addSchedule);
+// add service pattern with operating hours
+router.post('/service-patterns/add', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.addServicePattern);
+
 
 
 // Remove
@@ -74,7 +74,9 @@ router.delete('/route/remove', accessRequireToken(loginToken), authorizeRole(rol
 
 router.delete('/station/remove', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.removeStation);
 
-router.delete('/schedule/remove', accessRequireToken(loginToken), authorizeRole(role.admin), busScheduleController.removeSchedule);
+
+// remove service pattern with operating hours
+router.delete('/service-patterns/remove', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.deleteServicePattern);
 
 
 //Update
@@ -87,7 +89,7 @@ router.patch('/route/update',  accessRequireToken(loginToken), authorizeRole(rol
 
 router.patch('/station/update',  accessRequireToken(loginToken), authorizeRole(role.admin), stationController.updateStation);
 
-router.patch('/schedule/update', accessRequireToken(loginToken), authorizeRole(role.admin), busScheduleController.updateSchedule);
+router.patch('/service-patterns/update', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.updateServicePattern);
 
 
 // fetch 
@@ -98,12 +100,11 @@ router.get('/buses/fetch', accessRequireToken(loginToken), authorizeRole(role.ad
 
 router.get('/stations/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.fetchAllStations);
 
-router.get('/schedule/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), busScheduleController.getSchedules);
-
 // fetch schedules with their operating hours timeline and scheduled trips
-router.get('/schedule', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.getSchedule);
+router.get('/schedule/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.getSchedule);
 
 // fetch service patterns with their operating hours
-router.get('/service-patterns', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.getServicePatterns);
+router.get('/service-patterns/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.getServicePatterns);
+
 //===========================================================================================================================
 export default router;

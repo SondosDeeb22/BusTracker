@@ -17,7 +17,7 @@ i18n
     fallbackLng: 'en',
     supportedLngs: ['en', 'tr'],
     defaultNS: 'translation',
-    ns: ['translation', 'auth/loginPage', 'auth/forgot-passwordPage', 'auth/resetPasswordPage', 'homepage/operatingBuses', 'header', 'drivers', 'routes', 'stations', 'buses', 'busScedule'],
+    ns: ['translation', 'auth/loginPage', 'auth/forgot-passwordPage', 'auth/resetPasswordPage', 'homepage/operatingBuses', 'header', 'drivers', 'routes', 'stations', 'buses', 'busScedule', 'servicePatterns'],
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json'
     },

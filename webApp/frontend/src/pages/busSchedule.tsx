@@ -57,7 +57,7 @@ const BusSchedulePage = () => {
   //====================================================================================
 
   const endpoint = useMemo(() => {
-    const base = 'http://localhost:3001/api/admin/schedule';
+    const base = 'http://localhost:3001/api/admin/schedule/fetch';
     if (!selectedDate) return base;
     const qs = new URLSearchParams({ date: selectedDate });
     return `${base}?${qs.toString()}`;

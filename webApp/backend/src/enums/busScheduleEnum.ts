@@ -19,7 +19,7 @@ export enum shiftType {
 }
 
 export const ShiftTimeRanges = {
-  [shiftType.Morning]: { start: "07:00", end: "12:00" },
-  [shiftType.Afternoon]: { start: "12:00", end: "17:00" },
-  [shiftType.Evening]: { start: "17:00", end: "22:00" },
+  [shiftType.Morning]: { start: "07:15", end: "12:15" },
+  [shiftType.Afternoon]: { start: "12:15", end: "17:15" },
+  [shiftType.Evening]: { start: "17:15", end: "22:15" },
 };
