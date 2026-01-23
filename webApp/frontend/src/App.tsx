@@ -14,7 +14,7 @@ import DriversPage from "./pages/driversPage";
 import BusesPage from "./pages/busesPage";
 import RoutesPage from "./pages/routesPage";
 import StationsPage from "./pages/stationsPage";
-import BusSchedule from './pages/busSchedule';
+import BusSchedule from './pages/schedule';
 import ServicePatterns from './pages/servicePatterns';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
