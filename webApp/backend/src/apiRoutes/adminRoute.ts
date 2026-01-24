@@ -15,6 +15,7 @@ import { loginToken } from '../enums/tokenNameEnum';
 import {role} from '../enums/userEnum';
 
 //import controllers ----------------------------------------------------------
+
 import { DriverController } from "../controllers/driverController";
 const driverController = new DriverController();
 
@@ -30,15 +31,15 @@ import { StationController } from "../controllers/stationController";
 const stationController = new StationController();
 
 
-import { UserController } from "../controllers/userController";
-const userController = new UserController();
- 
 
-import { ScheduleController } from "../controllers/scheduleController";
-const scheduleController = new ScheduleController();
+import { ScheduleController } from '../controllers/scheduleController';
+const scheduleController = new ScheduleController() ; 
 
 import { ServicePatternController } from "../controllers/servicePatternController";
 const servicePatternController = new ServicePatternController();
+
+
+
 //import  Middlewares -------------------------------------
 import { accessRequireToken } from '../middlewares/tokenRequired'; // for authentication
 
@@ -49,62 +50,84 @@ import  {authorizeRole} from '../middlewares/authorizeRole'; // for authorizatio
 // Router
 //===========================================================================================================================
 
-
-// Adding 
-router.post('/driver/add', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.addDriver);
-
-router.post('/bus/add', accessRequireToken(loginToken), authorizeRole(role.admin), busController.addBus);
-
-router.post('/route/add', accessRequireToken(loginToken), authorizeRole(role.admin), routeController.addRoute);
-
-router.post('/station/add', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.addStation);
-
-// add service pattern with operating hours
-router.post('/service-patterns/add', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.addServicePattern);
-
-
-
-// Remove
-
-router.delete('/driver/remove', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.removeDriver);
-
-router.delete('/bus/remove', accessRequireToken(loginToken), authorizeRole(role.admin), busController.removeBus);
-
-router.delete('/route/remove', accessRequireToken(loginToken), authorizeRole(role.admin), routeController.removeRoute);
-
-router.delete('/station/remove', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.removeStation);
-
-
-// remove service pattern with operating hours
-router.delete('/service-patterns/remove', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.deleteServicePattern);
-
-
-//Update
-
-router.patch('/driver/update',  accessRequireToken(loginToken), authorizeRole(role.admin), driverController.updateDriver);
-
-router.patch('/bus/update', accessRequireToken(loginToken), authorizeRole(role.admin), busController.updateBus);
-
-router.patch('/route/update',  accessRequireToken(loginToken), authorizeRole(role.admin), routeController.updateRoute);
-
-router.patch('/station/update',  accessRequireToken(loginToken), authorizeRole(role.admin), stationController.updateStation);
-
-router.patch('/service-patterns/update', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.updateServicePattern);
-
-
-// fetch 
-router.get('/drivers/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.fetchAllDrivers);
+// Bus   -------------------------------------------------------------------------------------------------------------------------
 
 router.get('/buses/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), busController.fetchAllBuses);
 
+router.post('/bus/add', accessRequireToken(loginToken), authorizeRole(role.admin), busController.addBus);
+
+router.delete('/bus/remove', accessRequireToken(loginToken), authorizeRole(role.admin), busController.removeBus);
+
+router.patch('/bus/update', accessRequireToken(loginToken), authorizeRole(role.admin), busController.updateBus);
+
+
+
+// Driver  -------------------------------------------------------------------------------------------------------------------------
+
+router.get('/drivers/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.fetchAllDrivers);
+
+router.post('/driver/add', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.addDriver);
+
+router.delete('/driver/remove', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.removeDriver);
+
+router.patch('/driver/update',  accessRequireToken(loginToken), authorizeRole(role.admin), driverController.updateDriver);
+
+
+
+// Station  -------------------------------------------------------------------------------------------------------------------------
 
 router.get('/stations/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.fetchAllStations);
 
-// fetch schedules with their operating hours timeline and scheduled trips
+router.post('/station/add', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.addStation);
+
+router.delete('/station/remove', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.removeStation);
+
+router.patch('/station/update',  accessRequireToken(loginToken), authorizeRole(role.admin), stationController.updateStation);
+
+
+// Route  -------------------------------------------------------------------------------------------------------------------------
+
+router.post('/route/add', accessRequireToken(loginToken), authorizeRole(role.admin), routeController.addRoute);
+
+router.delete('/route/remove', accessRequireToken(loginToken), authorizeRole(role.admin), routeController.removeRoute);
+
+router.patch('/route/update',  accessRequireToken(loginToken), authorizeRole(role.admin), routeController.updateRoute);
+
+
+
+// Service Pattern -------------------------------------------------------------------------------------------------------------------------
+
+router.get('/service-pattern/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.getServicePatterns);
+
+router.post('/service-pattern/add', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.addServicePattern);
+
+router.delete('/service-pattern/remove', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.deleteServicePattern);
+
+router.patch('/service-pattern/update', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.updateServicePattern);
+
+
+
+// Schedule  -------------------------------------------------------------------------------------------------------------------------
+
 router.get('/schedule/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.getSchedule);
 
-// fetch service patterns with their operating hours
-router.get('/service-patterns/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), servicePatternController.getServicePatterns);
+router.post('/schedule/add', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.addSchedule);
+
+router.delete('/schedule/remove', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.removeSchedule);
+
+router.patch('/schedule/update', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.updateSchedule);
+
+
+// Scheduled Trip  -------------------------------------------------------------------------------------------------------------------------
+
+router.post('/schedule/trip/add', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.addScheduledTrip);
+
+router.delete('/schedule/trip/remove', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.removeScheduledTrip);
+
+// GET: we don't need (GET) becuase the scheduled trips is viewed in the schedule
+// PATCH: we don't need (PATCH) becuase the schedule trips is updated from the schedule using "trips/add" endpoint
+
+
 
 //===========================================================================================================================
 export default router;

@@ -29,7 +29,8 @@ class UserService {
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                console.error('JWT_LOGIN_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
@@ -37,15 +38,12 @@ class UserService {
                 (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
                 return;
             }
-            if (typeof userData === "string") {
-                (0, messageTemplate_1.sendResponse)(res, 500, userData);
-                return;
-            }
             // await userhelper.update(req, res, userModel, 'id', userData.userID, {language: body.language} )
             await userhelper.update(req, res, userModel_1.default, { language: body.language });
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while changing language. ${error}`);
+            console.error('Error occured while changing language.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -58,7 +56,8 @@ class UserService {
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                console.error('JWT_LOGIN_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
@@ -70,7 +69,8 @@ class UserService {
             await userhelper.update(req, res, userModel_1.default, { appearance: body.appearance });
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while changing appearance. ${error}`);
+            console.error('Error occured while changing appearance.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -87,7 +87,8 @@ class UserService {
             //====================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while changing route. ${error}`);
+            console.error('Error occured while changing route.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -104,7 +105,8 @@ class UserService {
             //====================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while changing route. ${error}`);
+            console.error('Error occured while updating bus status.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }

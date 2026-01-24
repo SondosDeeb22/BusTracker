@@ -40,8 +40,7 @@ class UserHelper {
             for (const field of requiredFields) {
                 if (body[field] === undefined || body[field] === null || body[field] === "") {
                     const status = 500;
-                    const message = `Fill all Fields please: missing ${field}`;
-                    (0, messageTemplate_1.sendResponse)(res, status, message);
+                    (0, messageTemplate_1.sendResponse)(res, status, 'common.validation.fillAllFields');
                     return;
                 }
             }
@@ -58,15 +57,13 @@ class UserHelper {
                     if (value === undefined || value === null || value === "") {
                         if (!rule.optional) {
                             const status = 500;
-                            const message = `Invalid ${rule.field}!`;
-                            (0, messageTemplate_1.sendResponse)(res, status, message);
+                            (0, messageTemplate_1.sendResponse)(res, status, 'common.validation.invalidField');
                             return;
                         }
                     }
                     else if (!(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
                         const status = 500;
-                        const message = `Invalid ${rule.field}!`;
-                        (0, messageTemplate_1.sendResponse)(res, status, message);
+                        (0, messageTemplate_1.sendResponse)(res, status, 'common.validation.invalidField');
                         return;
                     }
                 }
@@ -75,20 +72,35 @@ class UserHelper {
             const pkEntry = Object.entries(attrs).find(([_, a]) => a.primaryKey === true);
             if (pkEntry) {
                 const [pkName, pkAttr] = pkEntry;
+                // pkName is the actual primary-key column name for the given model (e.g. 'scheduleId', 'busId', ...)
+                // We avoid assuming a generic 'id' column because different tables might use different PK names
                 const hasPk = body[pkName] !== undefined && body[pkName] !== null && body[pkName] !== "";
                 const autoInc = pkAttr.autoIncrement === true;
                 const hasDefault = pkAttr.defaultValue !== undefined;
                 if (!hasPk && !autoInc && !hasDefault) {
+                    // If the PK isn't provided, isn't auto-increment, and has no default value,
+                    //we generate a new PK value using the model name prefix(First letter) + next numeric suffix.
                     const modelName = model.name.toLocaleUpperCase()[0];
-                    let id;
-                    let unique;
-                    do {
-                        id = Math.floor(100 + Math.random() * 900);
-                        unique = await model.findAll({
-                            where: { id: id }
+                    // Deterministic collision-safe generation:
+                    // Try IDs from 100 -> 999 and pick the first one that does NOT exist in DB
+                    // This keeps the old behavior of "check if used before" without randomness
+                    let finalId = '';
+                    for (let n = 100; n <= 999; n++) {
+                        const candidate = `${modelName}${String(n).padStart(3, '0')}`;
+                        const exists = await model.findOne({
+                            where: { [pkName]: candidate },
+                            attributes: [pkName],
                         });
-                    } while (unique.length !== 0);
-                    const finalId = `${modelName}${id}`;
+                        if (!exists) {
+                            finalId = candidate;
+                            break;
+                        }
+                    }
+                    if (!finalId) {
+                        console.error('Cannot generate a new primary key. ID space is exhausted.');
+                        (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+                        return;
+                    }
                     body[pkName] = finalId;
                 }
             }
@@ -101,8 +113,7 @@ class UserHelper {
                     });
                     if (duplicated) {
                         const status = 500;
-                        const message = `${dataName} was not Added, because another ${dataName} with the same ${field} already exists!`;
-                        (0, messageTemplate_1.sendResponse)(res, status, message);
+                        (0, messageTemplate_1.sendResponse)(res, status, 'common.validation.duplicate');
                         return;
                     }
                 }
@@ -111,15 +122,15 @@ class UserHelper {
             // apply transform (if existed) and create
             const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData);
-            const success = `${dataName} was Added successfully`;
-            (0, messageTemplate_1.sendResponse)(res, 200, success);
-            console.log(success);
+            (0, messageTemplate_1.sendResponse)(res, 200, options?.successMessageKey ?? 'common.crud.added');
+            console.log(`${dataName} was added successfully`);
             return;
             //==========================================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while creating ${dataName}. ${error}`);
-            console.log(`Error occured while creating ${dataName}. ${error}`);
+            messageTemplate_1.sendResponse;
+            console.error(`Error occured while creating ${dataName}.`, error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -131,7 +142,7 @@ class UserHelper {
         const dataName = (modelClassName?.replace(/Model$/, '') || '').toLowerCase(); // remove the word 'Model' from the name 
         try {
             if (!uniqueValue) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `No ${uniqueField} were found`);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.required');
                 return;
             }
             //ensure the user exists -----------------------------------------------------
@@ -142,7 +153,7 @@ class UserHelper {
                 attributes: [uniqueField]
             });
             if (!fieldExists) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `No ${dataName} found with this ${uniqueField}!`);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.crud.notFound');
                 return;
             }
             // Delete the user from the database ---------------------------------------------------
@@ -152,16 +163,17 @@ class UserHelper {
                 }
             });
             if (deletedField === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `Field wasn't removed. Ensure you entered correct ${uniqueField}`);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.crud.notRemoved');
                 return;
             }
             //if the user was removed 
-            (0, messageTemplate_1.sendResponse)(res, 200, `${dataName} was successfully Removed`);
+            (0, messageTemplate_1.sendResponse)(res, 200, 'common.crud.removed');
             return;
             // ======================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while removing ${dataName}. ${error}`);
+            console.error(`Error occured while removing ${dataName}.`, error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -174,16 +186,18 @@ class UserHelper {
         const dataName = (modelClassName?.replace(/Model$/, '') || '').toLowerCase();
         try {
             const body = req.body;
-            const uniqueField = 'id';
-            const uniqueValue = body.id;
+            const attrsForPk = model.getAttributes();
+            const pkEntry = Object.entries(attrsForPk).find(([_, a]) => a.primaryKey === true);
+            const uniqueField = pkEntry ? pkEntry[0] : 'id';
+            const uniqueValue = body?.[uniqueField] ?? values?.[uniqueField];
             // check that uniqueValue is not empty --------------------------------------------------
             if (uniqueValue === undefined || uniqueValue === null || uniqueValue === "") {
-                (0, messageTemplate_1.sendResponse)(res, 500, `No ${uniqueField} were found`);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.required');
                 return;
             }
             //check that updated values exists 
             if (!values || Object.keys(values).length === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Please provide the data!");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.noData');
                 return;
             }
             // normalize empty strings to null for nullable columns -------------------------------------
@@ -205,7 +219,7 @@ class UserHelper {
                         }
                     }
                     else if (!(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
-                        (0, messageTemplate_1.sendResponse)(res, 500, `Invalid ${rule.field}!`);
+                        (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.invalidField');
                         return;
                     }
                 }
@@ -218,7 +232,7 @@ class UserHelper {
                 attributes: [uniqueField]
             });
             if (!record) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `No ${dataName} found with this ${uniqueField}!`);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.crud.notFound');
                 return;
             }
             //----------------------------------------------------------------------------------------------
@@ -235,7 +249,7 @@ class UserHelper {
                 return currVal !== newVal;
             });
             if (changedKeys.length === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 200, `${dataName} is already up to date (no changes detected)`);
+                (0, messageTemplate_1.sendResponse)(res, 200, 'common.crud.noChanges');
                 return;
             }
             //------------------------------------------------------------------------------------------
@@ -249,15 +263,16 @@ class UserHelper {
                 }
             });
             if (updatedCount === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `${dataName} wasn't updated. Please verify the provided fields.`);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.crud.notUpdated');
                 return;
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, `${dataName} was updated successfully`);
+            (0, messageTemplate_1.sendResponse)(res, 200, 'common.crud.updated');
             return;
             //===================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while updatein ${dataName}.  ${error}`);
+            console.error(`Error occured while updating ${dataName}.`, error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }

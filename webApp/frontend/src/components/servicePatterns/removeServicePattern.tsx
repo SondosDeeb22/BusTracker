@@ -41,7 +41,7 @@ const RemoveServicePattern = ({
   const label = title?.trim() ? title.trim() : servicePatternId;
 
   const onConfirm = async () => {
-    const res = await axios.delete(`${backendBaseUrl}/api/admin/service-patterns/remove`, {
+    const res = await axios.delete(`${backendBaseUrl}/api/admin/service-pattern/remove`, {
       withCredentials: true,
       data: { servicePatternId },
     });

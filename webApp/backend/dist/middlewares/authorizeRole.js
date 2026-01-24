@@ -25,18 +25,17 @@ const authorizeRole = (role) => {
         //check if JWT exists in .env file
         const jwtLoginKey = process.env.JWT_LOGIN_KEY;
         if (!jwtLoginKey) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
         const tokenData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
         if (typeof tokenData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-            console.log(tokenData); // userData here is Error message , check authHelper.ts file
-            res.status(500).json({ message: tokenData });
+            (0, messageTemplate_1.sendResponse)(res, 401, tokenData);
             return;
         }
         // check the user role
         if (tokenData.userRole !== role) {
-            (0, messageTemplate_1.sendResponse)(res, 500, 'Access Denied!');
+            (0, messageTemplate_1.sendResponse)(res, 403, 'common.errors.forbidden');
             return;
         }
         next();

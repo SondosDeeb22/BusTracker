@@ -65,10 +65,11 @@ class RouteService {
                     await routeStationModel_1.default.bulkCreate(rows);
                 }
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, "route was Added successfully");
+            (0, messageTemplate_1.sendResponse)(res, 200, 'routes.success.added');
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating route. ${error}`);
+            console.error('Error occured while creating route.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //===================================================================================================
@@ -86,12 +87,12 @@ class RouteService {
             const { id, title, color, status: routeStatusValue } = body;
             const stations = Array.isArray(body.stations) ? body.stations : [];
             if (!id) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Route id is required");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'routes.validation.idRequired');
                 return;
             }
             // validate status (if provided)
             if (routeStatusValue && !Object.values(routeEnum_1.status).includes(routeStatusValue)) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Invalid status");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.invalidField');
                 return;
             }
             // normalize title
@@ -109,7 +110,7 @@ class RouteService {
                 where: { id }
             });
             if (updatedCount === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Route wasn't updated. Please verify the provided fields.");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.crud.notUpdated');
                 return;
             }
             // replace stations list
@@ -124,10 +125,11 @@ class RouteService {
                 }));
                 await routeStationModel_1.default.bulkCreate(rows);
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, 'Route was updated');
+            (0, messageTemplate_1.sendResponse)(res, 200, 'routes.success.updated');
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while updating route. ${error}`);
+            console.error('Error occured while updating route.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //===================================================================================================
@@ -191,7 +193,8 @@ class RouteService {
             //===============================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while viewing routes ${error}`);
+            console.error('Error occured while viewing routes.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
 }

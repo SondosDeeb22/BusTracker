@@ -90,7 +90,7 @@ const AddServicePattern = ({
     setCreating(true);
     try {
       const res = await axios.post(
-        `${backendBaseUrl}/api/admin/service-patterns/add`,
+        `${backendBaseUrl}/api/admin/service-pattern/add`,
         {
           title: trimmedTitle,
           hours: selectedHours,

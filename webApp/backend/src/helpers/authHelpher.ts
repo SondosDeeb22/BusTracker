@@ -93,18 +93,18 @@ class AuthHelper{
             const token: string = req.cookies[tokenName];
     
             if(!token){
-                return "Session expired, Please log in again";
+                return 'common.auth.sessionExpired';
             }
             
             const user_data = jwt.verify(token, secretKey) as tokentInterface;
             if(!user_data || typeof user_data !== "object"){
-                return "Invalid JWT token";
+                return 'common.auth.invalidToken';
             }
             return user_data;
     
         //---------------------------------------------------------------------------------------------------------------------    
         }catch(error){
-            return `Error Found while verification the token: ${error}`;
+            return 'common.errors.unauthorized';
         }
     } 
     //===========================================================================================================================================
@@ -146,7 +146,8 @@ class AuthHelper{
         try{
             const IPaddressAndLocation= await this.getIPaddressAndUserLocation(req);
             if(typeof IPaddressAndLocation === "string"){ // if succeed we receive IP and loction, for error cases we get error message(string)
-                sendResponse(res, 500, IPaddressAndLocation);
+                console.error('loginAttempt: failed to get IP/location:', IPaddressAndLocation);
+                sendResponse(res, 500, 'common.errors.internal');
                 return;
             }
 
@@ -162,10 +163,12 @@ class AuthHelper{
                 attemptDate: new Date()
             })
 
-            sendResponse(res, status, resultMessage);
+            // resultMessage is user-facing; do not return raw text
+            sendResponse(res, status, attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials');
             //=================================================================================================================================
         }catch(error){
-            sendResponse(res, 500, `Error occured while storing login attempt. ${error}`);
+            console.error('Error occured while storing login attempt.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
         
@@ -177,7 +180,8 @@ class AuthHelper{
         try{
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if(!jwtLoginKey){
-                sendResponse(res, 500, "Error in fetching JWT secret key");
+                console.error('Error in fetching JWT secret key');
+                sendResponse(res, 500, 'common.errors.internal');
                 return false;
             }
 
@@ -185,7 +189,7 @@ class AuthHelper{
             const userData = this.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
             if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
+                sendResponse(res, 401, userData);
                 return false;
             }
 
@@ -198,7 +202,7 @@ class AuthHelper{
             })
 
             if(!user){
-                sendResponse(res, 500, 'You are not authorized to perform this action');
+                sendResponse(res, 403, 'common.errors.forbidden');
                 return false;
                 
             };
@@ -206,7 +210,8 @@ class AuthHelper{
             return true;
         //==========================================================================================================================
         }catch(error){
-            sendResponse(res, 500, 'Error occured whild Validating login attempt');
+            console.error('Error occured while validating login attempt', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return false;
         }
     }

@@ -70,7 +70,7 @@ const router = createBrowserRouter([
         element: <StationsPage />
       },
       {
-        path: "service-patterns",
+        path: "service-pattern",
         element: <ServicePatterns />
       },
       {

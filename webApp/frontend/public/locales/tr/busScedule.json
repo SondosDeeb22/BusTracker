@@ -1,0 +1,88 @@
+{
+  "title": "Program",
+  "filters": {
+    "filterByDate": "Tarihe göre filtrele",
+    "clear": "Temizle"
+  },
+  "states": {
+    "loading": "Yükleniyor...",
+    "empty": "Program bulunamadı",
+    "loadError": "Programlar yüklenemedi"
+  },
+  "actions": {
+    "addNew": "+ Yeni Ekle",
+    "newTrips": "Sefer Ekle / Güncelle",
+    "removeTrip": "Seferi Sil",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "selectCellToAddTrip": "Sefer eklemek için bir hücre seçin"
+  },
+  "table": {
+    "time": "Saat",
+    "driver": "Sürücü",
+    "bus": "Otobüs"
+  },
+  "addForm": {
+    "title": "Program Ekle",
+    "date": "Tarih",
+    "servicePattern": "Servis Şablonu",
+    "selectServicePattern": "Servis şablonu seçin",
+    "loadingServicePatterns": "Servis şablonları yükleniyor...",
+    "submit": "Ekle",
+    "cancel": "İptal",
+    "loading": "Ekleniyor...",
+    "error": "Program eklenirken hata oluştu"
+  },
+  "updateForm": {
+    "title": "Programı Güncelle",
+    "date": "Tarih",
+    "servicePattern": "Servis Şablonu",
+    "selectServicePattern": "Servis şablonu seçin",
+    "loadingServicePatterns": "Servis şablonları yükleniyor...",
+    "submit": "Güncelle",
+    "cancel": "İptal",
+    "loading": "Güncelleniyor...",
+    "error": "Program güncellenirken hata oluştu"
+  },
+  "removeDialog": {
+    "title": "Programı Sil",
+    "confirmText": "Bu programı silmek istediğinizden emin misiniz?",
+    "cancel": "İptal",
+    "confirm": "Sil",
+    "loading": "Siliniyor...",
+    "error": "Program silinirken hata oluştu"
+  },
+  "success": {
+    "added": "Program başarıyla eklendi!",
+    "updated": "Program başarıyla güncellendi!",
+    "removed": "Program başarıyla silindi!"
+  },
+
+  "tripForm": {
+    "title": "Sefer Ekle / Güncelle",
+    "driver": "Sürücü",
+    "bus": "Otobüs",
+    "selectDriver": "Sürücü seçin",
+    "selectBus": "Otobüs seçin",
+    "loadingLists": "Yükleniyor...",
+    "submit": "Kaydet",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "success": "Sefer başarıyla kaydedildi",
+    "error": "Sefer kaydedilemedi",
+    "errors": {
+      "driverNotAvailable": "Bu saatte sürücü müsait değil",
+      "busNotAvailable": "Bu saatte otobüs müsait değil",
+      "driverOrBusNotAvailable": "Bu saatte sürücü veya otobüs müsait değil",
+      "notUpdated": "Sefer güncellenemedi"
+    }
+  },
+
+  "removeTripDialog": {
+    "title": "Seferi Sil",
+    "confirmText": "Bu seferi silmek istediğinizden emin misiniz?",
+    "cancel": "İptal",
+    "confirm": "Sil",
+    "loading": "Siliniyor..."
+  }
+}

@@ -37,10 +37,11 @@ class StationService {
                     { field: "status", enumObj: stationEnum_1.status },
                 ],
             });
-            (0, messageTemplate_1.sendResponse)(res, 200, "station was Added successfully");
+            (0, messageTemplate_1.sendResponse)(res, 200, "stations.success.added");
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating station. ${error}`);
+            console.error('Error occured while creating station.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //===================================================================================================
@@ -65,18 +66,11 @@ class StationService {
             const stations = await stationModel_1.default.findAll({
                 attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
             });
-            res.status(200).json({
-                success: true,
-                message: 'Stations fetched successfully',
-                data: stations
-            });
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'stations.success.fetched', stations);
         }
         catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching stations',
-                error: error
-            });
+            console.error('Error occured while fetching stations.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
 }

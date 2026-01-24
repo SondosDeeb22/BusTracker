@@ -8,6 +8,7 @@ exports.AuthController = void 0;
 //?importing 
 //============================================================================================================================================================
 const authService_1 = __importDefault(require("../services/authService"));
+const messageTemplate_1 = require("../exceptions/messageTemplate");
 const authService = new authService_1.default();
 //============================================================================================================================================================
 class AuthController {
@@ -38,8 +39,9 @@ class AuthController {
         // ensure that JWT_RESET_PASSWORD_KEY exists in .env
         const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
         if (!jwtResetPasswordKey) {
-            res.sendStatus(500);
-            return "jwt key is not defined";
+            console.error('JWT_RESET_PASSWORD_KEY is not defined');
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            return null;
         }
         return authService.verifyToken(req, res, jwtResetPasswordKey);
     }
@@ -62,8 +64,9 @@ class AuthController {
         // ensure that JWT_RESET_PASSWORD_KEY exists in .env
         const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
         if (!jwtSetPasswordKey) {
-            res.sendStatus(500);
-            return "jwt key is not defined";
+            console.error('JWT_SET_PASSWORD_KEY is not defined');
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            return null;
         }
         return authService.verifyToken(req, res, jwtSetPasswordKey);
     }

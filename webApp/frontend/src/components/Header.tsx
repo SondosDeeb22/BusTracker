@@ -130,7 +130,7 @@ const Header = () => {
                 <span>{t('nav.stations')}</span>
             </a>
 
-            <a href="/service-patterns" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
+            <a href="/service-pattern" className="flex items-center space-x-2 font-medium transition-colors duration-200" style={{ color: '#374151' }} onMouseEnter={(e) => e.currentTarget.style.color = COLORS.burgundy} onMouseLeave={(e) => e.currentTarget.style.color = '#374151'}>
                 <RectangleStackIcon className="h-5 w-5" />
                 <span>{t('nav.servicePatterns')}</span>
             </a>

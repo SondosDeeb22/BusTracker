@@ -1,0 +1,135 @@
+{
+  "common": {
+    "errors": {
+      "internal": "Internal server error",
+      "unauthorized": "Unauthorized",
+      "forbidden": "Access denied"
+    },
+    "auth": {
+      "sessionExpired": "Session expired, please log in again",
+      "invalidToken": "Invalid token"
+    },
+    "validation": {
+      "fillAllFields": "Fill all fields please",
+      "invalidField": "Invalid field",
+      "required": "Required field is missing",
+      "noData": "No data provided",
+      "duplicate": "Duplicate entry"
+    },
+    "crud": {
+      "added": "Added successfully",
+      "updated": "Updated successfully",
+      "removed": "Removed successfully",
+      "notFound": "Not found",
+      "notUpdated": "Not updated",
+      "notRemoved": "Not removed",
+      "noChanges": "No changes detected"
+    }
+  },
+  "auth": {
+    "login": {
+      "success": "Login successful",
+      "invalidCredentials": "Invalid credentials"
+    },
+    "currentUser": {
+      "success": "User data retrieved successfully"
+    },
+    "logout": {
+      "success": "Logged out successfully"
+    },
+    "token": {
+      "missing": "Token is missing"
+    },
+    "passwordReset": {
+      "validation": {
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required",
+        "passwordsMustMatch": "Passwords must match"
+      },
+      "errors": {
+        "emailNotRegistered": "Email is not registered",
+        "notUpdated": "Password was not updated"
+      },
+      "success": {
+        "emailSent": "Password reset email sent",
+        "updated": "Password reset successfully"
+      }
+    },
+    "setPassword": {
+      "validation": {
+        "passwordRequired": "Password is required",
+        "passwordsMustMatch": "Passwords must match"
+      },
+      "errors": {
+        "notUpdated": "Password was not updated"
+      },
+      "success": {
+        "updated": "Password set successfully"
+      }
+    }
+  },
+  "servicePatterns": {
+    "validation": {
+      "idRequired": "Service pattern id is required",
+      "titleRequired": "Title is required",
+      "selectAtLeastOneHour": "Select at least one hour",
+      "invalidHours": "Invalid hours"
+    },
+    "errors": {
+      "notFound": "Service pattern not found"
+    },
+    "success": {
+      "added": "Service pattern added successfully",
+      "updated": "Service pattern updated successfully",
+      "deleted": "Service pattern deleted successfully"
+    }
+  },
+  "schedule": {
+    "errors": {
+      "invalidDate": "Invalid date",
+      "notFound": "Schedule not found"
+    }
+  },
+  "stations": {
+    "success": {
+      "added": "Station added successfully",
+      "fetched": "Stations fetched successfully"
+    }
+  },
+  "tripForm": {
+    "success": {
+      "saved": "Trip saved successfully",
+      "updated": "Trip updated successfully",
+      "removed": "Trip removed successfully"
+    },
+    "errors": {
+      "driverNotAvailable": "Driver is not available at this time",
+      "busNotAvailable": "Bus is not available at this time",
+      "driverOrBusNotAvailable": "Driver or bus is not available at this time",
+      "notUpdated": "Trip was not updated",
+      "notFound": "Trip not found",
+      "notRemoved": "Trip was not removed"
+    }
+  },
+  "routes": {
+    "validation": {
+      "idRequired": "Route id is required"
+    },
+    "success": {
+      "added": "Route added successfully",
+      "updated": "Route updated successfully"
+    }
+  },
+  "buses": {
+    "success": {
+      "added": "Bus added successfully",
+      "fetched": "Buses fetched successfully"
+    }
+  },
+  "drivers": {
+    "success": {
+      "added": "Driver added successfully",
+      "fetched": "Drivers fetched successfully"
+    }
+  }
+}

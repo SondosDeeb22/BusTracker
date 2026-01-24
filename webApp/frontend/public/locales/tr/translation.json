@@ -1,0 +1,135 @@
+{
+  "common": {
+    "errors": {
+      "internal": "Sunucu hatası",
+      "unauthorized": "Yetkisiz",
+      "forbidden": "Erişim reddedildi"
+    },
+    "auth": {
+      "sessionExpired": "Oturum süresi doldu, lütfen tekrar giriş yapın",
+      "invalidToken": "Geçersiz token"
+    },
+    "validation": {
+      "fillAllFields": "Lütfen tüm alanları doldurun",
+      "invalidField": "Geçersiz alan",
+      "required": "Gerekli alan eksik",
+      "noData": "Veri sağlanmadı",
+      "duplicate": "Yinelenen kayıt"
+    },
+    "crud": {
+      "added": "Başarıyla eklendi",
+      "updated": "Başarıyla güncellendi",
+      "removed": "Başarıyla kaldırıldı",
+      "notFound": "Bulunamadı",
+      "notUpdated": "Güncellenmedi",
+      "notRemoved": "Kaldırılamadı",
+      "noChanges": "Değişiklik yok"
+    }
+  },
+  "auth": {
+    "login": {
+      "success": "Giriş başarılı",
+      "invalidCredentials": "Geçersiz kimlik bilgileri"
+    },
+    "currentUser": {
+      "success": "Kullanıcı bilgileri alındı"
+    },
+    "logout": {
+      "success": "Çıkış yapıldı"
+    },
+    "token": {
+      "missing": "Token eksik"
+    },
+    "passwordReset": {
+      "validation": {
+        "emailRequired": "E-posta gerekli",
+        "passwordRequired": "Şifre gerekli",
+        "passwordsMustMatch": "Şifreler aynı olmalı"
+      },
+      "errors": {
+        "emailNotRegistered": "E-posta kayıtlı değil",
+        "notUpdated": "Şifre güncellenemedi"
+      },
+      "success": {
+        "emailSent": "Şifre sıfırlama e-postası gönderildi",
+        "updated": "Şifre başarıyla sıfırlandı"
+      }
+    },
+    "setPassword": {
+      "validation": {
+        "passwordRequired": "Şifre gerekli",
+        "passwordsMustMatch": "Şifreler aynı olmalı"
+      },
+      "errors": {
+        "notUpdated": "Şifre güncellenemedi"
+      },
+      "success": {
+        "updated": "Şifre başarıyla ayarlandı"
+      }
+    }
+  },
+  "servicePatterns": {
+    "validation": {
+      "idRequired": "Servis deseni kimliği gerekli",
+      "titleRequired": "Başlık gerekli",
+      "selectAtLeastOneHour": "En az bir saat seçin",
+      "invalidHours": "Geçersiz saatler"
+    },
+    "errors": {
+      "notFound": "Servis deseni bulunamadı"
+    },
+    "success": {
+      "added": "Servis deseni başarıyla eklendi",
+      "updated": "Servis deseni başarıyla güncellendi",
+      "deleted": "Servis deseni başarıyla silindi"
+    }
+  },
+  "schedule": {
+    "errors": {
+      "invalidDate": "Geçersiz tarih",
+      "notFound": "Takvim bulunamadı"
+    }
+  },
+  "stations": {
+    "success": {
+      "added": "Durak başarıyla eklendi",
+      "fetched": "Duraklar başarıyla getirildi"
+    }
+  },
+  "tripForm": {
+    "success": {
+      "saved": "Sefer başarıyla kaydedildi",
+      "updated": "Sefer başarıyla güncellendi",
+      "removed": "Sefer başarıyla silindi"
+    },
+    "errors": {
+      "driverNotAvailable": "Bu saatte sürücü müsait değil",
+      "busNotAvailable": "Bu saatte otobüs müsait değil",
+      "driverOrBusNotAvailable": "Bu saatte sürücü veya otobüs müsait değil",
+      "notUpdated": "Sefer güncellenemedi",
+      "notFound": "Sefer bulunamadı",
+      "notRemoved": "Sefer silinemedi"
+    }
+  },
+  "routes": {
+    "validation": {
+      "idRequired": "Rota kimliği gerekli"
+    },
+    "success": {
+      "added": "Rota başarıyla eklendi",
+      "updated": "Rota başarıyla güncellendi"
+    }
+  },
+  "buses": {
+    "success": {
+      "added": "Otobüs başarıyla eklendi",
+      "fetched": "Otobüsler başarıyla getirildi"
+    }
+  },
+  "drivers": {
+    "success": {
+      "added": "Sürücü başarıyla eklendi",
+      "fetched": "Sürücüler başarıyla getirildi"
+    }
+  }
+}

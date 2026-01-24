@@ -51,12 +51,11 @@ export class DriverService{
         // Send validation email
         await authService.sendValidateEmail(res, req.body.email);
 
-        return sendResponse(res, 200, "Driver added successfully. Validation email sent.");
+        return sendResponse(res, 200, 'drivers.success.added');
     }
     catch (error) {
-        console.log("Error Found while adding driver", error);
-        return sendResponse(res, 500, `Error Found while adding driver 
-            ${error}`);
+        console.error('Error occured while adding driver.', error);
+        return sendResponse(res, 500, 'common.errors.internal');
     }
 }
 
@@ -95,17 +94,10 @@ export class DriverService{
                 attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
             });
 
-            res.status(200).json({
-                success: true,
-                message: 'Drivers fetched successfully',
-                data: drivers
-            });
+            return sendResponse(res, 200, 'drivers.success.fetched', drivers);
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching drivers',
-                error: error
-            });
+            console.error('Error occured while fetching drivers.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 

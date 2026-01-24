@@ -50,10 +50,11 @@ export class StationService{
               }
             );
 
-            sendResponse(res, 200, "station was Added successfully");
+            sendResponse(res, 200, "stations.success.added");
         
         }catch(error){
-            sendResponse(res, 500, `Error Found while creating station. ${error}`);
+            console.error('Error occured while creating station.', error);
+            sendResponse(res, 500, 'common.errors.internal');
         }
         
     }
@@ -86,17 +87,10 @@ export class StationService{
                 attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
             });
 
-            res.status(200).json({
-                success: true,
-                message: 'Stations fetched successfully',
-                data: stations
-            });
+            return sendResponse(res, 200, 'stations.success.fetched', stations);
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching stations',
-                error: error
-            });
+            console.error('Error occured while fetching stations.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 

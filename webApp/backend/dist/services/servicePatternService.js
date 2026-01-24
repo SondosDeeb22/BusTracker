@@ -53,7 +53,8 @@ class ServicePatternService {
             return (0, messageTemplate_1.sendResponse)(res, 200, null, data);
         }
         catch (error) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while fetching service patterns ${error}`);
+            console.error('Error occured while fetching service patterns.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //==================================================================================================================
@@ -65,17 +66,17 @@ class ServicePatternService {
         const title = typeof titleRaw === 'string' ? titleRaw.trim() : '';
         const hoursArray = Array.isArray(selectedHoursRaw) ? selectedHoursRaw : [];
         if (!title) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Fill all Fields please: missing title');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.titleRequired');
         }
         if (hoursArray.length === 0) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Please select at least one hour');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.selectAtLeastOneHour');
         }
         // normalize to unique sorted ints within 0..23
         const hours = Array.from(new Set(hoursArray
             .map((h) => (typeof h === 'number' ? h : Number(h)))
             .filter((h) => Number.isFinite(h) && h >= 0 && h <= endOperatingHour))).sort((a, b) => a - b);
         if (hours.length === 0) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Please select valid hours');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.invalidHours');
         }
         try {
             const created = await database_1.sequelize.transaction(async (t) => {
@@ -115,10 +116,11 @@ class ServicePatternService {
                 };
                 return createdPattern;
             });
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'servicepattern was Added successfully', created);
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'servicePatterns.success.added', created);
         }
         catch (error) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while creating service pattern. ${error}`);
+            console.error('Error occured while creating service pattern.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //==================================================================================================================
@@ -132,19 +134,19 @@ class ServicePatternService {
         const title = typeof titleRaw === 'string' ? titleRaw.trim() : '';
         const hoursArray = Array.isArray(selectedHoursRaw) ? selectedHoursRaw : [];
         if (!servicePatternId) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Fill all Fields please: missing servicePatternId');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.idRequired');
         }
         if (!title) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Fill all Fields please: missing title');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.titleRequired');
         }
         if (hoursArray.length === 0) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Please select at least one hour');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.selectAtLeastOneHour');
         }
         const hours = Array.from(new Set(hoursArray
             .map((h) => (typeof h === 'number' ? h : Number(h)))
             .filter((h) => Number.isFinite(h) && h >= startOperatingHour && h <= 23))).sort((a, b) => a - b);
         if (hours.length === 0) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'Please select valid hours');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.invalidHours');
         }
         try {
             const updated = await database_1.sequelize.transaction(async (t) => {
@@ -184,12 +186,13 @@ class ServicePatternService {
                 return out;
             });
             if (!updated) {
-                return (0, messageTemplate_1.sendResponse)(res, 500, 'ServicePattern not found');
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.errors.notFound');
             }
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'servicepattern was updated successfully', updated);
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'servicePatterns.success.updated', updated);
         }
         catch (error) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while updating service pattern. ${error}`);
+            console.error('Error occured while updating service pattern.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //==================================================================================================================
@@ -199,7 +202,7 @@ class ServicePatternService {
         const servicePatternIdRaw = req.body?.servicePatternId ?? req.body?.id ?? req.query?.servicePatternId;
         const servicePatternId = typeof servicePatternIdRaw === 'string' ? servicePatternIdRaw.trim() : '';
         if (!servicePatternId) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'ServicePattern id is required');
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.validation.idRequired');
         }
         try {
             const deleted = await database_1.sequelize.transaction(async (t) => {
@@ -240,13 +243,14 @@ class ServicePatternService {
             });
             //--------------------------------------------------------------------
             if (!deleted) {
-                return (0, messageTemplate_1.sendResponse)(res, 500, 'Service Pattern not found');
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'servicePatterns.errors.notFound');
             }
             //====================================================================
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'service Pattern was deleted successfully');
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'servicePatterns.success.deleted');
         }
         catch (error) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while deleting service pattern. ${error}`);
+            console.error('Error occured while deleting service pattern.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
 }

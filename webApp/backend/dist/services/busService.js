@@ -27,12 +27,12 @@ class BusService {
                 nonDuplicateFields: ['plate'],
                 enumFields: [{ field: "status", enumObj: busEnum_1.status }],
             });
-            (0, messageTemplate_1.sendResponse)(res, 200, "Bus was Added successfully");
+            (0, messageTemplate_1.sendResponse)(res, 200, 'buses.success.added');
             //----------------------------------------------------------------
         }
         catch (error) {
-            console.error("Error Found while creating bus", error);
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while creating bus ${error}`);
+            console.error('Error occured while creating bus.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //===================================================================================================
@@ -71,18 +71,11 @@ class BusService {
                     }
                 ]
             });
-            res.status(200).json({
-                success: true,
-                message: 'Buses fetched successfully',
-                data: buses
-            });
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'buses.success.fetched', buses);
         }
         catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching buses',
-                error: error
-            });
+            console.error('Error occured while fetching buses.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
 }

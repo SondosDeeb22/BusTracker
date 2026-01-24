@@ -37,7 +37,8 @@ class AuthService {
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                console.error('JWT_LOGIN_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
@@ -45,11 +46,12 @@ class AuthService {
                 (0, messageTemplate_1.sendResponse)(res, 401, userData);
                 return;
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, "User data retrieved successfully", userData);
+            (0, messageTemplate_1.sendResponse)(res, 200, 'auth.currentUser.success', userData);
             return;
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error retrieving user data ${error}`);
+            console.error('Error retrieving user data.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -63,7 +65,7 @@ class AuthService {
             const { email, password } = body;
             //check if the user provided all the needed data
             if (!email || !password) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Fill all Fields please");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.fillAllFields');
                 return;
             }
             const userEmail = email.trim();
@@ -75,7 +77,7 @@ class AuthService {
                 }
             });
             if (!userExists) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "No user found with the provided data");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.login.userNotFound');
                 return;
             }
             //=================================================================================================================================================
@@ -91,14 +93,16 @@ class AuthService {
                     //check if JWT exists in .env file
                     const jwtLoginKey = process.env.JWT_LOGIN_KEY;
                     if (!jwtLoginKey) {
-                        (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                        console.error('JWT_LOGIN_KEY is not defined');
+                        (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                         return;
                     }
                     authHelper.createJWTtoken(res, tokenNameEnum_1.loginToken, jwtLoginKey, { userID: userExists.id, userRole: userExists.role, userName: userExists.name
                     }, 3600000, true); // 3,600,000 millisecond = 60 minutes
                 }
                 catch (error) {
-                    (0, messageTemplate_1.sendResponse)(res, 500, error.message);
+                    console.error('Error occured while creating JWT token.', error);
+                    (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                     return;
                 }
                 attemptSuccessful = true;
@@ -115,7 +119,8 @@ class AuthService {
             return;
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while Logging in. ${error}`);
+            console.error('Error Found while Logging in.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -127,7 +132,8 @@ class AuthService {
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                console.error('JWT_LOGIN_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
@@ -135,15 +141,14 @@ class AuthService {
                 (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
                 return;
             }
-            // get the user name from the token
-            const name = userData.userName; //"fix the auth func "
             authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
-            (0, messageTemplate_1.sendResponse)(res, 200, `${name} logged out`);
+            (0, messageTemplate_1.sendResponse)(res, 200, 'auth.logout.success');
             return;
             // ===============================================================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error during logout. ${error}`);
+            console.error('Error during logout.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -155,7 +160,7 @@ class AuthService {
             const body = req.body;
             const { email } = body;
             if (!email) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'Enter Email address to proceed in Reset password operation');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.validation.emailRequired');
                 return;
             }
             // ensure the user is registred in out DB -------------------------------------------------------------------------------
@@ -165,7 +170,7 @@ class AuthService {
                 }
             });
             if (!uesrExists) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "This email is not registered in our system. Please use the email associated with your account");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.errors.emailNotRegistered');
                 return;
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
@@ -174,13 +179,15 @@ class AuthService {
                 //check if JWT exists in .env file
                 const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
                 if (!jwtResetPasswordKey) {
-                    (0, messageTemplate_1.sendResponse)(res, 500, `JWT_RESET_PASSWORD_KEY is not defined : ${jwtResetPasswordKey}`);
+                    console.error('JWT_RESET_PASSWORD_KEY is not defined');
+                    (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                     return;
                 }
                 resetPasswordTokenCreation = authHelper.createJWTtoken(res, tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey, { email: email }, 1200000, false); // 1,200,000 millisecond = 20 minutes
             }
             catch (error) {
-                (0, messageTemplate_1.sendResponse)(res, 500, error.message);
+                console.error('Error occured while creating reset password token.', error);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             // ==============================================================================================================================
@@ -205,12 +212,14 @@ class AuthService {
             <br><br>
             <p>Please note that this Reset Link will expire in 10 minutes</p>`;
             const sendEmailSResponse = await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
-            (0, messageTemplate_1.sendResponse)(res, 200, sendEmailSResponse);
+            void sendEmailSResponse;
+            (0, messageTemplate_1.sendResponse)(res, 200, 'auth.passwordReset.success.emailSent');
             return;
             //======================================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while sending password reset email. ${error}`);
+            console.error('Error occured while sending password reset email.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -222,22 +231,21 @@ class AuthService {
             //get token from url 
             const token = String(req.params.token || req.query.token);
             if (!token) {
-                res.sendStatus(401);
-                return "Error occured, token was not found";
+                (0, messageTemplate_1.sendResponse)(res, 401, 'auth.token.missing');
+                return null;
             }
             // check that token has the email address
             const userData = jsonwebtoken_1.default.verify(token, secretKey);
             if (!userData || typeof userData !== "object" || !userData.email) {
-                res.sendStatus(401);
-                return "Invalid JWT token";
+                (0, messageTemplate_1.sendResponse)(res, 401, 'common.auth.invalidToken');
+                return null;
             }
-            // send the userdata (email as respond)
-            res.sendStatus(200);
             return userData;
         }
         catch (error) {
-            res.sendStatus(401);
-            return;
+            console.error('Error occured while verifying token.', error);
+            (0, messageTemplate_1.sendResponse)(res, 401, 'common.auth.invalidToken');
+            return null;
         }
     }
     //? =================================================================================================================================
@@ -248,25 +256,25 @@ class AuthService {
             // ensure that JWT_RESET_PASSWORD_KEY exists in .env
             const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
             if (!jwtResetPasswordKey) {
-                res.sendStatus(500);
-                return "jwt key is not defined";
+                console.error('JWT_RESET_PASSWORD_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+                return;
             }
             // ensure token was provided 
             const userData = await this.verifyToken(req, res, jwtResetPasswordKey);
-            if (!userData || typeof userData === "string") {
-                (0, messageTemplate_1.sendResponse)(res, 401, "Error occurred while verifying reset-password-token");
+            if (!userData) {
                 return;
             }
             // get the passwords from the user input ------------------------------------------
             const body = req.body;
             const { newPassword, confirmPassword } = body;
             if (!newPassword || !confirmPassword) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Please provide a password to proceed with the Password Reset operation");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.validation.passwordRequired');
                 return;
             }
             //ensure the user entered identical passwords
             if (newPassword !== confirmPassword) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Make sure both passwords are identical");
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.validation.passwordsMustMatch');
                 return;
             }
             // update the password in the database ----------------------------------------------------------
@@ -279,15 +287,16 @@ class AuthService {
                 }
             });
             if (updatedPassword === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'Error Occured. Try resetting your password again');
-                return 'Error Occured. Try resetting your password again';
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.errors.notUpdated');
+                return;
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, 'Password was resetted successfully');
+            (0, messageTemplate_1.sendResponse)(res, 200, 'auth.passwordReset.success.updated');
             return;
             //=========================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while resetting the password. ${error}`);
+            console.error('Error occured while resetting the password.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -352,26 +361,26 @@ class AuthService {
             // ensure that JWT_RESET_PASSWORD_KEY exists in .env
             const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
             if (!jwtSetPasswordKey) {
-                res.sendStatus(500);
-                return "jwt key is not defined";
+                console.error('JWT_SET_PASSWORD_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+                return;
             }
             // ensure token was provided 
             const userData = await this.verifyToken(req, res, jwtSetPasswordKey);
-            if (!userData || typeof userData === "string") {
-                (0, messageTemplate_1.sendResponse)(res, 401, "Error occurred while verifying reset-password-token");
+            if (!userData) {
                 return;
             }
             // get the passwords from the user input ------------------------------------------
             const body = req.body;
             const { newPassword, confirmPassword } = body;
             if (!newPassword || !confirmPassword) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Please provide a password to proceed with the Password Setting operation");
-                return "Please provide a password to proceed with the Password Setting operation";
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.setPassword.validation.passwordRequired');
+                return;
             }
             //ensure the user entered identical passwords
             if (newPassword !== confirmPassword) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Make sure both passwords are identical");
-                return "Make sure both passwords are identical";
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.setPassword.validation.passwordsMustMatch');
+                return;
             }
             // update the password in the database ----------------------------------------------------------
             const hashedPassword = await bcrypt_1.default.hash(newPassword, 8);
@@ -383,17 +392,18 @@ class AuthService {
                 }
             });
             if (updatedPassword === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'Error Occured. Try setting your password again');
-                return 'Error Occured. Try setting your password again';
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.setPassword.errors.notUpdated');
+                return;
             }
             // Clear any existing login session on this browser 
             authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
-            (0, messageTemplate_1.sendResponse)(res, 200, 'Password was stored successfully');
+            (0, messageTemplate_1.sendResponse)(res, 200, 'auth.setPassword.success.updated');
             return;
             //======================================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occurred while setting password. ${error}`);
+            console.error('Error occurred while setting password.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }

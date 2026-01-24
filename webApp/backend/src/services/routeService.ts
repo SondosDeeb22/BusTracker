@@ -79,10 +79,11 @@ export class RouteService{
                 }
             }
 
-            sendResponse(res, 200, "route was Added successfully");
+            sendResponse(res, 200, 'routes.success.added');
         
         }catch(error){
-            sendResponse(res, 500, `Error Found while creating route. ${error}`);
+            console.error('Error occured while creating route.', error);
+            sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -103,13 +104,13 @@ export class RouteService{
             const stations: string[] = Array.isArray(body.stations) ? body.stations : [];
 
             if(!id){
-                sendResponse(res, 500, "Route id is required");
+                sendResponse(res, 500, 'routes.validation.idRequired');
                 return;
             }
 
             // validate status (if provided)
             if(routeStatusValue && !Object.values(status).includes(routeStatusValue)){
-                sendResponse(res, 500, "Invalid status");
+                sendResponse(res, 500, 'common.validation.invalidField');
                 return;
             }
 
@@ -128,7 +129,7 @@ export class RouteService{
             });
 
             if(updatedCount === 0){
-                sendResponse(res, 500, "Route wasn't updated. Please verify the provided fields.");
+                sendResponse(res, 500, 'common.crud.notUpdated');
                 return;
             }
 
@@ -146,9 +147,10 @@ export class RouteService{
                 await RouteStationModel.bulkCreate(rows);
             }
 
-            sendResponse(res, 200, 'Route was updated');
+            sendResponse(res, 200, 'routes.success.updated');
         }catch(error){
-            sendResponse(res, 500, `Error Found while updating route. ${error}`);
+            console.error('Error occured while updating route.', error);
+            sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -221,7 +223,8 @@ export class RouteService{
 
         //===============================================
         }catch(error){
-            sendResponse(res, 500, `Error occured while viewing routes ${error}`)
+            console.error('Error occured while viewing routes.', error);
+            sendResponse(res, 500, 'common.errors.internal');
 
         }
     }

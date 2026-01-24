@@ -66,7 +66,7 @@ const ServicePatterns = () => {
       setError(null);
 
       try {
-        const res = await axios.get(`${backendBaseUrl}/api/admin/service-patterns/fetch`, {
+        const res = await axios.get(`${backendBaseUrl}/api/admin/service-pattern/fetch`, {
           withCredentials: true,
         });
 
@@ -96,7 +96,7 @@ const ServicePatterns = () => {
     setError(null);
 
     try {
-      const res = await axios.get(`${backendBaseUrl}/api/admin/service-patterns/fetch`, {
+      const res = await axios.get(`${backendBaseUrl}/api/admin/service-pattern/fetch`, {
         withCredentials: true,
       });
 

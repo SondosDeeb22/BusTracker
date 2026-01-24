@@ -13,9 +13,11 @@ const scheduledTripsModel_1 = __importDefault(require("../models/scheduledTripsM
 const routeModel_1 = __importDefault(require("../models/routeModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
-//======================================================================================================================
-//? Helpers
-//======================================================================================================================
+const userHelper_1 = require("../helpers/userHelper");
+const helper = new userHelper_1.UserHelper();
+//===================================================================================================
+//? Helper
+//===================================================================================================
 const normalizeTime = (value) => {
     if (!value)
         return '';
@@ -28,13 +30,21 @@ const normalizeTime = (value) => {
     const ss = (parts[2] ?? '00').padStart(2, '0');
     return `${hh}:${mm}:${ss}`;
 };
-//======================================================================================================================
-//? Service
-//======================================================================================================================
-//======================================================================================================================
-//? View schedule (GET)
-//======================================================================================================================
+const calcDayFromDate = (dateStr) => {
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime()))
+        return '';
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[d.getDay()] ?? '';
+};
+//===================================================================================================
+//? schedule class
+//===================================================================================================
 class ScheduleService {
+    //===================================================================================================
+    //? Fetch schedule (GET)
+    // Fetch schedules with their operating hours timeline and scheduled trips
+    //===================================================================================================
     async getSchedule(req, res) {
         try {
             const where = {};
@@ -133,7 +143,160 @@ class ScheduleService {
             return (0, messageTemplate_1.sendResponse)(res, 200, null, mapped);
         }
         catch (error) {
-            return (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while fetching schedule ${error}`);
+            console.error('Error occured while fetching schedule', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? Remove schedule (Delete)
+    //===================================================================================================
+    async removeScheduledTrip(req, res) {
+        try {
+            const detailedScheduleId = typeof req.body?.detailedScheduleId === 'string' ? req.body.detailedScheduleId.trim() : '';
+            if (!detailedScheduleId) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.required');
+            }
+            const deletedCount = await scheduledTripsModel_1.default.destroy({ where: { detailedScheduleId } });
+            if (deletedCount === 0) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'tripForm.errors.notFound');
+            }
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'tripForm.success.removed');
+        }
+        catch (error) {
+            console.error('Error occured while removing scheduled trip.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? add schedule (POST)
+    // Create schedule row (date + servicePatternId). day is calculated from date.
+    //===================================================================================================
+    async addSchedule(req, res) {
+        try {
+            const body = req.body || {};
+            const date = typeof body.date === 'string' ? body.date.trim() : '';
+            const servicePatternId = typeof body.servicePatternId === 'string' ? body.servicePatternId.trim() : '';
+            if (!date || !servicePatternId) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.fillAllFields');
+            }
+            const day = calcDayFromDate(date);
+            if (!day) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'schedule.errors.invalidDate');
+            }
+            await helper.add(req, res, scheduleModel_1.default, { date, day, servicePatternId });
+            return;
+        }
+        catch (error) {
+            console.error('Error occured while creating schedule.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? add scheduled trip (POST)
+    // Add a trip row to a specific schedule.
+    //===================================================================================================
+    async addScheduledTrip(req, res) {
+        try {
+            const body = (req.body ?? {});
+            const scheduleId = typeof body.scheduleId === 'string' ? body.scheduleId.trim() : '';
+            const time = normalizeTime(body.time);
+            const routeId = typeof body.routeId === 'string' ? body.routeId.trim() : '';
+            const driverId = typeof body.driverId === 'string' ? body.driverId.trim() : '';
+            const busId = typeof body.busId === 'string' ? body.busId.trim() : '';
+            if (!scheduleId || !time || !routeId || !driverId || !busId) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.fillAllFields');
+            }
+            const scheduleExists = await scheduleModel_1.default.findOne({
+                where: { scheduleId },
+                attributes: ['scheduleId'],
+            });
+            if (!scheduleExists) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'schedule.errors.notFound');
+            }
+            const existingTrip = await scheduledTripsModel_1.default.findOne({
+                where: { scheduleId, time, routeId },
+                attributes: ['detailedScheduleId', 'driverId', 'busId'],
+            });
+            const occupied = await scheduledTripsModel_1.default.findOne({
+                where: {
+                    scheduleId,
+                    time,
+                    ...(existingTrip ? { detailedScheduleId: { [sequelize_1.Op.ne]: existingTrip.detailedScheduleId } } : {}),
+                    [sequelize_1.Op.or]: [{ driverId }, { busId }],
+                },
+                attributes: ['detailedScheduleId', 'driverId', 'busId'],
+            });
+            if (occupied) {
+                if (occupied.driverId === driverId) {
+                    return (0, messageTemplate_1.sendResponse)(res, 500, 'tripForm.errors.driverNotAvailable');
+                }
+                if (occupied.busId === busId) {
+                    return (0, messageTemplate_1.sendResponse)(res, 500, 'tripForm.errors.busNotAvailable');
+                }
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'tripForm.errors.driverOrBusNotAvailable');
+            }
+            if (existingTrip) {
+                const [updatedCount] = await scheduledTripsModel_1.default.update({ driverId, busId }, { where: { detailedScheduleId: existingTrip.detailedScheduleId } });
+                if (updatedCount === 0) {
+                    return (0, messageTemplate_1.sendResponse)(res, 500, 'tripForm.errors.notUpdated');
+                }
+                return (0, messageTemplate_1.sendResponse)(res, 200, 'tripForm.success.updated');
+            }
+            await helper.add(req, res, scheduledTripsModel_1.default, { scheduleId, time, routeId, driverId, busId }, { successMessageKey: 'tripForm.success.saved' });
+            return;
+        }
+        catch (error) {
+            console.error('Error occured while creating scheduled trip.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? update schedule (Patch)
+    // Update schedule row. (scheduleId required)
+    //===================================================================================================
+    async updateSchedule(req, res) {
+        try {
+            const body = req.body || {};
+            const scheduleId = typeof body.scheduleId === 'string' ? body.scheduleId.trim() : '';
+            if (!scheduleId) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.required');
+            }
+            const updates = { scheduleId };
+            if (body.date) {
+                const date = String(body.date).trim();
+                const day = calcDayFromDate(date);
+                if (!day)
+                    return (0, messageTemplate_1.sendResponse)(res, 500, 'schedule.errors.invalidDate');
+                updates.date = date;
+                updates.day = day;
+            }
+            if (body.servicePatternId) {
+                updates.servicePatternId = String(body.servicePatternId).trim();
+            }
+            await helper.update(req, res, scheduleModel_1.default, updates);
+            return;
+        }
+        catch (error) {
+            console.error('Error occured while updating schedule.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? Delete schedule (Delete)
+    // Delete schedule row (scheduleId). trips are deleted by DB cascade.
+    //===================================================================================================
+    async removeSchedule(req, res) {
+        try {
+            const scheduleId = typeof req.body?.scheduleId === 'string' ? req.body.scheduleId.trim() : '';
+            if (!scheduleId) {
+                return (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.required');
+            }
+            await helper.remove(req, res, scheduleModel_1.default, 'scheduleId', scheduleId);
+            return;
+        }
+        catch (error) {
+            console.error('Error occured while removing schedule.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
 }

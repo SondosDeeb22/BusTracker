@@ -39,11 +39,11 @@ export class BusService{
             }
            );
 
-           sendResponse(res, 200, "Bus was Added successfully");
+           sendResponse(res, 200, 'buses.success.added');
         //----------------------------------------------------------------
        }catch(error){
-            console.error("Error Found while creating bus", error);
-           sendResponse(res, 500, `Error Found while creating bus ${error}`);
+            console.error('Error occured while creating bus.', error);
+            sendResponse(res, 500, 'common.errors.internal');
        }
     }
 
@@ -91,17 +91,10 @@ export class BusService{
                 ]
             });
 
-            res.status(200).json({
-                success: true,
-                message: 'Buses fetched successfully',
-                data: buses
-            });
+            return sendResponse(res, 200, 'buses.success.fetched', buses);
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching buses',
-                error: error
-            });
+            console.error('Error occured while fetching buses.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
     

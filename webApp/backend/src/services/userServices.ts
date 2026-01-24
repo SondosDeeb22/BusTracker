@@ -48,8 +48,9 @@ export class UserService{
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
-            return;
+                console.error('JWT_LOGIN_KEY is not defined');
+                sendResponse(res, 500, 'common.errors.internal');
+                return;
             }
             
             const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
@@ -59,17 +60,13 @@ export class UserService{
                     return;
                 }
 
-            if(typeof userData === "string"){ 
-                sendResponse(res, 500, userData);
-                return;
-            }
-
             // await userhelper.update(req, res, userModel, 'id', userData.userID, {language: body.language} )
             await userhelper.update(req, res, userModel, {language: body.language} )
 
         }catch(error){
-        sendResponse(res, 500, `Error occured while changing language. ${error}`);
-        return;
+            console.error('Error occured while changing language.', error);
+            sendResponse(res, 500, 'common.errors.internal');
+            return;
     }
 
     }
@@ -86,8 +83,9 @@ export class UserService{
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
-            return;
+                console.error('JWT_LOGIN_KEY is not defined');
+                sendResponse(res, 500, 'common.errors.internal');
+                return;
             }
             
             const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
@@ -102,7 +100,8 @@ export class UserService{
             await userhelper.update(req, res, userModel,  {appearance: body.appearance} )
 
         }catch(error){
-            sendResponse(res, 500, `Error occured while changing appearance. ${error}`);
+            console.error('Error occured while changing appearance.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -122,7 +121,8 @@ export class UserService{
             await busService.updateBus(req, res);
         //====================================================================
         }catch(error){
-            sendResponse(res, 500, `Error occured while changing route. ${error}`);
+            console.error('Error occured while changing route.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -143,7 +143,8 @@ export class UserService{
             await busService.updateBus(req, res)
         //====================================================================
         }catch(error){
-            sendResponse(res, 500, `Error occured while changing route. ${error}`);
+            console.error('Error occured while updating bus status.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
     }

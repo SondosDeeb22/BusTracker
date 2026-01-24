@@ -68,17 +68,17 @@ class AuthHelper {
             // take the token from the cookie 
             const token = req.cookies[tokenName];
             if (!token) {
-                return "Session expired, Please log in again";
+                return 'common.auth.sessionExpired';
             }
             const user_data = jsonwebtoken_1.default.verify(token, secretKey);
             if (!user_data || typeof user_data !== "object") {
-                return "Invalid JWT token";
+                return 'common.auth.invalidToken';
             }
             return user_data;
             //---------------------------------------------------------------------------------------------------------------------    
         }
         catch (error) {
-            return `Error Found while verification the token: ${error}`;
+            return 'common.errors.unauthorized';
         }
     };
     //===========================================================================================================================================
@@ -115,7 +115,8 @@ class AuthHelper {
         try {
             const IPaddressAndLocation = await this.getIPaddressAndUserLocation(req);
             if (typeof IPaddressAndLocation === "string") { // if succeed we receive IP and loction, for error cases we get error message(string)
-                (0, messageTemplate_1.sendResponse)(res, 500, IPaddressAndLocation);
+                console.error('loginAttempt: failed to get IP/location:', IPaddressAndLocation);
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             //---------------------------------------------------------------------
@@ -129,11 +130,13 @@ class AuthHelper {
                 attemptTime: new Date().toTimeString().slice(0, 8),
                 attemptDate: new Date()
             });
-            (0, messageTemplate_1.sendResponse)(res, status, resultMessage);
+            // resultMessage is user-facing; do not return raw text
+            (0, messageTemplate_1.sendResponse)(res, status, attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials');
             //=================================================================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, `Error occured while storing login attempt. ${error}`);
+            console.error('Error occured while storing login attempt.', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -144,13 +147,14 @@ class AuthHelper {
         try {
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, "Error in fetching JWT secret key");
+                console.error('Error in fetching JWT secret key');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return false;
             }
             // get the logged in user data ---------------------------------------------------
             const userData = this.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
             if (typeof userData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
+                (0, messageTemplate_1.sendResponse)(res, 401, userData);
                 return false;
             }
             //check if the user (logged in ) tryying to change value in bus table, is the same user assinged as driver for that bus
@@ -161,7 +165,7 @@ class AuthHelper {
                 }
             });
             if (!user) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'You are not authorized to perform this action');
+                (0, messageTemplate_1.sendResponse)(res, 403, 'common.errors.forbidden');
                 return false;
             }
             ;
@@ -169,7 +173,8 @@ class AuthHelper {
             //==========================================================================================================================
         }
         catch (error) {
-            (0, messageTemplate_1.sendResponse)(res, 500, 'Error occured whild Validating login attempt');
+            console.error('Error occured while validating login attempt', error);
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return false;
         }
     }

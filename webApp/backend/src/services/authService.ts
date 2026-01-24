@@ -56,8 +56,9 @@ class AuthService{
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
-            return;
+                console.error('JWT_LOGIN_KEY is not defined');
+                sendResponse(res, 500, 'common.errors.internal');
+                return;
             }
            
             const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, loginToken, jwtLoginKey);
@@ -67,11 +68,12 @@ class AuthService{
                 return;
             }
 
-            sendResponse(res, 200, "User data retrieved successfully", userData);
+            sendResponse(res, 200, 'auth.currentUser.success', userData);
             return;
             
         } catch (error) {
-            sendResponse(res, 500, `Error retrieving user data ${error}`);
+            console.error('Error retrieving user data.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
 
@@ -92,7 +94,7 @@ class AuthService{
 
             //check if the user provided all the needed data
             if( !email || !password){
-                sendResponse(res, 500, "Fill all Fields please");
+                sendResponse(res, 500, 'common.validation.fillAllFields');
                 return;
             }
             const userEmail = email.trim();
@@ -107,7 +109,7 @@ class AuthService{
             })
 
             if(!userExists){
-                sendResponse(res, 500, "No user found with the provided data");
+                sendResponse(res, 500, 'auth.login.userNotFound');
                 return;
             }
             //=================================================================================================================================================
@@ -126,7 +128,8 @@ class AuthService{
                     //check if JWT exists in .env file
                     const jwtLoginKey = process.env.JWT_LOGIN_KEY;
                     if (!jwtLoginKey) {
-                        sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                        console.error('JWT_LOGIN_KEY is not defined');
+                        sendResponse(res, 500, 'common.errors.internal');
                         return;
                     }
                 
@@ -135,7 +138,8 @@ class AuthService{
                         }, 3600000, true);// 3,600,000 millisecond = 60 minutes
                     
                 }catch(error){
-                    sendResponse(res, 500, (error as Error).message);
+                    console.error('Error occured while creating JWT token.', error);
+                    sendResponse(res, 500, 'common.errors.internal');
                     return;
                 }
                 
@@ -155,7 +159,8 @@ class AuthService{
             return;
             
         } catch (error) {
-            sendResponse(res, 500, `Error Found while Logging in. ${error}`);
+            console.error('Error Found while Logging in.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
 
@@ -170,7 +175,8 @@ class AuthService{
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                sendResponse(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                console.error('JWT_LOGIN_KEY is not defined');
+                sendResponse(res, 500, 'common.errors.internal');
                 return;
             }
            
@@ -181,19 +187,17 @@ class AuthService{
                 return;
             }
 
-            // get the user name from the token
-            const name: string = userData.userName //"fix the auth func "
-
             authHelper.removeCookieToken(res, loginToken)
 
             
 
-            sendResponse(res, 200, `${name} logged out`);
+            sendResponse(res, 200, 'auth.logout.success');
             return;
 
         // ===============================================================================================================================
         } catch (error) {
-            sendResponse(res, 500, `Error during logout. ${error}`);
+            console.error('Error during logout.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
     } 
@@ -211,7 +215,7 @@ class AuthService{
             } = body;
 
             if(!email){
-                sendResponse(res, 500, 'Enter Email address to proceed in Reset password operation');
+                sendResponse(res, 500, 'auth.passwordReset.validation.emailRequired');
                 return;
             }
             
@@ -223,7 +227,7 @@ class AuthService{
             })
 
             if(!uesrExists){
-                sendResponse(res, 500, "This email is not registered in our system. Please use the email associated with your account");
+                sendResponse(res, 500, 'auth.passwordReset.errors.emailNotRegistered');
                 return;
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
@@ -233,7 +237,8 @@ class AuthService{
                 //check if JWT exists in .env file
                 const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
                 if (!jwtResetPasswordKey) {
-                    sendResponse(res, 500, `JWT_RESET_PASSWORD_KEY is not defined : ${jwtResetPasswordKey}`);
+                    console.error('JWT_RESET_PASSWORD_KEY is not defined');
+                    sendResponse(res, 500, 'common.errors.internal');
                     return;
                 }
                 resetPasswordTokenCreation  = authHelper.createJWTtoken( res, 
@@ -244,7 +249,8 @@ class AuthService{
                 false);// 1,200,000 millisecond = 20 minutes
                 
             }catch(error){
-                sendResponse(res, 500, (error as Error).message);
+                console.error('Error occured while creating reset password token.', error);
+                sendResponse(res, 500, 'common.errors.internal');
                 return;
             }
             // ==============================================================================================================================
@@ -273,11 +279,13 @@ class AuthService{
             
             const sendEmailSResponse = await sendEmail(email, mailSubject, htmlContent);
 
-            sendResponse(res, 200, sendEmailSResponse);
+            void sendEmailSResponse;
+            sendResponse(res, 200, 'auth.passwordReset.success.emailSent');
             return ;
             //======================================================================================================
         }catch(error){
-            sendResponse(res, 500, `Error occured while sending password reset email. ${error}`);
+            console.error('Error occured while sending password reset email.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
     }
@@ -285,52 +293,51 @@ class AuthService{
     // =================================================================================================================================
     //? Function to verify token (for frontend HEAD checks)
     // =================================================================================================================================
-    async verifyToken(req: Request, res: Response, secretKey: string): Promise<void | string   | emailInterface>{
+    async verifyToken(req: Request, res: Response, secretKey: string): Promise<emailInterface | null>{
         try{
       
             //get token from url 
             const token = String(req.params.token || req.query.token);
 
             if(!token){
-                res.sendStatus(401);
-                return  "Error occured, token was not found";
+                sendResponse(res, 401, 'auth.token.missing');
+                return null;
 
             }
 
             // check that token has the email address
             const userData = jwt.verify(token, secretKey) as emailInterface;
             if(!userData || typeof userData !== "object" || !userData.email){
-                res.sendStatus(401);
-                return "Invalid JWT token";
+                sendResponse(res, 401, 'common.auth.invalidToken');
+                return null;
             }
 
-            // send the userdata (email as respond)
-            res.sendStatus(200);
             return userData;
         }catch(error){
-            res.sendStatus(401);
-            return;
+            console.error('Error occured while verifying token.', error);
+            sendResponse(res, 401, 'common.auth.invalidToken');
+            return null;
         }
     }
 
     //? =================================================================================================================================
     //? Function to reset the password
     // =================================================================================================================================
-    async resetPassword(req: Request, res: Response):Promise<string | void>{
+    async resetPassword(req: Request, res: Response):Promise<void>{
         try{
 
             // ensure that JWT_RESET_PASSWORD_KEY exists in .env
             const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
             if (!jwtResetPasswordKey) {
-                res.sendStatus(500);
-                return  "jwt key is not defined";
+                console.error('JWT_RESET_PASSWORD_KEY is not defined');
+                sendResponse(res, 500, 'common.errors.internal');
+                return;
             }
 
             // ensure token was provided 
             const userData = await this.verifyToken(req, res,jwtResetPasswordKey );
 
-            if(!userData || typeof userData === "string"){
-                sendResponse(res, 401, "Error occurred while verifying reset-password-token");
+            if(!userData){
                 return;
             }
 
@@ -344,13 +351,13 @@ class AuthService{
             }= body;
 
             if(!newPassword || !confirmPassword){
-                sendResponse(res, 500, "Please provide a password to proceed with the Password Reset operation");
+                sendResponse(res, 500, 'auth.passwordReset.validation.passwordRequired');
                 return;
             }
 
             //ensure the user entered identical passwords
             if(newPassword !== confirmPassword){
-                sendResponse(res, 500, "Make sure both passwords are identical");
+                sendResponse(res, 500, 'auth.passwordReset.validation.passwordsMustMatch');
                 return;
             }
 
@@ -367,17 +374,18 @@ class AuthService{
             });
 
             if(updatedPassword === 0){
-                sendResponse(res, 500, 'Error Occured. Try resetting your password again');
-                return 'Error Occured. Try resetting your password again';
+                sendResponse(res, 500, 'auth.passwordReset.errors.notUpdated');
+                return;
             }
 
 
-            sendResponse(res, 200, 'Password was resetted successfully');
+            sendResponse(res, 200, 'auth.passwordReset.success.updated');
             return;
 
             //=========================================================================
         }catch(error){
-            sendResponse(res, 500, `Error occured while resetting the password. ${error}`);
+            console.error('Error occured while resetting the password.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
 
         }
@@ -446,20 +454,20 @@ class AuthService{
     //===================================================================================================================================
     //? set password 
     //===================================================================================================================================
-    async setPassword(req: Request, res: Response): Promise<string | void>{
+    async setPassword(req: Request, res: Response): Promise<void>{
         try{
             // ensure that JWT_RESET_PASSWORD_KEY exists in .env
             const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
             if (!jwtSetPasswordKey) {
-                res.sendStatus(500);
-                return  "jwt key is not defined";
+                console.error('JWT_SET_PASSWORD_KEY is not defined');
+                sendResponse(res, 500, 'common.errors.internal');
+                return;
             }
 
             // ensure token was provided 
             const userData = await this.verifyToken(req, res, jwtSetPasswordKey );
 
-            if(!userData || typeof userData === "string"){
-                sendResponse(res, 401, "Error occurred while verifying reset-password-token");
+            if(!userData){
                 return;
             }
 
@@ -474,14 +482,14 @@ class AuthService{
 
  
             if(!newPassword || !confirmPassword){
-                sendResponse(res, 500, "Please provide a password to proceed with the Password Setting operation");
-                return "Please provide a password to proceed with the Password Setting operation";
+                sendResponse(res, 500, 'auth.setPassword.validation.passwordRequired');
+                return;
             }
 
             //ensure the user entered identical passwords
             if(newPassword !== confirmPassword){
-                sendResponse(res, 500, "Make sure both passwords are identical");
-                return "Make sure both passwords are identical";
+                sendResponse(res, 500, 'auth.setPassword.validation.passwordsMustMatch');
+                return;
             }
 
 
@@ -499,20 +507,21 @@ class AuthService{
             });
 
             if(updatedPassword === 0){
-                sendResponse(res, 500, 'Error Occured. Try setting your password again');
-                return 'Error Occured. Try setting your password again';
+                sendResponse(res, 500, 'auth.setPassword.errors.notUpdated');
+                return;
             }
 
     
             // Clear any existing login session on this browser 
             authHelper.removeCookieToken(res, loginToken);
 
-            sendResponse(res, 200, 'Password was stored successfully');
+            sendResponse(res, 200, 'auth.setPassword.success.updated');
             return;
 
         //======================================================================================================
         }catch(error){
-            sendResponse(res, 500, `Error occurred while setting password. ${error}`);
+            console.error('Error occurred while setting password.', error);
+            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
     }

@@ -41,12 +41,11 @@ class DriverService {
             });
             // Send validation email
             await authService.sendValidateEmail(res, req.body.email);
-            return (0, messageTemplate_1.sendResponse)(res, 200, "Driver added successfully. Validation email sent.");
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'drivers.success.added');
         }
         catch (error) {
-            console.log("Error Found while adding driver", error);
-            return (0, messageTemplate_1.sendResponse)(res, 500, `Error Found while adding driver 
-            ${error}`);
+            console.error('Error occured while adding driver.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //===================================================================================================
@@ -75,18 +74,11 @@ class DriverService {
                 where: { role: userEnum_1.role.driver },
                 attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
             });
-            res.status(200).json({
-                success: true,
-                message: 'Drivers fetched successfully',
-                data: drivers
-            });
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'drivers.success.fetched', drivers);
         }
         catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Error fetching drivers',
-                error: error
-            });
+            console.error('Error occured while fetching drivers.', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
 }

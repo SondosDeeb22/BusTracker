@@ -75,7 +75,8 @@ export class ServicePatternService {
 
             return sendResponse(res, 200, null, data);
         } catch (error) {
-            return sendResponse(res, 500, `Error occured while fetching service patterns ${error}`);
+            console.error('Error occured while fetching service patterns.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -90,11 +91,11 @@ export class ServicePatternService {
         const hoursArray: unknown[] = Array.isArray(selectedHoursRaw) ? selectedHoursRaw : [];
 
         if (!title) {
-            return sendResponse(res, 500, 'Fill all Fields please: missing title');
+            return sendResponse(res, 500, 'servicePatterns.validation.titleRequired');
         }
 
         if (hoursArray.length === 0) {
-            return sendResponse(res, 500, 'Please select at least one hour');
+            return sendResponse(res, 500, 'servicePatterns.validation.selectAtLeastOneHour');
         }
 
         // normalize to unique sorted ints within 0..23
@@ -107,7 +108,7 @@ export class ServicePatternService {
         ).sort((a, b) => a - b);
 
         if (hours.length === 0) {
-            return sendResponse(res, 500, 'Please select valid hours');
+            return sendResponse(res, 500, 'servicePatterns.validation.invalidHours');
         }
 
         try {
@@ -167,9 +168,10 @@ export class ServicePatternService {
                 return createdPattern;
             });
 
-            return sendResponse(res, 200, 'servicepattern was Added successfully', created);
+            return sendResponse(res, 200, 'servicePatterns.success.added', created);
         } catch (error) {
-            return sendResponse(res, 500, `Error occured while creating service pattern. ${error}`);
+            console.error('Error occured while creating service pattern.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -186,15 +188,15 @@ export class ServicePatternService {
         const hoursArray: unknown[] = Array.isArray(selectedHoursRaw) ? selectedHoursRaw : [];
 
         if (!servicePatternId) {
-            return sendResponse(res, 500, 'Fill all Fields please: missing servicePatternId');
+            return sendResponse(res, 500, 'servicePatterns.validation.idRequired');
         }
 
         if (!title) {
-            return sendResponse(res, 500, 'Fill all Fields please: missing title');
+            return sendResponse(res, 500, 'servicePatterns.validation.titleRequired');
         }
 
         if (hoursArray.length === 0) {
-            return sendResponse(res, 500, 'Please select at least one hour');
+            return sendResponse(res, 500, 'servicePatterns.validation.selectAtLeastOneHour');
         }
 
         const hours = Array.from(
@@ -206,7 +208,7 @@ export class ServicePatternService {
         ).sort((a, b) => a - b);
 
         if (hours.length === 0) {
-            return sendResponse(res, 500, 'Please select valid hours');
+            return sendResponse(res, 500, 'servicePatterns.validation.invalidHours');
         }
 
         try {
@@ -264,12 +266,13 @@ export class ServicePatternService {
             });
 
             if (!updated) {
-                return sendResponse(res, 500, 'ServicePattern not found');
+                return sendResponse(res, 500, 'servicePatterns.errors.notFound');
             }
 
-            return sendResponse(res, 200, 'servicepattern was updated successfully', updated);
+            return sendResponse(res, 200, 'servicePatterns.success.updated', updated);
         } catch (error) {
-            return sendResponse(res, 500, `Error occured while updating service pattern. ${error}`);
+            console.error('Error occured while updating service pattern.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -283,7 +286,7 @@ export class ServicePatternService {
         const servicePatternId = typeof servicePatternIdRaw === 'string' ? servicePatternIdRaw.trim() : '';
 
         if (!servicePatternId) {
-            return sendResponse(res, 500, 'ServicePattern id is required');
+            return sendResponse(res, 500, 'servicePatterns.validation.idRequired');
         }
 
         try {
@@ -335,14 +338,15 @@ export class ServicePatternService {
 
             //--------------------------------------------------------------------
             if (!deleted) {
-                return sendResponse(res, 500, 'Service Pattern not found');
+                return sendResponse(res, 500, 'servicePatterns.errors.notFound');
             }
 
             //====================================================================
 
-            return sendResponse(res, 200, 'service Pattern was deleted successfully');
+            return sendResponse(res, 200, 'servicePatterns.success.deleted');
         } catch (error) {
-            return sendResponse(res, 500, `Error occured while deleting service pattern. ${error}`);
+            console.error('Error occured while deleting service pattern.', error);
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
     //============================================================================================================================

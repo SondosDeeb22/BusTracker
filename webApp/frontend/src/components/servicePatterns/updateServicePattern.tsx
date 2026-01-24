@@ -121,7 +121,7 @@ const UpdateServicePattern = ({
     setUpdating(true);
     try {
       const res = await axios.patch(
-        `${backendBaseUrl}/api/admin/service-patterns/update`,
+        `${backendBaseUrl}/api/admin/service-pattern/update`,
         {
           servicePatternId: pattern.servicePatternId,
           title: trimmedTitle,

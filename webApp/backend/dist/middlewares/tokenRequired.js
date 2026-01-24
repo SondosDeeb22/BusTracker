@@ -20,21 +20,20 @@ const accessRequireToken = (tokenName) => {
             // take the token from the cookie 
             const token = req.cookies[tokenName];
             if (!token) {
-                console.log("Session expired, Please log in again");
-                res.status(401).json({ message: "Session expired, Please log in again" });
+                (0, messageTemplate_1.sendResponse)(res, 401, 'common.auth.sessionExpired');
                 return;
             }
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
-                (0, messageTemplate_1.sendResponse)(res, 500, `JWT_LOGIN_KEY is not defined : ${jwtLoginKey}`);
+                console.error('JWT_LOGIN_KEY is not defined');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
             // verifty the correctenss of the token
             const userData = jsonwebtoken_1.default.verify(token, jwtLoginKey);
             if (!userData || typeof userData !== "object") {
-                console.log("Invalid JWT token");
-                res.status(401).json({ message: "Invalid JWT token" });
+                (0, messageTemplate_1.sendResponse)(res, 401, 'common.auth.invalidToken');
                 return;
             }
             next(); // Pass control to the next middleware/route
@@ -42,7 +41,7 @@ const accessRequireToken = (tokenName) => {
         }
         catch (error) {
             console.error('Middleware error:', error);
-            res.status(500).json({ message: 'Internal Server Error' });
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     };
 };

@@ -1,0 +1,91 @@
+{
+  "title": "Schedule",
+  "filters": {
+    "filterByDate": "Filter by date",
+    "clear": "Clear"
+  },
+  "states": {
+    "loading": "Loading...",
+    "empty": "No schedules found",
+    "loadError": "Failed to load schedules"
+  },
+  "actions": {
+    "addNew": "+ Add New",
+    "newTrips": "Add / Update Trip",
+    "removeTrip": "Remove Trip",
+    "edit": "Edit",
+    "delete": "Delete",
+    "selectCellToAddTrip": "Select a cell to add a trip"
+  },
+  "table": {
+    "time": "Time",
+    "driver": "Driver",
+    "bus": "Bus"
+  },
+  "addForm": {
+    "title": "Add Schedule",
+    "date": "Date",
+    "servicePattern": "Service Pattern",
+    "selectServicePattern": "Select a service pattern",
+    "loadingServicePatterns": "Loading service patterns...",
+    "submit": "Add",
+    "cancel": "Cancel",
+    "loading": "Adding...",
+    "error": "Error adding schedule"
+  },
+  "updateForm": {
+    "title": "Update Schedule",
+    "date": "Date",
+    "servicePattern": "Service Pattern",
+    "selectServicePattern": "Select a service pattern",
+    "loadingServicePatterns": "Loading service patterns...",
+    "submit": "Update",
+    "cancel": "Cancel",
+    "loading": "Updating...",
+    "error": "Error updating schedule"
+  },
+  "removeDialog": {
+    "title": "Remove Schedule",
+    "confirmText": "Are you sure you want to remove this schedule?",
+    "cancel": "Cancel",
+    "confirm": "Remove",
+    "loading": "Removing...",
+    "error": "Error removing schedule"
+  },
+  "success": {
+    "added": "Schedule added successfully!",
+    "updated": "Schedule updated successfully!",
+    "removed": "Schedule removed successfully!"
+  },
+
+  "tripForm": {
+    "title": "Add / Update Trip",
+    "driver": "Driver",
+    "bus": "Bus",
+    "selectDriver": "Select driver",
+    "selectBus": "Select bus",
+    "loadingLists": "Loading...",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "success": {
+      "saved": "Trip saved successfully",
+      "updated": "Trip updated successfully"
+    },
+    "error": "Failed to save trip",
+    "errors": {
+      "driverNotAvailable": "Driver is not available at this time",
+      "busNotAvailable": "Bus is not available at this time",
+      "driverOrBusNotAvailable": "Driver or bus is not available at this time",
+      "notUpdated": "Trip was not updated"
+    }
+  },
+
+  "removeTripDialog": {
+    "title": "Remove Trip",
+    "confirmText": "Are you sure you want to remove this trip?",
+    "cancel": "Cancel",
+    "confirm": "Remove",
+    "loading": "Removing..."
+  }
+}
