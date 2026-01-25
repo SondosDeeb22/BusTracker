@@ -23,7 +23,8 @@ import UserModel from "../models/userModel";
 // import exceptions --------------------------------------------------------------------
 import { sendResponse } from "../exceptions/messageTemplate";
 
-
+//import enums -----------------------
+import {role} from  '../enums/userEnum';
 
 // import helpers --------------------------------------------------------------------
 import AuthHelper from "../helpers/authHelpher";
@@ -46,7 +47,6 @@ import {sendEmail} from "../helpers/sendEmail";
 
 
 class AuthService{
-
 
     //==========================================================================================================
     //? Get Current User 
@@ -206,12 +206,12 @@ class AuthService{
     //? Function that Send emails to Reset password
     // =================================================================================================================================
 
-    async sendEmailToResetPassword(req: Request, res: Response):Promise<void>{
+    async sendEmailToResetPassword(req: Request, res: Response, targetRole: role):Promise<void>{
         try{
             const body:emailInterface = req.body;
 
             const {
-                email
+                email,
             } = body;
 
             if(!email){
@@ -222,25 +222,34 @@ class AuthService{
             // ensure the user is registred in out DB -------------------------------------------------------------------------------
             const uesrExists = await UserModel.findOne({
                 where :{
-                    email: email
-                }
+                    email: email,
+                }, 
+                attributes: ['email', 'role']
             })
-
+            
             if(!uesrExists){
                 sendResponse(res, 500, 'auth.passwordReset.errors.emailNotRegistered');
+                return;
+            }
+
+            const userRole = uesrExists.role;
+
+            // if the user not allowed to perform this stop the opeartion (e.x: driver trying to reset his passwrod from the admin portal , visa vers )
+            if(userRole !== targetRole){
+                sendResponse(res, 403, 'auth.passwordReset.errors.notTargetedRole');
                 return;
             }
             //create token and store it in cookie----------------------------------------------------------------------------------
             let resetPasswordTokenCreation : string;
             try{
-                
-                //check if JWT exists in .env file
-                const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+                const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY?.trim();
                 if (!jwtResetPasswordKey) {
                     console.error('JWT_RESET_PASSWORD_KEY is not defined');
                     sendResponse(res, 500, 'common.errors.internal');
                     return;
                 }
+
+
                 resetPasswordTokenCreation  = authHelper.createJWTtoken( res, 
                 resetPasswordToken, 
                 jwtResetPasswordKey, 
@@ -250,7 +259,7 @@ class AuthService{
                 
             }catch(error){
                 console.error('Error occured while creating reset password token.', error);
-                sendResponse(res, 500, 'common.errors.internal');
+                sendResponse(res, 500, 'auth.common.errors.internal');
                 return;
             }
             // ==============================================================================================================================

@@ -39,7 +39,8 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
       try {
         // Make a HEAD request to check if resetPasswordToken is valid
         const response = await axios.head(`http://localhost:3001/api/auth/reset-password/${token}`, {
-          withCredentials: true,
+          withCredentials: false,
+          timeout: 8000,
         });
 
         if (response.status === 200) {// Token is valid

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = () => {
   const { t } = useTranslation('auth/forgot-passwordPage');
+  const { t: tGlobal } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [EmailSent, setEmailSent] = useState(false);
@@ -21,7 +22,7 @@ const ForgotPassword = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/forgot-password', 
+      const response = await axios.post('http://localhost:3001/api/auth/admin/forgot-password', 
         { email: targetEmail},
         {
           headers: {
@@ -39,8 +40,22 @@ const ForgotPassword = () => {
       
       
     } catch (error) {
-      setError(t('errors.notRegistered'));
-      console.error('email not registered in system error:', error);
+      const backendMessage = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
+
+      if (backendMessage === 'auth.passwordReset.errors.notTargetedRole') {
+        setError(tGlobal('auth.passwordReset.errors.notTargetedRole'));
+        
+      } else if (backendMessage === 'auth.forgot-password.error.missingEmail') {
+        setError(t('errors.missingEmail'));
+
+      } else if (backendMessage === 'auth.passwordReset.errors.emailNotRegistered') {
+        setError(tGlobal('auth.passwordReset.errors.emailNotRegistered'));
+
+      } else {
+        setError(tGlobal('auth.passwordReset.errors.emailNotRegistered'));
+      }
+
+      console.error('forgot password error:', error);
     } finally {
       setLoading(false);
     }

@@ -47,7 +47,8 @@
         "passwordsMustMatch": "Şifreler aynı olmalı"
       },
       "errors": {
-        "emailNotRegistered": "E-posta kayıtlı değil",
+        "notTargetedRole": "Bu işlemi gerçekleştirmeye yetkiniz yok",
+        "emailNotRegistered": "Bu e-posta adresi sistemimizde kayıtlı değil. Lütfen hesabınıza bağlı olan e-posta adresini kullanın",
         "notUpdated": "Şifre güncellenemedi"
       },
       "success": {

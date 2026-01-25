@@ -155,10 +155,10 @@ class AuthService {
     //? =================================================================================================================================
     //? Function that Send emails to Reset password
     // =================================================================================================================================
-    async sendEmailToResetPassword(req, res) {
+    async sendEmailToResetPassword(req, res, targetRole) {
         try {
             const body = req.body;
-            const { email } = body;
+            const { email, } = body;
             if (!email) {
                 (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.validation.emailRequired');
                 return;
@@ -166,18 +166,24 @@ class AuthService {
             // ensure the user is registred in out DB -------------------------------------------------------------------------------
             const uesrExists = await userModel_1.default.findOne({
                 where: {
-                    email: email
-                }
+                    email: email,
+                },
+                attributes: ['email', 'role']
             });
             if (!uesrExists) {
                 (0, messageTemplate_1.sendResponse)(res, 500, 'auth.passwordReset.errors.emailNotRegistered');
                 return;
             }
+            const userRole = uesrExists.role;
+            // if the user not allowed to perform this stop the opeartion (e.x: driver trying to reset his passwrod from the admin portal , visa vers )
+            if (userRole !== targetRole) {
+                (0, messageTemplate_1.sendResponse)(res, 403, 'auth.passwordReset.errors.notTargetedRole');
+                return;
+            }
             //create token and store it in cookie----------------------------------------------------------------------------------
             let resetPasswordTokenCreation;
             try {
-                //check if JWT exists in .env file
-                const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+                const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY?.trim();
                 if (!jwtResetPasswordKey) {
                     console.error('JWT_RESET_PASSWORD_KEY is not defined');
                     (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
@@ -187,7 +193,7 @@ class AuthService {
             }
             catch (error) {
                 console.error('Error occured while creating reset password token.', error);
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'auth.common.errors.internal');
                 return;
             }
             // ==============================================================================================================================

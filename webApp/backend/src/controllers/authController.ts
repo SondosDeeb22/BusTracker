@@ -8,7 +8,7 @@ import { sendResponse } from '../exceptions/messageTemplate';
 //import Enums ------------------------------------------------------------------------------
 import { setPasswordToken } from "../enums/tokenNameEnum";
 import { loginData, emailInterface, NewPassword} from "../interfaces/authServiceInterface";    
-
+import {role} from '../enums/userEnum';
 
 const authService = new AuthService();
 
@@ -36,28 +36,42 @@ export class AuthController{
     }
     
     // =================================================================================================================================
-    //? 1. Reset Password 
-    //? 1.1. function send email for user for password resetting
-    async sendEmailToResetPassword(req: Request, res: Response): Promise<void>{
-        return authService.sendEmailToResetPassword(req, res);
+    //? 1. Reset Password (Forgot password page)
+
+    // 1.1. function send email for user for password resetting
+    async sendEmailToResetAdminPassword(req: Request, res: Response): Promise<void>{
+        return authService.sendEmailToResetPassword(req, res, role.admin);
     }
 
     //==================================================================================================================================
-    //? 1.2. verify reset password token (HEAD)
+    // 1.2. function send email for user for password resetting
+    async sendEmailToResetDriverPassword(req: Request, res: Response): Promise<void>{
+        return authService.sendEmailToResetPassword(req, res, role.driver);
+    }
+
+    //==================================================================================================================================
+        
+    // 1.3. verify reset password token (HEAD)
 
     async verifyResetPasswordToken(req: Request, res: Response): Promise<emailInterface | null>{
         // ensure that JWT_RESET_PASSWORD_KEY exists in .env
-            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
+            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY?.trim();
             if (!jwtResetPasswordKey) {
                 console.error('JWT_RESET_PASSWORD_KEY is not defined');
                 sendResponse(res, 500, 'common.errors.internal');
                 return null;
             }
 
-        return authService.verifyToken(req, res, jwtResetPasswordKey);
+        const userData = await authService.verifyToken(req, res, jwtResetPasswordKey);
+        if (!userData) {
+            return null;
+        }
+
+        res.sendStatus(200);
+        return userData;
     }
     //=================================================================================================================================
-    //? 1.3. function to rest the password
+    // 1.4. function to rest the password
     async resetPassword(req: Request, res: Response): Promise<void>{
         return authService.resetPassword(req, res);
     }
@@ -84,7 +98,13 @@ export class AuthController{
                 return null;
             }
 
-        return authService.verifyToken(req, res, jwtSetPasswordKey);
+        const userData = await authService.verifyToken(req, res, jwtSetPasswordKey);
+        if (!userData) {
+            return null;
+        }
+
+        res.sendStatus(200);
+        return userData;
     }
     //==================================================================================================================================
     //? 2.3. function to set password (if it's new user, e.x: new driver )

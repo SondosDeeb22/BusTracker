@@ -47,7 +47,8 @@
         "passwordsMustMatch": "Passwords must match"
       },
       "errors": {
-        "emailNotRegistered": "Email is not registered",
+        "notTargetedRole": "Your are not authorized to perform this action",
+        "emailNotRegistered": "This email is not registered in our system. Please use the email associated with your account",
         "notUpdated": "Password was not updated"
       },
       "success": {

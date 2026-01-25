@@ -25,21 +25,27 @@ import { accessRequireToken } from '../middlewares/tokenRequired';
 //===========================================================================================================================
 
 
-
+// Login, Logout, get user info --------------------------------------------------------------------------------------
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.get('/user-info', accessRequireToken(loginToken), authController.getCurrentUser);
 
 
-router.post('/forgot-password', authController.sendEmailToResetPassword);
 
+// send reset password email( Forgot Password page) -----------------------------------------------------------------
+router.post('/admin/forgot-password', authController.sendEmailToResetAdminPassword);
+
+router.post('/driver/forgot-password', authController.sendEmailToResetDriverPassword);
+
+
+// Reset password -----------------------------------------------------------------------------------------
 
 // public token verification endpoint for reset password (HEAD) using same handler for shared logic
 router.head('/reset-password/:token', authController.verifyResetPasswordToken);
 router.patch('/reset-password/:token', authController.resetPassword); /// reset-password-token is the name of required token
 
+// password setup (fresh-driver) ----------------------------------------------------------------------------
 
-// this endpoint for drivers only 
 router.head('/set-password/:token', authController.verifySetPasswordToken); 
 router.patch('/set-password/:token', authController.setPassword); 
 

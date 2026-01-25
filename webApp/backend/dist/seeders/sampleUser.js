@@ -76,7 +76,7 @@ const users = [
         licenseNumber: "LIC3002001",
         licenseExpiryDate: "2026-10-15",
         status: "active",
-        hashedPassword: "$2b$10$examplehash3",
+        hashedPassword: "$2b$08$aOc.CwK/vqj/R/QHoaWxJ.KkIry58pOShrI8T6vaKX0wqhQOG.V/C",
         language: "turkish",
         appearance: "light",
     },
