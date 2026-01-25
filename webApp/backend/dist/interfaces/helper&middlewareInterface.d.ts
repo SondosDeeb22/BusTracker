@@ -9,7 +9,7 @@ export interface LocationData {
     region: string;
 }
 export interface userIPaddressAndLocation {
-    ip: string;
-    location: string;
+    ip: string | null;
+    location: string | null;
 }
 //# sourceMappingURL=helper&middlewareInterface.d.ts.map

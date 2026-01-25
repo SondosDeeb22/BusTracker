@@ -2,8 +2,8 @@ import { Model, InferAttributes, InferCreationAttributes, CreationOptional } fro
 declare class LoginAttemptModel extends Model<InferAttributes<LoginAttemptModel>, InferCreationAttributes<LoginAttemptModel>> {
     attemptID: CreationOptional<number>;
     userEmail: string;
-    IPaddress: string;
-    attemptLocation: string;
+    IPaddress: string | null;
+    attemptLocation: string | null;
     attemptSuccessful: boolean;
     attemptTime: string;
     attemptDate: Date;

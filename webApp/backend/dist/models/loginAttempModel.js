@@ -20,10 +20,10 @@ LoginAttemptModel.init({
         allowNull: false
     }, IPaddress: {
         type: sequelize_1.DataTypes.STRING(100),
-        allowNull: false
+        allowNull: true
     }, attemptLocation: {
         type: sequelize_1.DataTypes.STRING(100),
-        allowNull: false
+        allowNull: true
     }, attemptSuccessful: {
         type: sequelize_1.DataTypes.BOOLEAN,
         allowNull: false

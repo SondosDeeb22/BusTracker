@@ -16,7 +16,7 @@ export interface LocationData {
 }
 
 export interface userIPaddressAndLocation{
-    ip: string, 
-    location: string
+    ip: string | null, 
+    location: string | null
 }
 

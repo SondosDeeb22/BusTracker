@@ -12,8 +12,8 @@ import { LoginAttemptData } from '../interfaces/loginAttemptInterface';
 class LoginAttemptModel extends Model<InferAttributes<LoginAttemptModel>, InferCreationAttributes<LoginAttemptModel>>{
     declare attemptID: CreationOptional<number>;
     declare userEmail: string;
-    declare IPaddress: string;
-    declare attemptLocation: string;
+    declare IPaddress: string | null;
+    declare attemptLocation: string | null;
     declare attemptSuccessful: boolean;
     declare attemptTime: string;
     declare attemptDate: Date;
@@ -33,10 +33,10 @@ LoginAttemptModel.init(
             allowNull: false
         }, IPaddress: {
             type: DataTypes.STRING(100),
-            allowNull: false
+            allowNull: true
         }, attemptLocation:{
             type: DataTypes.STRING(100),
-            allowNull:false
+            allowNull:true
         }, attemptSuccessful:{
             type: DataTypes.BOOLEAN,
             allowNull: false

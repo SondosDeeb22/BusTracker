@@ -85,19 +85,23 @@ class AuthHelper {
     // Function to get the user IP address and use it to get his location info
     //============================================================================================================================================
     getIPaddressAndUserLocation = async (req) => {
+        const unknownResult = { ip: null, location: null };
         try {
             const ip = req.ip;
-            //--------------------------------------------------------------------
-            //get the location from the IP address
-            const response = await fetch(`http://ip-api.com/json/${ip}`); // using third party tool ip-api.com website
+            if (!ip) {
+                console.warn('IP address not available, skipping location lookup');
+                return unknownResult;
+            }
+            const response = await fetch(`http://ip-api.com/json/${ip}`);
             if (!response.ok) {
-                return "Error occured, Failed to fetch location data";
+                console.warn('Failed to fetch location data, skipping location lookup');
+                return { ip, location: null };
             }
             const locationJSONdata = await response.json();
             if (!locationJSONdata || Object.keys(locationJSONdata).length === 0) {
-                return "Error Occured, No location data found for the give IP address";
+                console.warn('No location data found for the given IP address, skipping location lookup');
+                return { ip, location: null };
             }
-            console.log("Location data received:", locationJSONdata);
             const city = locationJSONdata.city || 'Unknown City';
             const country = locationJSONdata.country || 'Unknown Country';
             const region = locationJSONdata.region || 'Unknown Region';
@@ -105,7 +109,8 @@ class AuthHelper {
             return { ip, location };
         }
         catch (error) {
-            return "Error Occured while getting location data from the IP address";
+            console.warn('Error occured while getting location data from the IP address');
+            return unknownResult;
         }
     };
     // =================================================================================================================================
@@ -114,11 +119,6 @@ class AuthHelper {
     async loginAttempt(req, res, attemptSuccessful, userEmail, status, resultMessage) {
         try {
             const IPaddressAndLocation = await this.getIPaddressAndUserLocation(req);
-            if (typeof IPaddressAndLocation === "string") { // if succeed we receive IP and loction, for error cases we get error message(string)
-                console.error('loginAttempt: failed to get IP/location:', IPaddressAndLocation);
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
-                return;
-            }
             //---------------------------------------------------------------------
             // store the ip in the database
             const IPstored = await loginAttempModel_1.default.create({
