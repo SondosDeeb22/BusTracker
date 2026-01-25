@@ -5,6 +5,26 @@
       "unauthorized": "Unauthorized",
       "forbidden": "Access denied"
     },
+    "pages": {
+      "errorScreen": {
+        "actions": {
+          "login": "Login"
+        },
+        "notFound": {
+          "title": "404",
+          "message": "Page not found",
+          "helpText": "The page you’re looking for doesn’t exist or was moved"
+        },
+        "generic": {
+          "title": "Error",
+          "message": "Something went wrong",
+          "helpText": "Please try again or go back to the homepage."
+        },
+        "unexpected": {
+          "message": "Unexpected error"
+        }
+      }
+    },
     "auth": {
       "sessionExpired": "Session expired, please log in again",
       "invalidToken": "Invalid token"

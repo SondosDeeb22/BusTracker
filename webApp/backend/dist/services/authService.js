@@ -350,7 +350,7 @@ class AuthService {
 
             
             <br><br>
-            <p>Please note that this Reset Link will expire in 10 minutes</p>`;
+            <p>Please note that this link will expire in 20 minutes</p>`;
             const sendEmailSResponse = await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
             console.log('this is sendEmailSResponse from sendValidation Email function authServices --------', sendEmailSResponse);
             //=========================================================================================

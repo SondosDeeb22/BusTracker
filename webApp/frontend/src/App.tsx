@@ -22,6 +22,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ProtectedRoute from "./components/ProtectedRoute";
 import ResetPasswordProtection from "./components/ResetPasswordProtection";
 import SetPasswordProtection from "./components/SetPasswordProtection";
+import RouterErrorElement from "./components/RouterErrorElement";
+import NotFoundPage from "./components/NotFoundPage";
 
 
 //===============================================================================================
@@ -29,25 +31,30 @@ import SetPasswordProtection from "./components/SetPasswordProtection";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />
+    element: <Login />,
+    errorElement: <RouterErrorElement />
   },
   {
     path: "/forgot-password",
-    element: <ForgotPassword />
+    element: <ForgotPassword />,
+    errorElement: <RouterErrorElement />
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordProtection><ResetPassword /></ResetPasswordProtection>
+    element: <ResetPasswordProtection><ResetPassword /></ResetPasswordProtection>,
+    errorElement: <RouterErrorElement />
   },
   // route for drivers to set their initial password (link in validation emails)
   {
     path: "/set-password",
-    element: <SetPasswordProtection><SetPassword /></SetPasswordProtection>
+    element: <SetPasswordProtection><SetPassword /></SetPasswordProtection>,
+    errorElement: <RouterErrorElement />
   },
  
   {
     path: "/",
     element: <ProtectedRoute>  <HomepageLayout />  </ProtectedRoute>,
+    errorElement: <RouterErrorElement />,
     children: [
       {
         path: "homepage",
@@ -79,6 +86,11 @@ const router = createBrowserRouter([
       },
       
     ]
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+    errorElement: <RouterErrorElement />
   }
 ]);
 

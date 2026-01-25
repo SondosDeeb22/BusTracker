@@ -3,15 +3,14 @@
 //====================================================================================================================================
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { COLORS } from '../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 import { burgundy } from '../styles/colorPalette';
 
 import LanguageSwitcher from '../components/LanguageSwitcher';
 
 import { useSearchParams } from 'react-router-dom';
+import ErrorScreen from './ErrorScreen';
 
 interface SetPasswordProtectionProps {
   children: React.ReactNode;
@@ -23,7 +22,6 @@ interface SetPasswordProtectionProps {
 //====================================================================================================================================
 
 const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children }) => {
-  const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation('auth/common');
@@ -59,7 +57,7 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
     };
 
     checkToken();
-  }, [navigate, token]);
+  }, [token]);
 
   // Show loading state while checking token ======================================================================
   if (loading) {
@@ -76,40 +74,20 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
   // Show error if token is invalid =========================================================================
   if (!isValid) {
     return (
-
-      
-      <div className="flex items-center justify-center min-h-screen">
-
-        {/* button to change the language  */}
-        <div className="absolute top-4 right-4 z-50">
-          <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
-            <LanguageSwitcher />
+      <ErrorScreen
+        title={t('setProtection.invalidTitle')}
+        message={t('setProtection.invalidMessage')}
+        helpText={t('setProtection.help')}
+        actionHref="/forgot-password"
+        actionLabel={t('setProtection.requestNewLink')}
+        showLanguageSwitcher={(
+          <div className="absolute top-4 right-4 z-50">
+            <div className="px-2 py-1 rounded-md" style={{ backgroundColor: burgundy }}>
+              <LanguageSwitcher />
+            </div>
           </div>
-        </div>
-        {/* ---------------------------------------------------------------------------------------- */}
-
-        <div className="text-center">
-          <h1 
-            className="text-2xl font-bold mb-4"
-            style={{color: COLORS.burgundy}}
-          >
-            {t('setProtection.invalidTitle')}
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {t('setProtection.invalidMessage')}
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            {t('setProtection.help')}
-          </p>
-          <a 
-            href="/forgot-password" 
-            className="inline-block px-6 py-2 text-white rounded-md hover:bg-red-900"
-            style={{backgroundColor: COLORS.burgundy}}
-          >
-            {t('setProtection.requestNewLink')}
-          </a>
-        </div>
-      </div>
+        )}
+      />
     );
   }
 

@@ -3,12 +3,11 @@
 //====================================================================================================================================
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { COLORS } from '../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
 import { useSearchParams } from 'react-router-dom';
+import ErrorScreen from './ErrorScreen';
 
 interface ResetPasswordProtectionProps {
   children: React.ReactNode;
@@ -20,7 +19,6 @@ interface ResetPasswordProtectionProps {
 //====================================================================================================================================
 
 const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ children }) => {
-  const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation('auth/common');
@@ -57,7 +55,7 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
     };
 
     checkToken();
-  }, [navigate, token]);
+  }, [token]);
 
   // Show loading state while checking token ======================================================================
   if (loading) {
@@ -74,29 +72,13 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
   // Show error if token is invalid =========================================================================
   if (!isValid) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 
-            className="text-2xl font-bold mb-4"
-            style={{color: COLORS.burgundy}}
-          >
-            {t('resetProtection.invalidTitle')}
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {t('resetProtection.invalidMessage')}
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            {t('resetProtection.help')}
-          </p>
-          <a 
-            href="/forgot-password" 
-            className="inline-block px-6 py-2 text-white rounded-md hover:bg-red-900"
-            style={{backgroundColor: COLORS.burgundy}}
-          >
-            {t('resetProtection.requestNewLink')}
-          </a>
-        </div>
-      </div>
+      <ErrorScreen
+        title={t('resetProtection.invalidTitle')}
+        message={t('resetProtection.invalidMessage')}
+        helpText={t('resetProtection.help')}
+        actionHref="/forgot-password"
+        actionLabel={t('resetProtection.requestNewLink')}
+      />
     );
   }
 

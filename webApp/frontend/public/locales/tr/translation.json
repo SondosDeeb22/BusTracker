@@ -5,6 +5,26 @@
       "unauthorized": "Yetkisiz",
       "forbidden": "Erişim reddedildi"
     },
+    "pages": {
+      "errorScreen": {
+        "actions": {
+          "login": "Giriş Yap"
+        },
+        "notFound": {
+          "title": "404",
+          "message": "Sayfa bulunamadı",
+          "helpText": "Aradığınız sayfa mevcut değil veya taşınmış olabilir"
+        },
+        "generic": {
+          "title": "Hata",
+          "message": "Bir şeyler ters gitti",
+          "helpText": "Lütfen tekrar deneyin veya ana sayfaya dönün."
+        },
+        "unexpected": {
+          "message": "Beklenmeyen hata"
+        }
+      }
+    },
     "auth": {
       "sessionExpired": "Oturum süresi doldu, lütfen tekrar giriş yapın",
       "invalidToken": "Geçersiz token"
