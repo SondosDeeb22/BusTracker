@@ -1,0 +1,12 @@
+{
+  "language_saved": "Language preference saved",
+  "language_failed": "Failed to save language",
+  "appearance_saved": "Appearance preference saved",
+  "appearance_failed": "Failed to save appearance",
+  "settings_load_failed": "Failed to load settings",
+  "bus_location_updated": "Bus location updated",
+  "connection_lost": "Connection lost",
+  "connection_restored": "Connection restored",
+  "server_error": "Cannot reach the server. If you are using an Android emulator, use 10.0.2.2 instead of localhost",
+  "details": "Details"
+}

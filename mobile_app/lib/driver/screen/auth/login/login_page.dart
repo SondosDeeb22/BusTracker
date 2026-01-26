@@ -2,8 +2,8 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import 'forgotPasswordPage.dart';
-import '../homepage_driver.dart';
+import '../forgot_password/forgot_password_page.dart';
+import '../../homepage_driver/homepage_driver.dart';
 
 //========================================================
 

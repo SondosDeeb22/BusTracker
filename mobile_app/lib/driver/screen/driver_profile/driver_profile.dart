@@ -3,8 +3,8 @@
 //========================================================
 import 'package:flutter/material.dart';
 
-import 'package:mobile_app/src/screens/driver/homepage_driver.dart';
-import 'package:mobile_app/src/screens/driver/weeklyBusSchedule.dart';
+import '../homepage_driver/homepage_driver.dart';
+import '../weekly_bus_schedule/weekly_bus_schedule.dart';
 
 //========================================================
 

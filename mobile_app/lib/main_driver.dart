@@ -2,11 +2,15 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import 'src/screens/driver/auth/loginPage.dart';
+import 'driver/screen/auth/login/login_page.dart';
+
+//========================================================
 
 void main() {
   runApp(const DriverApp());
 }
+
+//========================================================
 
 class DriverApp extends StatelessWidget {
   const DriverApp({super.key});

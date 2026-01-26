@@ -2,8 +2,8 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import 'package:mobile_app/src/screens/driver/driverProfile.dart';
-import 'package:mobile_app/src/screens/driver/homepage_driver.dart';
+import '../driver_profile/driver_profile.dart';
+import '../homepage_driver/homepage_driver.dart';
 
 //========================================================
 class WeeklyBusSchedule extends StatefulWidget {

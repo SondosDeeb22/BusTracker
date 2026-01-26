@@ -1,0 +1,12 @@
+{
+  "language_saved": "Dil tercihi kaydedildi",
+  "language_failed": "Dil kaydedilemedi",
+  "appearance_saved": "Görünüm tercihi kaydedildi",
+  "appearance_failed": "Görünüm kaydedilemedi",
+  "settings_load_failed": "Ayarlar yüklenemedi",
+  "bus_location_updated": "Otobüs konumu güncellendi",
+  "connection_lost": "Bağlantı kesildi",
+  "connection_restored": "Bağlantı geri geldi",
+  "server_error": "Sunucuya ulaşılamıyor. Android emülatör kullanıyorsanız, localhost yerine 10.0.2.2 kullanın",
+  "details": "Detaylar"
+}

@@ -2,7 +2,7 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import 'resetPassword.dart';
+import '../reset_password/reset_password.dart';
 
 //========================================================
 

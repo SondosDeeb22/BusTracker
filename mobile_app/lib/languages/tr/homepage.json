@@ -1,0 +1,19 @@
+{
+  "welcome_title": "NEU Otobüs Takip Sistemi'ne Hoş Geldiniz",
+  "welcome_subtitle": "Otobüsünüzü gerçek zamanlı olarak takip edin",
+  "search_hint": "Otobüs durağı veya güzergahı ara",
+  "recent_stops": "Son Duraklar",
+  "favorite_routes": "Favori Güzergahlar",
+  "no_recent_stops": "Son durak bulunmuyor",
+  "no_favorite_routes": "Henüz favori güzergah yok",
+  "bus_arriving": "Otobüs geliyor",
+  "minutes": "dakika içinde",
+  "live_tracking": "Canlı Takip",
+  "view_all": "Tümünü Gör",
+  "live_buses_status": "Canlı Otobüs Durumu",
+  "currently_working": "Şu Anda Çalışan",
+  "total_buses": "Toplam Otobüs",
+  "buses": "Otobüs",
+  "operating": "Çalışan",
+  "all": "Tümü"
+}

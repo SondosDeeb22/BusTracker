@@ -1,6 +1,11 @@
 Standard Development Rules (SDR):
 Here's set of rules that you must consider while developing this project
 
+
+- follow standard, commnley used folder architecture. be persistant and obvious, organization is must in creating file.
+
+- consider seperating big logic files to more abstracted files for better organization
+
 Style and Decoration:
 - use line of "=" to seperate distict logic areas 
 - use line of "-" to seperate sections of the same logic area
@@ -39,5 +44,32 @@ Documentation Rules:
 
 - Update documentation(ReadMe file) when behavior changes
 
+==================================================================
+Mobile application
+==================================================================
+
+Mobile application Structure :
 
 
+lib
+ |_ user
+       |_ model
+       |_ service
+       |_ controller
+       |_ screen
+       |_ widget
+
+model:
+contain all classes that represent the data
+
+service:
+contains files used for communication with APIs or DB
+
+controller:
+this folder has files to control the app logic and data status
+
+screen:
+each screen in the app has it's own folder
+
+widget:
+contains reusable widgets(components)

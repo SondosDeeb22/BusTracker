@@ -2,11 +2,48 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import 'homepageUser.dart';
+import '../homepage_user/homepage_user.dart';
+import '../../../services/localization_service.dart';
 
 //========================================================
-class CoverPage extends StatelessWidget {
+class CoverPage extends StatefulWidget {
   const CoverPage({super.key});
+
+  @override
+  State<CoverPage> createState() => _CoverPageState();
+}
+
+//========================================================
+
+class _CoverPageState extends State<CoverPage> {
+  late final LocalizationService _localizationService;
+
+  @override
+  void initState() {
+    super.initState();
+    _localizationService = LocalizationService();
+    // Listen for language changes to rebuild UI
+    _localizationService.addListener(_onLanguageChanged);
+  }
+
+  @override
+  void dispose() {
+    _localizationService.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  void _onLanguageChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Also rebuild when dependencies change (including locale)
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +56,8 @@ class CoverPage extends StatelessWidget {
               height: 500,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Color(0xFF59011A),
-                borderRadius: BorderRadius.only(
-                ),
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.only(),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -35,8 +71,8 @@ class CoverPage extends StatelessWidget {
                   SizedBox(height: 80),
 
                   Text(
-                    'NEU Bus Tracker',
-                    style: TextStyle(
+                    'app_title'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30,
                       fontWeight: FontWeight.w600,
@@ -48,28 +84,29 @@ class CoverPage extends StatelessWidget {
             // Lower section with button -------------------------------------
             Expanded(
               child: Container(
-                color: Color(0xFFF2F1ED),
+                color: Theme.of(context).scaffoldBackgroundColor,
 
                 child: Center(
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const HomepageUser(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const HomepageUser()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF59011A),
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 50,
+                        vertical: 16,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    // Button content and styling ---------- 
+                    // Button content and styling ----------
                     child: Text(
-                      'Explore Buses',
-                      style: TextStyle(
+                      'explore_buses'.tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,

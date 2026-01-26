@@ -1,0 +1,19 @@
+{
+  "welcome_title": "Welcome to NEU Bus Tracker",
+  "welcome_subtitle": "Track your bus in real-time",
+  "search_hint": "Search for bus stop or route",
+  "recent_stops": "Recent Stops",
+  "favorite_routes": "Favorite Routes",
+  "no_recent_stops": "No recent stops",
+  "no_favorite_routes": "No favorite routes yet",
+  "bus_arriving": "Bus arriving in",
+  "minutes": "minutes",
+  "live_tracking": "Live Tracking",
+  "view_all": "View All",
+  "live_buses_status": "Live Buses Status",
+  "currently_working": "Currently Working",
+  "total_buses": "Total Buses",
+  "buses": "Buses",
+  "operating": "Operating",
+  "all": "All"
+}
