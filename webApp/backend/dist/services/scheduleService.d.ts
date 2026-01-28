@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 export declare class ScheduleService {
     getSchedule(req: Request, res: Response): Promise<void>;
+    getUserSchedule(req: Request, res: Response): Promise<void>;
     removeScheduledTrip(req: Request, res: Response): Promise<void>;
     addSchedule(req: Request, res: Response): Promise<void>;
     addScheduledTrip(req: Request, res: Response): Promise<void>;

@@ -1,0 +1,14 @@
+{
+  "bus_schedule_title": "Bus Schedule",
+  "select_day": "Select day",
+  "bus_schedule_no_data": "No schedule available",
+  "bus_schedule_no_times": "No trips for this route",
+
+  "day_monday": "Monday",
+  "day_tuesday": "Tuesday",
+  "day_wednesday": "Wednesday",
+  "day_thursday": "Thursday",
+  "day_friday": "Friday",
+  "day_saturday": "Saturday",
+  "day_sunday": "Sunday"
+}

@@ -16,6 +16,8 @@ const routeController_1 = require("../controllers/routeController");
 const routeController = new routeController_1.RouteController();
 const userController_1 = require("../controllers/userController");
 const userController = new userController_1.UserController();
+const scheduleController_1 = require("../controllers/scheduleController");
+const scheduleController = new scheduleController_1.ScheduleController();
 //import enums ----------------------------------------------------------------
 const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const userEnum_1 = require("../enums/userEnum");
@@ -29,6 +31,8 @@ const authorizeRole_1 = require("../middlewares/authorizeRole"); // for authoriz
 router.get('/routes/all', routeController.viewAllRoutes);
 // view routes of operating buses
 router.get('/routes/operating', routeController.viewOperatingRoutes);
+// view bus schedule for users (no auth)
+router.get('/schedule/fetch', scheduleController.getUserSchedule);
 //change the language or appeareance
 router.patch('/language', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeLanguage);
 router.patch('/appearance', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeAppearance);

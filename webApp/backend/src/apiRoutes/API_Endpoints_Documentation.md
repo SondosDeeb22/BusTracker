@@ -17,19 +17,24 @@
   - Success (200): 
     ```json
     {
-      "success": true,
+      "message": "string | null",
       "data": [
         {
           "id": "string",
-          "busNumber": "string",
-          "plateNumber": "string",
-          "capacity": "number",
-          "model": "string",
+          "plate": "string",
+          "brand": "string",
           "status": "string",
-          "routeId": "string",
-          "driverId": "string",
-          "createdAt": "datetime",
-          "updatedAt": "datetime"
+          "assignedRoute": "string | null",
+          "assignedDriver": "string | null",
+          "driver": {
+            "id": "string",
+            "name": "string",
+            "email": "string"
+          },
+          "route": {
+            "id": "string",
+            "title": "string"
+          }
         }
       ]
     }
@@ -45,30 +50,20 @@
   - Body: 
     ```json
     {
-      "busNumber": "string",
-      "plateNumber": "string",
-      "capacity": "number",
-      "model": "string"
+      "plate": "string",
+      "brand": "string",
+      "status": "string"
     }
     ```
 - **Output**: 
-  - Success (201): 
+  - Success (200): 
     ```json
     {
-      "success": true,
-      "data": {
-        "id": "string",
-        "busNumber": "string",
-        "plateNumber": "string",
-        "capacity": "number",
-        "model": "string",
-        "status": "active",
-        "createdAt": "datetime",
-        "updatedAt": "datetime"
-      }
+      "message": "string",
+      "data": null
     }
     ```
-  - Error: 400 Bad Request, 401 Unauthorized, 403 Forbidden
+  - Error: 401 Unauthorized, 403 Forbidden
 
 #### Endpoint: `DELETE /api/admin/bus/remove`
 ========================================================================================================================
@@ -79,15 +74,15 @@
   - Body: 
     ```json
     {
-      "busId": "string"
+      "id": "string"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Bus removed successfully"
+      "message": "string",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 401 Unauthorized, 403 Forbidden
@@ -101,28 +96,20 @@
   - Body: 
     ```json
     {
-      "busId": "string",
-      "busNumber": "string",
-      "plateNumber": "string",
-      "capacity": "number",
-      "model": "string",
-      "status": "string"
+      "id": "string",
+      "plate": "string",
+      "brand": "string",
+      "status": "string",
+      "assignedRoute": "string | null",
+      "assignedDriver": "string | null"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "data": {
-        "id": "string",
-        "busNumber": "string",
-        "plateNumber": "string",
-        "capacity": "number",
-        "model": "string",
-        "status": "string",
-        "updatedAt": "datetime"
-      }
+      "message": "string",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 401 Unauthorized, 403 Forbidden
@@ -639,31 +626,63 @@
 - **Usage**: Fetch all schedules
 - **Input**: 
   - Headers: `Authorization: Bearer <loginToken>`
-  - Query parameters: None
+  - Query parameters (all optional): 
+    - `date`: `YYYY-MM-DD`
+    - `servicePatternId`: `string`
+    - `fromDate`: `YYYY-MM-DD`
+    - `toDate`: `YYYY-MM-DD`
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
+      "message": "string | null",
       "data": [
         {
-          "id": "string",
-          "routeId": "string",
+          "scheduleId": "string",
+          "date": "date",
+          "day": "string",
           "servicePatternId": "string",
-          "startDate": "date",
-          "endDate": "date",
-          "isActive": "boolean",
+          "servicePattern": {
+            "servicePatternId": "string",
+            "title": "string",
+            "operatingHours": [
+              {
+                "operatingHourId": "string",
+                "hour": "HH:mm:ss"
+              }
+            ]
+          },
+          "timeline": [
+            {
+              "time": "HH:mm:ss",
           "trips": [
             {
-              "id": "string",
-              "departureTime": "string",
-              "arrivalTime": "string",
+                  "detailedScheduleId": "string",
+                  "scheduleId": "string",
+                  "time": "HH:mm:ss",
+                  "routeId": "string",
+                  "driverId": "string",
               "busId": "string",
-              "driverId": "string"
+                  "route": {
+                    "id": "string",
+                    "title": "string",
+                    "color": "string"
+                  },
+                  "driver": {
+                    "id": "string",
+                    "name": "string"
+                  },
+                  "bus": {
+                    "id": "string",
+                    "plate": "string",
+                    "brand": "string",
+                    "status": "string"
+                  }
+                }
+              ]
             }
           ],
-          "createdAt": "datetime",
-          "updatedAt": "datetime"
+          "otherTrips": []
         }
       ]
     }
@@ -1231,6 +1250,75 @@
     }
     ```
   - Error: 401 Unauthorized, 400 Bad Request
+
+---
+
+## GET /api/user/schedule/fetch
+
+- Description: Retrieve user bus schedules. Supports optional date or date-range filters and servicePatternId for filtering specific services. The endpoint returns an array of "day" objects containing a timeline of trip slots; each trip contains a time and route info.
+
+- Method: GET
+- URL: `/api/user/schedule/fetch`
+- Headers:
+  - `Authorization: Bearer <loginToken>` (optional; include to access user-specific schedules)
+  - `Accept: application/json`
+
+- Query Parameters:
+  - `date` (string, YYYY-MM-DD) — optional. Request schedules for a single date.
+  - `fromDate` (string, YYYY-MM-DD) — optional. Start of date range.
+  - `toDate` (string, YYYY-MM-DD) — optional. End of date range.
+  - `servicePatternId` (string) — optional. Filter results to a specific service pattern ID.
+
+- Example request (GET):
+
+```
+GET /api/user/schedule/fetch?date=2026-01-27&servicePatternId=SP123
+Authorization: Bearer <token>
+Accept: application/json
+```
+
+- Successful response (200):
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "day": "monday",
+      "date": "2026-01-27T00:00:00.000Z",
+      "timeline": [
+        {
+          "trips": [
+            {
+              "time": "08:30:00",
+              "route": {
+                "title": "Route A",
+                "color": "#FF0000"
+              }
+            },
+            {
+              "time": "09:15:00",
+              "route": {
+                "title": "Route B",
+                "color": "#00FF00"
+              }
+            }
+          ]
+        }
+      ]
+    }
+    // ... more day objects ...
+  ]
+}
+```
+
+- Notes:
+  - The client maps this API response into UI models: day keys are normalized to weekday names, `date` is formatted for display, and routes are aggregated with a list of departure times (see mobile_app service mapping logic).
+
+- Error responses:
+  - `400 Bad Request` — invalid query parameter values (e.g., malformed date)
+  - `401 Unauthorized` — missing or invalid Authorization token (when required)
+  - `500 Internal Server Error` — server failure
 
 ---
 

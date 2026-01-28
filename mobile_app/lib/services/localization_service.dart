@@ -34,13 +34,11 @@ class LocalizationService extends ChangeNotifier {
       // reads 'selected_language' from SharedPreferences, if not fouund we use 'en' as default
       final prefs = await SharedPreferences.getInstance();
       _currentLanguage = prefs.getString(_languageKey) ?? 'en';
-
     } catch (e) {
       print('Error loading language preference: $e');
       _currentLanguage = 'en'; // Fallback to English
     }
   }
-
 
   // ====================================================
   //? Load translation files
@@ -56,6 +54,7 @@ class LocalizationService extends ChangeNotifier {
         'cover_page.json',
         'homepage.json',
         'account_settings.json',
+        'bus_schedule.json',
         'messages.json',
       ];
 
@@ -141,7 +140,6 @@ class LocalizationService extends ChangeNotifier {
 }
 
 //==================================================================================
-
 
 // Extension for easy access to translations
 extension Translations on String {

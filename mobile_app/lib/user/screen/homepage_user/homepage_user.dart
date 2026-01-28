@@ -3,6 +3,7 @@
 //========================================================
 import 'package:flutter/material.dart';
 import '../account_settings_user/account_settings_user.dart';
+import '../bus_schedule_user/bus_schedule_user.dart';
 import 'package:mobile_app/user/service/route_api_service.dart';
 import 'package:mobile_app/user/model/bus_route_card_model.dart';
 import 'package:mobile_app/user/controller/route_color_parser.dart';
@@ -31,6 +32,8 @@ class HomepageUser extends StatefulWidget {
 // When we call setState(...), Flutter rebuilds the UI using the updated values
 class _HomepageUserState extends State<HomepageUser> {
   bool _showAll = false;
+
+  int _bottomIndex = 0;
 
   bool _loading = true;
   String? _error;
@@ -330,6 +333,63 @@ class _HomepageUserState extends State<HomepageUser> {
           ),
         ),
       ),
+
+      // bottom navigation bar ---------------------------------------------------
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _bottomIndex,
+        onTap: (i) {
+          if (i == _bottomIndex) return;
+
+          if (i == 0) {
+            Navigator.of(
+              context,
+            ).pushReplacement(_noAnimationRoute(const HomepageUser()));
+            return;
+          }
+
+          if (i == 1) {
+            Navigator.of(
+              context,
+            ).pushReplacement(_noAnimationRoute(const BusScheduleUser()));
+            return;
+          }
+
+          setState(() {
+            _bottomIndex = i;
+          });
+        },
+
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        selectedItemColor: Theme.of(context).colorScheme.secondary,
+        unselectedItemColor: Colors.white,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+
+        items: const [
+          // icon for Live Buses Status -------------------------------------------
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_bus_outlined),
+            label: 'Live',
+          ),
+
+          // icon for Bus Schedule -------------------------------------------------
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_outlined),
+            label: 'Schedule',
+          ),
+        ],
+      ),
     );
   }
+}
+
+// ===========================================================================
+// Helper: disable page transition animations for bottom nav
+PageRoute<void> _noAnimationRoute(Widget page) {
+  return PageRouteBuilder<void>(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+  );
 }

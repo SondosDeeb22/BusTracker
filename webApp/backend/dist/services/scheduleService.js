@@ -148,6 +148,177 @@ class ScheduleService {
         }
     }
     //===================================================================================================
+    //? Fetch schedule for users (GET)
+    // Fetch schedules with their operating hours timeline and scheduled trips
+    // (Simplified output: no driver/bus objects)
+    //===================================================================================================
+    async getUserSchedule(req, res) {
+        try {
+            const where = {};
+            const dateParam = typeof req.query.date === 'string' ? req.query.date.trim() : '';
+            if (dateParam) {
+                where.date = dateParam;
+            }
+            const servicePatternId = typeof req.query.servicePatternId === 'string' ? req.query.servicePatternId.trim() : '';
+            if (servicePatternId) {
+                where.servicePatternId = servicePatternId;
+            }
+            const fromDate = typeof req.query.fromDate === 'string' ? req.query.fromDate.trim() : '';
+            const toDate = typeof req.query.toDate === 'string' ? req.query.toDate.trim() : '';
+            if (fromDate || toDate) {
+                where.date = {
+                    ...(fromDate ? { [sequelize_1.Op.gte]: fromDate } : {}),
+                    ...(toDate ? { [sequelize_1.Op.lte]: toDate } : {}),
+                };
+            }
+            const schedules = await scheduleModel_1.default.findAll({
+                where,
+                include: [
+                    {
+                        model: servicePatternModel_1.default,
+                        as: 'servicePattern',
+                        attributes: ['servicePatternId', 'title'],
+                        include: [
+                            {
+                                model: operatingHoursModel_1.default,
+                                as: 'operatingHours',
+                                attributes: ['operatingHourId', 'hour'],
+                            },
+                        ],
+                    },
+                    {
+                        model: scheduledTripsModel_1.default,
+                        as: 'trips',
+                        attributes: ['time', 'routeId'],
+                        include: [
+                            {
+                                model: routeModel_1.default,
+                                as: 'route',
+                                attributes: ['id', 'title', 'color'],
+                            },
+                        ],
+                    },
+                ],
+                order: [
+                    ['date', 'ASC'],
+                    [{ model: scheduledTripsModel_1.default, as: 'trips' }, 'time', 'ASC'],
+                ],
+            });
+            const mapped = schedules.map((row) => {
+                const operatingHours = row?.servicePattern?.operatingHours ?? [];
+                const buckets = new Map();
+                for (const oh of operatingHours) {
+                    const t = normalizeTime(oh.hour);
+                    if (!t)
+                        continue;
+                    if (!buckets.has(t))
+                        buckets.set(t, { time: t, trips: [] });
+                }
+                const otherTrips = [];
+                const trips = row?.trips ?? [];
+                for (const trip of trips) {
+                    const tripTime = normalizeTime(trip?.time);
+                    const bucket = buckets.get(tripTime);
+                    // Keep the trip object simplified for user UI consumption.
+                    // We reuse the already-loaded route relation and do not include driver/bus.
+                    const simplifiedTrip = {
+                        time: tripTime,
+                        route: trip?.route,
+                    };
+                    if (bucket) {
+                        bucket.trips.push(simplifiedTrip);
+                    }
+                    else {
+                        otherTrips.push(simplifiedTrip);
+                    }
+                }
+                const timeline = Array.from(buckets.values()).sort((a, b) => a.time.localeCompare(b.time));
+                return {
+                    scheduleId: row.scheduleId,
+                    date: row.date,
+                    day: row.day,
+                    servicePatternId: row.servicePatternId,
+                    servicePattern: row.servicePattern,
+                    timeline,
+                    otherTrips,
+                };
+            });
+            // Backward compatibility: the mobile app currently expects the original "mapped" schedule list
+            // (date/day + timeline slots). Only return the grouped response when explicitly requested.
+            const groupBy = typeof req.query.groupBy === 'string' ? req.query.groupBy.trim() : '';
+            if (groupBy !== 'servicePattern') {
+                return (0, messageTemplate_1.sendResponse)(res, 200, null, mapped);
+            }
+            const parseColorToArgbInt = (raw) => {
+                const s = String(raw ?? '').trim();
+                const hex = s.startsWith('#') ? s.slice(1) : s;
+                if (!/^[0-9a-fA-F]{6}$/.test(hex))
+                    return 0xFF9E9E9E;
+                return (0xFF000000 | parseInt(hex, 16)) >>> 0;
+            };
+            const grouped = new Map();
+            for (const schedule of mapped) {
+                const spId = typeof schedule?.servicePatternId === 'string' ? schedule.servicePatternId.trim() : '';
+                if (!spId)
+                    continue;
+                if (!grouped.has(spId)) {
+                    const oh = schedule?.servicePattern?.operatingHours ?? [];
+                    grouped.set(spId, {
+                        servicePatternId: spId,
+                        operatingHours: oh,
+                        routesAcc: new Map(),
+                    });
+                }
+                const group = grouped.get(spId);
+                const ingestTrip = (trip) => {
+                    const route = trip?.route;
+                    const routeName = typeof route?.title === 'string' ? route.title.trim() : '';
+                    if (!routeName)
+                        return;
+                    const time = normalizeTime(trip?.time);
+                    if (!time)
+                        return;
+                    if (!group.routesAcc.has(routeName)) {
+                        group.routesAcc.set(routeName, {
+                            routeName,
+                            tabColorValue: parseColorToArgbInt(route?.color),
+                            times: new Set(),
+                        });
+                    }
+                    group.routesAcc.get(routeName).times.add(time);
+                };
+                const timeline = Array.isArray(schedule?.timeline) ? schedule.timeline : [];
+                for (const slot of timeline) {
+                    const trips = Array.isArray(slot?.trips) ? slot.trips : [];
+                    for (const trip of trips) {
+                        ingestTrip(trip);
+                    }
+                }
+                const otherTrips = Array.isArray(schedule?.otherTrips) ? schedule.otherTrips : [];
+                for (const trip of otherTrips) {
+                    ingestTrip(trip);
+                }
+            }
+            const response = Array.from(grouped.values()).map((g) => {
+                const routes = Array.from(g.routesAcc.values()).map((r) => ({
+                    routeName: r.routeName,
+                    tabColorValue: r.tabColorValue,
+                    departureTimes: Array.from(r.times).sort((a, b) => a.localeCompare(b)),
+                }));
+                return {
+                    servicePatternId: g.servicePatternId,
+                    operatingHours: g.operatingHours,
+                    routes,
+                };
+            });
+            return (0, messageTemplate_1.sendResponse)(res, 200, null, response);
+        }
+        catch (error) {
+            console.error('Error occured while fetching schedule', error);
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
+    }
+    //===================================================================================================
     //? Remove schedule (Delete)
     //===================================================================================================
     async removeScheduledTrip(req, res) {

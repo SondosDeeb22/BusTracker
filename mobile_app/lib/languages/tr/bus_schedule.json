@@ -1,0 +1,14 @@
+{
+  "bus_schedule_title": "Otobüs Programı",
+  "select_day": "Gün seç",
+  "bus_schedule_no_data": "Program bulunamadı",
+  "bus_schedule_no_times": "Bu hat için sefer yok",
+
+  "day_monday": "Pazartesi",
+  "day_tuesday": "Salı",
+  "day_wednesday": "Çarşamba",
+  "day_thursday": "Perşembe",
+  "day_friday": "Cuma",
+  "day_saturday": "Cumartesi",
+  "day_sunday": "Pazar"
+}

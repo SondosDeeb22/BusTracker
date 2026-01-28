@@ -10,6 +10,9 @@ class ScheduleController {
     async getSchedule(req, res) {
         return scheduleService.getSchedule(req, res);
     }
+    async getUserSchedule(req, res) {
+        return scheduleService.getUserSchedule(req, res);
+    }
     async addSchedule(req, res) {
         return scheduleService.addSchedule(req, res);
     }

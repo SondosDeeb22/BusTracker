@@ -165,6 +165,224 @@ export class ScheduleService {
         }
     }
 
+    //===================================================================================================
+    //? Fetch schedule for users (GET)
+    // Fetch schedules with their operating hours timeline and scheduled trips
+    // (Simplified output: no driver/bus objects)
+    //===================================================================================================
+    
+    async getUserSchedule(req: Request, res: Response) {
+        try {
+            const where: any = {};
+
+            const dateParam = typeof req.query.date === 'string' ? req.query.date.trim() : '';
+            if (dateParam) {
+                where.date = dateParam;
+            }
+
+            const servicePatternId = typeof req.query.servicePatternId === 'string' ? req.query.servicePatternId.trim() : '';
+            if (servicePatternId) {
+                where.servicePatternId = servicePatternId;
+            }
+
+            const fromDate = typeof req.query.fromDate === 'string' ? req.query.fromDate.trim() : '';
+            const toDate = typeof req.query.toDate === 'string' ? req.query.toDate.trim() : '';
+
+            if (fromDate || toDate) {
+                where.date = {
+                    ...(fromDate ? { [Op.gte]: fromDate } : {}),
+                    ...(toDate ? { [Op.lte]: toDate } : {}),
+                };
+            }
+
+            const schedules = await ScheduleModel.findAll({
+                where,
+                include: [
+                    {
+                        model: ServicePatternModel,
+                        as: 'servicePattern',
+                        attributes: ['servicePatternId', 'title'],
+                        include: [
+                            {
+                                model: OperatingHoursModel,
+                                as: 'operatingHours',
+                                attributes: ['operatingHourId', 'hour'],
+                            },
+                        ],
+                    },
+                    {
+                        model: ScheduledTripsModel,
+                        as: 'trips',
+                        attributes: ['time', 'routeId'],
+                        include: [
+                            {
+                                model: RouteModel,
+                                as: 'route',
+                                attributes: ['id', 'title', 'color'],
+                            },
+                        ],
+                    },
+                ],
+                order: [
+                    ['date', 'ASC'],
+                    [{ model: ScheduledTripsModel, as: 'trips' }, 'time', 'ASC'],
+                ],
+            });
+
+            const mapped = schedules.map((row: any) => {
+                const operatingHours: Array<{ operatingHourId: string; hour: string }> = row?.servicePattern?.operatingHours ?? [];
+
+                const buckets = new Map<string, { time: string; trips: any[] }>();
+                for (const oh of operatingHours) {
+                    const t = normalizeTime(oh.hour);
+                    if (!t) continue;
+                    if (!buckets.has(t)) buckets.set(t, { time: t, trips: [] });
+                }
+
+                const otherTrips: any[] = [];
+                const trips: any[] = row?.trips ?? [];
+                for (const trip of trips) {
+                    const tripTime = normalizeTime(trip?.time);
+                    const bucket = buckets.get(tripTime);
+
+                    // Keep the trip object simplified for user UI consumption.
+                    // We reuse the already-loaded route relation and do not include driver/bus.
+                    const simplifiedTrip = {
+                        time: tripTime,
+                        route: trip?.route,
+                    };
+
+                    if (bucket) {
+                        bucket.trips.push(simplifiedTrip);
+                    } else {
+                        otherTrips.push(simplifiedTrip);
+                    }
+                }
+
+                const timeline = Array.from(buckets.values()).sort((a, b) => a.time.localeCompare(b.time));
+
+                return {
+                    scheduleId: row.scheduleId,
+                    date: row.date,
+                    day: row.day,
+                    servicePatternId: row.servicePatternId,
+                    servicePattern: row.servicePattern,
+                    timeline,
+                    otherTrips,
+                };
+            });
+
+            // Backward compatibility: the mobile app currently expects the original "mapped" schedule list
+            // (date/day + timeline slots). Only return the grouped response when explicitly requested.
+            const groupBy = typeof req.query.groupBy === 'string' ? req.query.groupBy.trim() : '';
+            if (groupBy !== 'servicePattern') {
+                return sendResponse(res, 200, null, mapped);
+            }
+
+            // ==============================================================================================
+            // Group schedules by servicePatternId (optimized, single-pass accumulator)
+            //
+            // Requirements satisfied:
+            // - No DB re-query: uses already-loaded relations inside `mapped`.
+            // - Simplified output: no driver/bus objects.
+            // - Single-pass Map accumulator keyed by servicePatternId.
+            // - Routes grouped by route title with color and sorted departure times.
+            // - Preserves ordering: Map insertion order follows first appearance in `mapped`.
+            // ==============================================================================================
+
+            type OperatingHour = { operatingHourId: string; hour: string };
+            type GroupedRoute = { routeName: string; tabColorValue: number; departureTimes: string[] };
+            type GroupedServicePattern = {
+                servicePatternId: string;
+                operatingHours: OperatingHour[];
+                routes: GroupedRoute[];
+            };
+
+            const parseColorToArgbInt = (raw: unknown): number => {
+                const s = String(raw ?? '').trim();
+                const hex = s.startsWith('#') ? s.slice(1) : s;
+                if (!/^[0-9a-fA-F]{6}$/.test(hex)) return 0xFF9E9E9E;
+                return (0xFF000000 | parseInt(hex, 16)) >>> 0;
+            };
+
+            const grouped = new Map<
+                string,
+                {
+                    servicePatternId: string;
+                    operatingHours: OperatingHour[];
+                    routesAcc: Map<string, { routeName: string; tabColorValue: number; times: Set<string> }>;
+                }
+            >();
+
+            for (const schedule of mapped) {
+                const spId = typeof schedule?.servicePatternId === 'string' ? schedule.servicePatternId.trim() : '';
+                if (!spId) continue;
+
+                if (!grouped.has(spId)) {
+                    const oh: OperatingHour[] = schedule?.servicePattern?.operatingHours ?? [];
+                    grouped.set(spId, {
+                        servicePatternId: spId,
+                        operatingHours: oh,
+                        routesAcc: new Map(),
+                    });
+                }
+
+                const group = grouped.get(spId)!;
+
+                const ingestTrip = (trip: any) => {
+                    const route = trip?.route;
+                    const routeName = typeof route?.title === 'string' ? route.title.trim() : '';
+                    if (!routeName) return;
+
+                    const time = normalizeTime(trip?.time);
+                    if (!time) return;
+
+                    if (!group.routesAcc.has(routeName)) {
+                        group.routesAcc.set(routeName, {
+                            routeName,
+                            tabColorValue: parseColorToArgbInt(route?.color),
+                            times: new Set<string>(),
+                        });
+                    }
+
+                    group.routesAcc.get(routeName)!.times.add(time);
+                };
+
+                const timeline: any[] = Array.isArray(schedule?.timeline) ? schedule.timeline : [];
+                for (const slot of timeline) {
+                    const trips: any[] = Array.isArray(slot?.trips) ? slot.trips : [];
+                    for (const trip of trips) {
+                        ingestTrip(trip);
+                    }
+                }
+
+                const otherTrips: any[] = Array.isArray(schedule?.otherTrips) ? schedule.otherTrips : [];
+                for (const trip of otherTrips) {
+                    ingestTrip(trip);
+                }
+            }
+
+            const response: GroupedServicePattern[] = Array.from(grouped.values()).map((g) => {
+                const routes: GroupedRoute[] = Array.from(g.routesAcc.values()).map((r) => ({
+                    routeName: r.routeName,
+                    tabColorValue: r.tabColorValue,
+                    departureTimes: Array.from(r.times).sort((a, b) => a.localeCompare(b)),
+                }));
+
+                return {
+                    servicePatternId: g.servicePatternId,
+                    operatingHours: g.operatingHours,
+                    routes,
+                };
+            });
+
+            return sendResponse(res, 200, null, response);
+        } catch (error) {
+            console.error('Error occured while fetching schedule', error);
+            return sendResponse(res, 500, 'common.errors.internal');
+        }
+    }
+
     
     //===================================================================================================
     //? Remove schedule (Delete)

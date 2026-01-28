@@ -15,6 +15,10 @@ export class ScheduleController {
         return scheduleService.getSchedule(req, res);
     }
 
+    async getUserSchedule(req: Request, res: Response) {
+        return scheduleService.getUserSchedule(req, res);
+    }
+
     async addSchedule(req: Request, res: Response) {
         return scheduleService.addSchedule(req, res);
     }
