@@ -28,6 +28,8 @@ class ServicePatternSection extends StatelessWidget {
         ? 0
         : selectedRouteIndex.clamp(0, routes.length - 1);
 
+    final hasOperatingTimes = servicePattern.operatingTimes.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -35,13 +37,15 @@ class ServicePatternSection extends StatelessWidget {
           routes: routes,
           selectedIndex: safeIndex,
           onSelect: onSelectRoute,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              TimesGrid(times: servicePattern.operatingTimes),
-            ],
-          ),
+          child: hasOperatingTimes
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    TimesGrid(times: servicePattern.operatingTimes),
+                  ],
+                )
+              : null,
         ),
       ],
     );

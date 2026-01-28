@@ -2,7 +2,6 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import '../../../services/localization_service.dart';
 
 //========================================================
 
@@ -27,15 +26,7 @@ class TimesGrid extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     if (times.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        child: Center(
-          child: Text(
-            'bus_schedule_no_times'.tr,
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     //==============================================================

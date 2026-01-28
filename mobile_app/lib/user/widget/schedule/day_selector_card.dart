@@ -39,7 +39,9 @@ class DaySelectorCard extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                dayLabel,
+                '$dayLabel $date',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: colorScheme.onSurface,
@@ -47,18 +49,6 @@ class DaySelectorCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 10),
-
-            Text(
-              date,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
-              ),
-            ),
-
-            const SizedBox(width: 12),
-            
             Icon(Icons.expand_more, color: colorScheme.onSurface),
           ],
         ),

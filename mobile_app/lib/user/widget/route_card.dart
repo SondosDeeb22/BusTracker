@@ -84,6 +84,7 @@ class RouteCard extends StatelessWidget {
   }
 
   //----------------------------------------------------------------------------------------
+  // Returns the appropriate text color based on the background color's brightness
   Color _textColorFor(Color bg) {
     final brightness = ThemeData.estimateBrightnessForColor(bg);
     return brightness == Brightness.dark ? Colors.white : Colors.black;

@@ -43,6 +43,66 @@ const calcDayFromDate = (dateStr: string): string => {
     return days[d.getDay()] ?? '';
 };
 
+// Normalize day key for grouping 
+const normalizeDayKey = (value: unknown): string => {
+    const raw = String(value ?? '')
+        .trim()
+        .toLowerCase();
+
+    switch (raw) {
+        case 'monday':
+            return 'monday';
+        case 'tuesday':
+            return 'tuesday';
+        case 'wednesday':
+        case 'wedensday':
+            return 'wednesday';
+        case 'thursday':
+            return 'thursday';
+        case 'friday':
+            return 'friday';
+        case 'saturday':
+            return 'saturday';
+        case 'sunday':
+            return 'sunday';
+        default:
+            return raw;
+    }
+};
+
+
+// ==========================================================================
+// Format date for mobile UI
+const formatDateForMobileUi = (value: unknown): string => {
+    const s = String(value ?? '').trim();
+    const d = new Date(s);
+    if (Number.isNaN(d.getTime())) return s;
+
+    const two = (v: number) => String(v).padStart(2, '0');
+    return `${two(d.getDate())}/${two(d.getMonth() + 1)}/${d.getFullYear()}`;
+};
+
+// ==========================================================================
+// Normalize time to hour:minute format
+const normalizeTimeToHourMinute = (value: unknown): string => {
+    const t = normalizeTime(value);
+    if (!t) return '';
+    const parts = t.split(':');
+    const hh = (parts[0] ?? '00').padStart(2, '0');
+    const mm = (parts[1] ?? '00').padStart(2, '0');
+    return `${hh}:${mm}`;
+};
+
+// ==========================================================================
+// Parse color to ARGB int
+
+const parseColorToArgbInt = (raw: unknown): number => {
+    const s = String(raw ?? '').trim();
+    const hex = s.startsWith('#') ? s.slice(1) : s;
+    if (!/^[0-9a-fA-F]{6}$/.test(hex)) return 0xFF9E9E9E;
+    return (0xFF000000 | parseInt(hex, 16)) >>> 0;
+};
+
 
 //===================================================================================================
 //? schedule class
@@ -132,16 +192,12 @@ export class ScheduleService {
                     if (!t) continue;
                     if (!buckets.has(t)) buckets.set(t, { time: t, trips: [] });
                 }
-
-                const otherTrips: any[] = [];
                 const trips: any[] = row?.trips ?? [];
                 for (const trip of trips) {
                     const tripTime = normalizeTime(trip?.time);
                     const bucket = buckets.get(tripTime);
                     if (bucket) {
                         bucket.trips.push(trip);
-                    } else {
-                        otherTrips.push(trip);
                     }
                 }
 
@@ -154,7 +210,6 @@ export class ScheduleService {
                     servicePatternId: row.servicePatternId,
                     servicePattern: row.servicePattern,
                     timeline,
-                    otherTrips,
                 };
             });
 
@@ -238,8 +293,6 @@ export class ScheduleService {
                     if (!t) continue;
                     if (!buckets.has(t)) buckets.set(t, { time: t, trips: [] });
                 }
-
-                const otherTrips: any[] = [];
                 const trips: any[] = row?.trips ?? [];
                 for (const trip of trips) {
                     const tripTime = normalizeTime(trip?.time);
@@ -254,8 +307,6 @@ export class ScheduleService {
 
                     if (bucket) {
                         bucket.trips.push(simplifiedTrip);
-                    } else {
-                        otherTrips.push(simplifiedTrip);
                     }
                 }
 
@@ -268,115 +319,173 @@ export class ScheduleService {
                     servicePatternId: row.servicePatternId,
                     servicePattern: row.servicePattern,
                     timeline,
-                    otherTrips,
                 };
             });
 
-            // Backward compatibility: the mobile app currently expects the original "mapped" schedule list
-            // (date/day + timeline slots). Only return the grouped response when explicitly requested.
-            const groupBy = typeof req.query.groupBy === 'string' ? req.query.groupBy.trim() : '';
-            if (groupBy !== 'servicePattern') {
-                return sendResponse(res, 200, null, mapped);
-            }
-
             // ==============================================================================================
-            // Group schedules by servicePatternId (optimized, single-pass accumulator)
-            //
-            // Requirements satisfied:
-            // - No DB re-query: uses already-loaded relations inside `mapped`.
-            // - Simplified output: no driver/bus objects.
-            // - Single-pass Map accumulator keyed by servicePatternId.
-            // - Routes grouped by route title with color and sorted departure times.
-            // - Preserves ordering: Map insertion order follows first appearance in `mapped`.
+            // Group schedules into the mobile UI shape:
+            // Day -> Service Patterns -> Routes -> Departure Times
             // ==============================================================================================
 
-            type OperatingHour = { operatingHourId: string; hour: string };
             type GroupedRoute = { routeName: string; tabColorValue: number; departureTimes: string[] };
             type GroupedServicePattern = {
                 servicePatternId: string;
-                operatingHours: OperatingHour[];
+                title: string;
+                operatingTimes: string[];
                 routes: GroupedRoute[];
             };
-
-            const parseColorToArgbInt = (raw: unknown): number => {
-                const s = String(raw ?? '').trim();
-                const hex = s.startsWith('#') ? s.slice(1) : s;
-                if (!/^[0-9a-fA-F]{6}$/.test(hex)) return 0xFF9E9E9E;
-                return (0xFF000000 | parseInt(hex, 16)) >>> 0;
+            type GroupedDay = {
+                dayKey: string;
+                date: string;
+                servicePatterns: GroupedServicePattern[];
             };
 
-            const grouped = new Map<
+            // ------------------------------
+        
+            const dayAcc = new Map<
                 string,
                 {
-                    servicePatternId: string;
-                    operatingHours: OperatingHour[];
-                    routesAcc: Map<string, { routeName: string; tabColorValue: number; times: Set<string> }>;
+                    dayKey: string;
+                    date: string;
+                    servicePatterns: Map<
+                        string,
+                        {
+                            servicePatternId: string;
+                            title: string;
+                            operatingTimes: string[];
+                            routesAcc: Map<string, { routeName: string; tabColorValue: number; times: Set<string> }>;
+                        }
+                    >;
                 }
             >();
 
+            // ==============================================================================================
+            // here we are organizing the teh routes under the correct day and service pattern
+            // the loop processes each schedule, gropuing it into the matching day and service pattern within the day accumulator map "dayAcc" we defined before
+            
             for (const schedule of mapped) {
-                const spId = typeof schedule?.servicePatternId === 'string' ? schedule.servicePatternId.trim() : '';
-                if (!spId) continue;
 
-                if (!grouped.has(spId)) {
-                    const oh: OperatingHour[] = schedule?.servicePattern?.operatingHours ?? [];
-                    grouped.set(spId, {
-                        servicePatternId: spId,
-                        operatingHours: oh,
-                        routesAcc: new Map(),
+                // extract day and date information and normailzing them to united format 
+                const dayKey = normalizeDayKey(schedule?.day);
+                const dateStr = formatDateForMobileUi(schedule?.date);
+                const dayId = `${dayKey}|${dateStr}`;
+
+                //________________________________________________
+
+                // check if the dayId is already exists in the accumulator, if not we create new entry
+                if (!dayAcc.has(dayId)) {
+                    dayAcc.set(dayId, {
+                        dayKey,
+                        date: dateStr,
+                        servicePatterns: new Map(),
                     });
                 }
 
-                const group = grouped.get(spId)!;
+                // --------------------------------------------------------------------------------------
 
+                const day = dayAcc.get(dayId)!;
+
+                // extract service pattern id and title from the schedule instance 
+                const spId = typeof schedule?.servicePatternId === 'string' ? schedule.servicePatternId.trim() : '';
+                const spTitle = typeof schedule?.servicePattern?.title === 'string' ? schedule.servicePattern.title.trim() : '';
+                const spKey = spId || spTitle;
+                //________________________________________________
+                
+                // check if the servicePatternId exists already, if not create new entry to that service pattern wihtin this day
+                if (!spKey) continue;
+
+                // creating service pattern entry 
+                if (!day.servicePatterns.has(spKey)) {
+                    // get operating hours
+                    const operatingHoursRaw: any[] = Array.isArray(schedule?.servicePattern?.operatingHours)
+                        ? schedule.servicePattern.operatingHours
+                        : [];
+                    const operatingTimes = operatingHoursRaw
+                        .map((oh) => normalizeTimeToHourMinute(oh?.hour))
+                        .filter((t) => Boolean(t))
+                        .sort((a, b) => String(a).localeCompare(String(b)));
+
+                    day.servicePatterns.set(spKey, {
+                        servicePatternId: spId,
+                        title: spTitle,
+                        operatingTimes,
+                        routesAcc: new Map(),
+                    });
+                }
+                //-----------------------------------------------------
+
+                // get service pattern id
+                const sp = day.servicePatterns.get(spKey)!;
+
+                // handle trip data
                 const ingestTrip = (trip: any) => {
+
                     const route = trip?.route;
                     const routeName = typeof route?.title === 'string' ? route.title.trim() : '';
                     if (!routeName) return;
 
-                    const time = normalizeTime(trip?.time);
+                    // get trip time
+                    const time = normalizeTimeToHourMinute(trip?.time);
                     if (!time) return;
 
-                    if (!group.routesAcc.has(routeName)) {
-                        group.routesAcc.set(routeName, {
+                    // check if the route exists already, if not create new entry to that route within this service pattern within this day
+                    if (!sp.routesAcc.has(routeName)) {
+                        sp.routesAcc.set(routeName, {
                             routeName,
-                            tabColorValue: parseColorToArgbInt(route?.color),
+                            tabColorValue: route?.color,
                             times: new Set<string>(),
                         });
                     }
 
-                    group.routesAcc.get(routeName)!.times.add(time);
+                    // after confirming the route exists , we add the current trips times to the route's list of times
+                    sp.routesAcc.get(routeName)!.times.add(time);
                 };
 
+                //-----------------------------------------------
+
+                // get timeline trips
                 const timeline: any[] = Array.isArray(schedule?.timeline) ? schedule.timeline : [];
+                  
+                // Loop through all teh timeline slots for this scheudle (to add their routes and departure times)
                 for (const slot of timeline) {
                     const trips: any[] = Array.isArray(slot?.trips) ? slot.trips : [];
                     for (const trip of trips) {
                         ingestTrip(trip);
                     }
                 }
-
-                const otherTrips: any[] = Array.isArray(schedule?.otherTrips) ? schedule.otherTrips : [];
-                for (const trip of otherTrips) {
-                    ingestTrip(trip);
-                }
             }
 
-            const response: GroupedServicePattern[] = Array.from(grouped.values()).map((g) => {
-                const routes: GroupedRoute[] = Array.from(g.routesAcc.values()).map((r) => ({
-                    routeName: r.routeName,
-                    tabColorValue: r.tabColorValue,
-                    departureTimes: Array.from(r.times).sort((a, b) => a.localeCompare(b)),
-                }));
+            // =====================================================================================
+
+            // convert the accumulated data into the final response format
+            const response: GroupedDay[] = Array.from(dayAcc.values()).map((day) => {
+
+                const servicePatterns: GroupedServicePattern[] = Array.from(day.servicePatterns.values()).map((sp) => {
+                    
+                    const routes: GroupedRoute[] = Array.from(sp.routesAcc.values()).map((r) => ({
+                        routeName: r.routeName,
+                        tabColorValue: r.tabColorValue,
+                        departureTimes: Array.from(r.times).sort((a, b) => a.localeCompare(b)),
+                    }));
+
+                    return {
+                        servicePatternId: sp.servicePatternId,
+                        title: sp.title,
+                        operatingTimes: sp.operatingTimes,
+                        routes,
+                    };
+                });
 
                 return {
-                    servicePatternId: g.servicePatternId,
-                    operatingHours: g.operatingHours,
-                    routes,
+                    dayKey: day.dayKey,
+                    date: day.date,
+                    servicePatterns,
                 };
             });
 
             return sendResponse(res, 200, null, response);
+            
+        // =============================================================================================
         } catch (error) {
             console.error('Error occured while fetching schedule', error);
             return sendResponse(res, 500, 'common.errors.internal');

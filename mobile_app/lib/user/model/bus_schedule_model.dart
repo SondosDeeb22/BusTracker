@@ -7,6 +7,8 @@
 //? data models for user bus schedule screen
 //========================================================
 
+import 'package:flutter/material.dart';
+
 class BusScheduleDayModel {
   final String dayKey;
   final String date;
@@ -36,10 +38,9 @@ class BusScheduleServicePatternModel {
 }
 
 //========================================================
-
 class BusScheduleRouteModel {
   final String routeName;
-  final int tabColorValue;
+  final Color tabColorValue;
   final List<String> departureTimes;
 
   const BusScheduleRouteModel({

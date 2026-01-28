@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../model/bus_schedule_model.dart';
 
 //========================================================
-
 class RouteTabs extends StatelessWidget {
   final List<BusScheduleRouteModel> routes;
   final int selectedIndex;
@@ -36,42 +35,28 @@ class RouteTabs extends StatelessWidget {
             runSpacing: 8,
             children: List.generate(routes.length, (i) {
               final route = routes[i];
-              final tabColor = Color(route.tabColorValue);
-              final isSelected = i == selectedIndex;
+              final bgColor = route.tabColorValue;
 
-              return IgnorePointer(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => onSelect(i),
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: tabColor,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: colorScheme.shadow.withValues(
-                                    alpha: 0.15,
-                                  ),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Text(
-                        route.routeName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _textColorFor(tabColor),
-                        ),
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => onSelect(i),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      route.routeName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: _textColorFor(bgColor),
                       ),
                     ),
                   ),
