@@ -41,6 +41,9 @@ dependencies:
   # Shared preferences for local storage
   shared_preferences: ^2.2.3
 
+  # Deep links (myapp://...)
+  app_links: ^6.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,9 +71,18 @@ flutter:
   ## Bus logo (White) --------------------------------------------
     - assets/BusLogoWhite.png
   ## Translation files -------------------------------------------
-    - lib/languages/
-    - lib/languages/en/
-    - lib/languages/tr/
+    - lib/user/languages/
+    - lib/user/languages/en/
+    
+
+    - lib/user/languages/tr/
+    - 
+
+    - lib/driver/languages/
+    - lib/driver/languages/en/
+    - lib/driver/languages/en/auth/
+    - lib/driver/languages/tr/
+    - lib/driver/languages/tr/auth/
   # --------------------------------------------------------------------
 
   # An image asset can refer to one or more resolution-specific "variants", see

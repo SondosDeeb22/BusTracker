@@ -2,8 +2,8 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import '../reset_password/reset_password.dart';
-
+import '../../../controller/auth/forgot_password/forgot_password_controller.dart';
+import '../../../widget/auth/forgot_password/forgot_password_form.dart';
 //========================================================
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -18,14 +18,35 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   static const _burgundy = Color(0xFF59011A);
   static const _bg = Color(0xFFF2F1ED);
-  static const _border = Color(0xFFC9A47A);
 
-  final _emailController = TextEditingController();
+  final ForgotPasswordController _controller = ForgotPasswordController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onControllerChanged);
+  }
+
+  void _onControllerChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _controller.removeListener(_onControllerChanged);
+    _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _sendResetLink() async {
+    final ok = await _controller.sendResetLink();
+    if (!mounted) return;
+
+    if (!ok) return;
+
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override
@@ -53,92 +74,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // forgot password portion ===================================================================================
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 22,
-                ),
-
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //-----------------------------------------------------
-                    const SizedBox(height: 50),
-
-                    //-----------------------------------------------------
-                    const Text(
-                      'Forgot your Password?',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black,
-                      ),
-                    ),
-
-                    //-----------------------------------------------------
-                    const SizedBox(height: 40),
-
-                    //-----------------------------------------------------
-                    const Text(
-                      'No stress. Enter the email associated with your account and we’ll send you a reset link to get you back on track',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-
-                    //-----------------------------------------------------
-                    const SizedBox(height: 40),
-
-                    //-----------------------------------------------------
-                    TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-
-                    //-----------------------------------------------------
-                    const SizedBox(height: 50),
-
-                    //-----------------------------------------------------
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: trigger forgot-password flow / send reset email
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const ResetPasswrodPage(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _burgundy,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'send rest link',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            ForgotPasswordForm(
+              emailController: _controller.emailController,
+              isLoading: _controller.isLoading,
+              onSendResetLink: _sendResetLink,
+              errorMessage: _controller.inlineErrorMessage,
+              successMessage: _controller.inlineSuccessMessage,
+              primaryColor: _burgundy,
+              backgroundColor: _bg,
             ),
           ],
         ),

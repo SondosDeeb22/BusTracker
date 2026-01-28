@@ -1,0 +1,11 @@
+{
+  "driver_app_title": "NEU Bus Tracker",
+  "driver_login_title": "Sürücü Girişi",
+  "driver_login_email_label": "E-posta",
+  "driver_login_password_label": "Şifre",
+  "driver_login_button": "Giriş Yap",
+  "driver_login_forgot_password": "Şifrenizi mi unuttunuz?",
+  "driver_login_error_fill_all_fields": "Lütfen tüm alanları doldurun",
+  "driver_login_error_invalid_credentials": "E-posta veya şifre yanlış. Lütfen tekrar deneyin.",
+  "driver_login_error_try_later": "Giriş başarısız. Lütfen daha sonra tekrar deneyin."
+}

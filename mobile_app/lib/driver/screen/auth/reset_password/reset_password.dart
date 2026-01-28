@@ -2,11 +2,18 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
+import '../../../controller/auth/reset_password/reset_password_controller.dart';
+import '../../../service/localization/localization_service.dart';
+
+// widget
+import '../../../widget/auth/reset_password/reset_password_form.dart';
 
 //========================================================
 
 class ResetPasswrodPage extends StatefulWidget {
-  const ResetPasswrodPage({super.key});
+  final String token;
+
+  const ResetPasswrodPage({super.key, required this.token});
 
   @override
   State<ResetPasswrodPage> createState() => _ResetPasswrodPageState();
@@ -17,21 +24,68 @@ class ResetPasswrodPage extends StatefulWidget {
 class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
   static const _burgundy = Color(0xFF59011A);
   static const _bg = Color(0xFFF2F1ED);
-  static const _border = Color(0xFFC9A47A);
 
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  late final ResetPasswordController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = ResetPasswordController(token: widget.token);
+    _controller.addListener(_onControllerChanged);
+  }
+
+  void _onControllerChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
-    _newPasswordController.dispose();
-    _confirmPasswordController.dispose();
+    _controller.removeListener(_onControllerChanged);
+    _controller.dispose();
     super.dispose();
   }
 
-  // functin to reset driver password
-  void _resetPassword() {
-    // TODO: validate + call reset password endpoint
+  //========================================================
+
+  Future<void> _showMessageDialog({
+    required String title,
+    required String message,
+  }) async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text('driver_common_ok'.translate),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //========================================================
+
+  Future<void> _submit() async {
+    final ok = await _controller.submit();
+    if (!mounted) return;
+
+    if (!ok) return;
+
+    await _showMessageDialog(
+      title: 'driver_reset_password_success_title'.translate,
+      message:
+          _controller.successMessage ??
+          'driver_reset_password_success_message'.translate,
+    );
+
+    if (!mounted) return;
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
@@ -58,79 +112,18 @@ class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
 
       // -----------------------------------------------------------
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
-
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-
-            children: [
-              //-----------------------------------------------------
-              const SizedBox(height: 50),
-
-              //-----------------------------------------------------
-              const Text(
-                'Reset Password',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
-                ),
-              ),
-
-              //-----------------------------------------------------
-              const SizedBox(height: 50),
-
-              //-----------------------------------------------------
-              TextField(
-                controller: _newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'New Password',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              //-----------------------------------------------------
-              const SizedBox(height: 20),
-
-              //-----------------------------------------------------
-              TextField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-
-              //-----------------------------------------------------
-              const SizedBox(height: 50),
-
-              //-----------------------------------------------------
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: _resetPassword,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _burgundy,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Reset Password',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            ResetPasswordForm(
+              newPasswordController: _controller.newPasswordController,
+              confirmPasswordController: _controller.confirmPasswordController,
+              isLoading: _controller.isLoading,
+              errorMessage: _controller.errorMessage,
+              onSubmit: _submit,
+              primaryColor: _burgundy,
+              backgroundColor: _bg,
+            ),
+          ],
         ),
       ),
     );

@@ -1,0 +1,11 @@
+{
+  "driver_app_title": "NEU Bus Tracker",
+  "driver_login_title": "Driver Login",
+  "driver_login_email_label": "Email",
+  "driver_login_password_label": "Password",
+  "driver_login_button": "Login",
+  "driver_login_forgot_password": "Forgot password?",
+  "driver_login_error_fill_all_fields": "Please fill all fields",
+  "driver_login_error_invalid_credentials": "Your email or password was incorrect. Please try again.",
+  "driver_login_error_try_later": "Login failed. Please try later"
+}

@@ -72,7 +72,7 @@
         "notUpdated": "Password was not updated"
       },
       "success": {
-        "emailSent": "Password reset email sent",
+        "emailSent": "Password reset was email sent",
         "updated": "Password reset successfully"
       }
     },

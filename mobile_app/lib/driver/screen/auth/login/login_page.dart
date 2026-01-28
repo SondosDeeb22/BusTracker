@@ -2,8 +2,17 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
+
+//screen
 import '../forgot_password/forgot_password_page.dart';
 import '../../homepage_driver/homepage_driver.dart';
+
+// controller
+import '../../../controller/auth/login/login_controller.dart';
+
+//widgets
+import '../../../widget/auth/login/login_form.dart';
+import '../../../widget/auth/login/login_header.dart';
 
 //========================================================
 
@@ -19,18 +28,28 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   static const _burgundy = Color(0xFF59011A);
   static const _bg = Color(0xFFF2F1ED);
-  static const _border = Color(0xFFC9A47A);
 
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final LoginController _controller = LoginController();
 
   @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onControllerChanged);
+  }
+
+  void _onControllerChanged() {
+    if (mounted) setState(() {}); // re-render because external state changed( it could be isloadign or errorMessage)
+  }
+
+ // clean up listener when widget is disposed
+  @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _controller.removeListener(_onControllerChanged);
+    _controller.dispose();
     super.dispose();
   }
 
+  // =======================================================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,145 +60,36 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: [
             // Upper part (Logo) -------------------------------------
-            Container(
-              height: 400,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF59011A),
-                borderRadius: BorderRadius.only(),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image(
-                    image: AssetImage('assets/BusLogoWhite.png'),
-                    width: 150,
-                    height: 150,
-                  ),
-
-                  SizedBox(height: 20),
-
-                  Text(
-                    'NEU Bus Tracker',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: _bg,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  Text(
-                    'Driver Login',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: _bg,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const LoginHeader(background: _burgundy, textColor: _bg),
+            
             // login data form ===================================================================================
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 45,
-                  vertical: 22,
-                ),
+            LoginForm(
+              emailController: _controller.emailController,
+              passwordController: _controller.passwordController,
+              loginErrorMessage: _controller.loginErrorMessage,
+              isLoading: _controller.isLoading,
+              primaryColor: _burgundy,
+              backgroundColor: _bg,
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 26),
+              onLogin: () async {
+                final loginSucceeded = await _controller.login();
+                if (!loginSucceeded) return;
+                if (!mounted) return;
 
-                    // Email ----------------------------------------------------
-                    TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const HomepageDriver()),
+                );
+              },
 
-                    //----------------------------------------------------
-                    const SizedBox(height: 16),
-
-                    // Password ----------------------------------------------------
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-
-                    //----------------------------------------------------
-                    const SizedBox(height: 20),
-
-                    // login Button ----------------------------------------------------
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // TODO: integrate driver login (API/firebase/etc.)
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (_) => const HomepageDriver(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _burgundy,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: _bg,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    //----------------------------------------------------
-                    const SizedBox(height: 12),
-
-                    // forgot password Button ----------------------------------------------------
-                    Align(
-                      // wraped  TextButton widget with Align to control its position in the layout
-                      alignment: Alignment.center,
-
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const ForgotPasswordPage(), // dircet driver to forgot password page
-                            ),
-                          );
-                        },
-
-                        child: const Text(
-                          'Forgot password?',
-                          style: TextStyle(
-                            color: _burgundy,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // =================================================================
+              onForgotPassword: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const ForgotPasswordPage(), // dircet driver to forgot password page
+                  ),
+                );
+              },
             ),
           ],
         ),

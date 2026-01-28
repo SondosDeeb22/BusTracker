@@ -14,6 +14,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalizationService extends ChangeNotifier {
   static const String _languageKey = 'selected_language';
+  static String _assetRoot = 'lib/user/languages';
+  static List<String> _translationFiles = const [
+    'common.json',
+    'navigation.json',
+    'cover_page.json',
+    'homepage.json',
+    'account_settings.json',
+    'bus_schedule.json',
+    'messages.json',
+  ];
   static Map<String, dynamic>? _translations;
   static String _currentLanguage = 'en';
 
@@ -26,6 +36,25 @@ class LocalizationService extends ChangeNotifier {
   Future<void> init() async {
     await _loadSavedLanguage();
     await _loadTranslations();
+  }
+
+  //========================================================
+
+  void setAssetRoot(String assetRoot) {
+    _assetRoot = assetRoot.trim().isEmpty
+        ? 'lib/user/languages'
+        : assetRoot.trim();
+  }
+
+  //========================================================
+
+  void setTranslationFiles(List<String> files) {
+    final cleaned = files
+        .map((f) => f.trim())
+        .where((f) => f.isNotEmpty)
+        .toList(growable: false);
+    if (cleaned.isEmpty) return;
+    _translationFiles = cleaned;
   }
 
   // Load saved language preference
@@ -48,21 +77,13 @@ class LocalizationService extends ChangeNotifier {
       _translations = {};
 
       // List of translation files to load
-      final files = [
-        'common.json',
-        'navigation.json',
-        'cover_page.json',
-        'homepage.json',
-        'account_settings.json',
-        'bus_schedule.json',
-        'messages.json',
-      ];
+      final files = _translationFiles;
 
       // Load each file and merge translations
       for (final file in files) {
         try {
           final String jsonString = await rootBundle.loadString(
-            'lib/languages/$_currentLanguage/$file',
+            '$_assetRoot/$_currentLanguage/$file',
           );
           final Map<String, dynamic> fileTranslations = json.decode(jsonString);
           _translations!.addAll(fileTranslations);
@@ -70,7 +91,7 @@ class LocalizationService extends ChangeNotifier {
           // If file not found in current language, try English fallback
           try {
             final String jsonString = await rootBundle.loadString(
-              'lib/languages/en/$file',
+              '$_assetRoot/en/$file',
             );
             final Map<String, dynamic> fileTranslations = json.decode(
               jsonString,
