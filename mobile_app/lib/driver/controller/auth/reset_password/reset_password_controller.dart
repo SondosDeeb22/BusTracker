@@ -20,10 +20,12 @@ class ResetPasswordController extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String? _successMessage;
+  bool _shouldRedirectInvalidToken = false;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get successMessage => _successMessage;
+  bool get shouldRedirectInvalidToken => _shouldRedirectInvalidToken;
 
   //========================================================
 
@@ -35,12 +37,16 @@ class ResetPasswordController extends ChangeNotifier {
 
     _errorMessage = null;
     _successMessage = null;
+    _shouldRedirectInvalidToken = false;
 
     if (newPassword.trim().isEmpty || confirmPassword.trim().isEmpty) {
       _errorMessage = 'driver_reset_password_error_fill_all_fields'.translate;
       notifyListeners();
       return false;
     }
+    //test
+    debugPrint('NEW: "${newPasswordController.text}"');
+    debugPrint('CONFIRM: "${confirmPasswordController.text}"');
 
     if (newPassword != confirmPassword) {
       _errorMessage =
@@ -58,12 +64,24 @@ class ResetPasswordController extends ChangeNotifier {
       final result = await service.resetPassword(
         token: _token,
         newPassword: newPassword,
+        confirmPassword: confirmPassword,
       );
 
       if (!result.passwordReset) {
-        _errorMessage = result.message.trim().isEmpty
+        final rawMessage = result.message.trim();
+        final translated = rawMessage.isEmpty ? '' : rawMessage.translate;
+
+        if (rawMessage == 'common.auth.invalidToken' ||
+            translated == 'common.auth.invalidToken') {
+          _shouldRedirectInvalidToken = true;
+          _errorMessage = null;
+          notifyListeners();
+          return false;
+        }
+
+        _errorMessage = rawMessage.isEmpty
             ? 'driver_reset_password_error_try_later'.translate
-            : result.message;
+            : (translated == rawMessage ? rawMessage : translated);
         notifyListeners();
         return false;
       }

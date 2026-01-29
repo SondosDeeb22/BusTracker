@@ -8,6 +8,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:app_links/app_links.dart';
 import 'driver/screen/auth/login/login_page.dart';
 import 'driver/screen/auth/reset_password/reset_password.dart';
+import 'driver/screen/auth/reset_password/invalid_reset_link_page.dart';
+import 'driver/service/auth/reset_password/reset_password_service.dart';
 import 'driver/service/localization/localization_service.dart';
 
 //========================================================
@@ -103,11 +105,20 @@ class _DriverAppState extends State<DriverApp> {
     final nonNullToken = token;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _navigatorKey.currentState?.push(
-        MaterialPageRoute(
-          builder: (_) => ResetPasswrodPage(token: nonNullToken),
-        ),
-      );
+      Future<void>(() async {
+        final service = ResetPasswordService();
+        final errorKeyOrMessage = await service.validateResetPasswordToken(
+          token: nonNullToken,
+        );
+
+        final route = (errorKeyOrMessage == null)
+            ? MaterialPageRoute(
+                builder: (_) => ResetPasswrodPage(token: nonNullToken),
+              )
+            : MaterialPageRoute(builder: (_) => const InvalidResetLinkPage());
+
+        _navigatorKey.currentState?.pushReplacement(route);
+      });
     });
   }
 

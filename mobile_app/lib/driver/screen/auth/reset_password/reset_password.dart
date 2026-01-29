@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import '../../../controller/auth/reset_password/reset_password_controller.dart';
 import '../../../service/localization/localization_service.dart';
 
+import '../../../service/auth/reset_password/reset_password_service.dart';
+import 'invalid_reset_link_page.dart';
+import '../login/login_page.dart';
 // widget
 import '../../../widget/auth/reset_password/reset_password_form.dart';
 
@@ -32,9 +35,37 @@ class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
     super.initState();
     _controller = ResetPasswordController(token: widget.token);
     _controller.addListener(_onControllerChanged);
+
+    _validateToken();
+  }
+
+  Future<void> _validateToken() async {
+    final service = ResetPasswordService();
+    final errorKeyOrMessage = await service.validateResetPasswordToken(
+      token: widget.token,
+    );
+
+    if (errorKeyOrMessage == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const InvalidResetLinkPage()),
+      );
+    });
   }
 
   void _onControllerChanged() {
+    if (_controller.shouldRedirectInvalidToken) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const InvalidResetLinkPage()),
+        );
+      });
+      return;
+    }
+
     if (mounted) setState(() {});
   }
 
@@ -47,46 +78,18 @@ class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
 
   //========================================================
 
-  Future<void> _showMessageDialog({
-    required String title,
-    required String message,
-  }) async {
-    if (!mounted) return;
-
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('driver_common_ok'.translate),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  //========================================================
-
   Future<void> _submit() async {
-    final ok = await _controller.submit();
+    final bool resetSucceeded = await _controller.submit();
     if (!mounted) return;
 
-    if (!ok) return;
+    if (!resetSucceeded) return;
 
-    await _showMessageDialog(
-      title: 'driver_reset_password_success_title'.translate,
-      message:
-          _controller.successMessage ??
-          'driver_reset_password_success_message'.translate,
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
     );
-
-    if (!mounted) return;
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override

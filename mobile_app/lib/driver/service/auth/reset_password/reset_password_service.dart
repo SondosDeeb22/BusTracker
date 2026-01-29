@@ -27,9 +27,43 @@ class ResetPasswordService {
 
   //========================================================
 
+  Future<String?> validateResetPasswordToken({required String token}) async {
+    final client = HttpClient();
+
+    try {
+      final uri = Uri.parse('$_baseUrl/api/auth/reset-password/$token');
+
+      final request = await client.headUrl(uri);
+      request.headers.set(HttpHeaders.acceptHeader, 'application/json');
+
+      final response = await request.close();
+      print(
+        '[ResetPasswordService] validateResetPasswordToken HEAD $uri -> ${response.statusCode}',
+      );
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return null;
+      }
+
+      // Backend may return a JSON body even for HEAD; try to read it safely.
+      final body = await response.transform(utf8.decoder).join();
+      final decoded = _tryDecodeJson(body);
+      final message = (decoded is Map<String, dynamic>)
+          ? (decoded['message']?.toString() ?? '')
+          : '';
+
+      return message.isEmpty ? 'common.auth.invalidToken' : message;
+    } catch (_) {
+      return 'common.auth.invalidToken';
+    } finally {
+      client.close(force: true);
+    }
+  }
+  //=========================================================================
+
   Future<ResetPasswordResult> resetPassword({
     required String token,
     required String newPassword,
+    required String confirmPassword,
   }) async {
     final client = HttpClient();
 
@@ -42,6 +76,7 @@ class ResetPasswordService {
 
       final payload = <String, String>{
         'newPassword': newPassword,
+        'confirmPassword': confirmPassword,
       };
 
       request.add(utf8.encode(jsonEncode(payload)));
@@ -63,12 +98,12 @@ class ResetPasswordService {
       return ResetPasswordResult.success(
         message.isEmpty ? 'Password reset successful' : message,
       );
-     
-    // ----------------------------------------------------------------
+
+      // ----------------------------------------------------------------
     } catch (error) {
       return ResetPasswordResult.failure('Reset password failed: $error');
-      
-    // ----------------------------------------------------------------
+
+      // ----------------------------------------------------------------
     } finally {
       client.close(force: true);
     }

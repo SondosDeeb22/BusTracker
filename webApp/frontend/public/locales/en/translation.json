@@ -63,7 +63,7 @@
     "passwordReset": {
       "validation": {
         "emailRequired": "Email is required",
-        "passwordRequired": "Password is required",
+        "passwordRequired": "Fill all fields please. Password is required",
         "passwordsMustMatch": "Passwords must match"
       },
       "errors": {

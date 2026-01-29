@@ -55,9 +55,7 @@ class ForgotPasswordController extends ChangeNotifier {
       final translatedMessage = message.isEmpty ? '' : message.translate;
 
       if (result.emailSent) {
-        _inlineSuccessMessage = translatedMessage.isEmpty
-            ? emailSentTitle()
-            : translatedMessage;
+        _inlineSuccessMessage = '';
       } else {
         _inlineErrorMessage = translatedMessage.isEmpty
             ? genericErrorMessage()
@@ -90,9 +88,6 @@ class ForgotPasswordController extends ChangeNotifier {
 
   String requestFailedTitle() =>
       'driver_forgot_password_request_failed_title'.translate;
-
-  String emailSentTitle() =>
-      'driver_forgot_password_email_sent_title'.translate;
 
   String genericErrorTitle() => 'driver_forgot_password_error_title'.translate;
   String genericErrorMessage() =>
