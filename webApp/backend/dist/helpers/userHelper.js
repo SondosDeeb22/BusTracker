@@ -42,7 +42,7 @@ class UserHelper {
                 for (const rule of options.enumFields) {
                     const value = body[rule.field];
                     if ((value === undefined || value === null || value === "") && !rule.optional) {
-                        throw new errors_1.ValidationError('common.errors.validation.invalidField');
+                        throw new errors_1.ValidationError('common.errors.validation.missingField');
                     }
                     if (value != null && !(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
                         throw new errors_1.ValidationError('common.errors.validation.invalidField');
@@ -193,12 +193,10 @@ class UserHelper {
             if (options?.enumFields && options.enumFields.length > 0) {
                 for (const rule of options.enumFields) {
                     const value = values[rule.field];
-                    if (value === undefined || value === null || value === "") {
-                        if (!rule.optional) {
-                            continue;
-                        }
+                    if ((value === undefined || value === null || value === "") && !rule.optional) {
+                        throw new errors_1.ValidationError('common.errors.validation.missingField');
                     }
-                    else if (!(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
+                    if (value != null && !(0, validateEnumValue_1.validateEnum)(value, rule.enumObj)) {
                         throw new errors_1.ValidationError('common.errors.validation.invalidField');
                     }
                 }

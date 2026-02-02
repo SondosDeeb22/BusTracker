@@ -1,8 +1,28 @@
-import { Request, Response } from 'express';
+type OperatingHourDto = {
+    operatingHourId: string;
+    hour: string;
+};
+type ServicePatternDto = {
+    servicePatternId: string;
+    title: string;
+    operatingHours: OperatingHourDto[];
+};
 export declare class ServicePatternService {
-    getServicePatterns(req: Request, res: Response): Promise<void>;
-    addServicePattern(req: Request, res: Response): Promise<void>;
-    updateServicePattern(req: Request, res: Response): Promise<void>;
-    deleteServicePattern(req: Request, res: Response): Promise<void>;
+    getServicePatterns(): Promise<{
+        messageKey: string;
+        data: ServicePatternDto[];
+    }>;
+    addServicePattern(payload: Record<string, any>): Promise<{
+        messageKey: string;
+        data: ServicePatternDto;
+    }>;
+    updateServicePattern(payload: Record<string, any>): Promise<{
+        messageKey: string;
+        data: ServicePatternDto;
+    }>;
+    deleteServicePattern(servicePatternIdRaw: unknown): Promise<{
+        messageKey: string;
+    }>;
 }
+export {};
 //# sourceMappingURL=servicePatternService.d.ts.map

@@ -1,8 +1,17 @@
-import { Request, Response } from 'express';
 export declare class BusService {
-    addBus(req: Request, res: Response): Promise<void>;
-    removeBus(req: Request, res: Response): Promise<void>;
-    updateBus(req: Request, res: Response): Promise<void>;
-    fetchAllBuses(req: Request, res: Response): Promise<void>;
+    addBus(payload: Record<string, any>): Promise<{
+        messageKey: string;
+    }>;
+    removeBus(busId: unknown): Promise<{
+        messageKey: string;
+    }>;
+    updateBus(values: Record<string, any>): Promise<{
+        updated: boolean;
+        messageKey: string;
+    }>;
+    fetchAllBuses(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
 }
 //# sourceMappingURL=busService.d.ts.map

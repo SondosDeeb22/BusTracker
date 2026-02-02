@@ -9,6 +9,10 @@ const userService = new UserService();
 import { BusService } from '../services/busService';
 import users from '../seeders/sampleUser';
 const busService = new BusService();
+
+import { sendResponse } from '../exceptions/messageTemplate';
+import { handleControllerError } from './controllerErrorMapper';
+import { UnauthorizedError } from '../errors';
 //============================================================================================================================================================
 
 
@@ -19,15 +23,43 @@ export class UserController{
     //===================================================================================================================    
 
     async changeLanguage(req: Request, res: Response){
-        return userService.changeLanguage(req, res);
+        try {
+            const userId = req.user?.id;
+            if (userId == null) {
+                throw new UnauthorizedError('common.auth.sessionExpired');
+            }
+
+            const result = await userService.changeLanguage(userId, req.body?.language);
+            sendResponse(res, 200, result.messageKey);
+            return;
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
     }
 
+
+
+
+    
     // =================================================================================================================================
     // update apperacne 
     //===================================================================================================================    
 
     async changeAppearance(req: Request, res: Response){
-        return userService.changeAppearance(req, res);
+        try {
+            const userId = req.user?.id;
+            if (userId == null) {
+                throw new UnauthorizedError('common.auth.sessionExpired');
+            }
+
+            const result = await userService.changeAppearance(userId, req.body?.appearance);
+            sendResponse(res, 200, result.messageKey);
+            return;
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
     }
 
 
@@ -39,14 +71,42 @@ export class UserController{
     //===================================================================================================================    
 
     async changeRoute(req: Request, res: Response){
-        return userService.changeRoute(req, res);
+        try {
+            const userId = req.user?.id;
+            if (userId == null) {
+                throw new UnauthorizedError('common.auth.sessionExpired');
+            }
+
+            const result = await userService.changeRoute(userId, req.body);
+            sendResponse(res, 200, result.messageKey);
+            return;
+            
+        // --------------------------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
     }
 
     // =================================================================================================================================
     // start/ stop bus (by driver)
     //===================================================================================================================    
     async changeBusStatus(req: Request, res: Response){
-        return userService.updateBusStatus(req, res)
+        try {
+            const userId = req.user?.id;
+            if (userId == null) {
+                throw new UnauthorizedError('common.auth.sessionExpired');
+            }
+
+            const result = await userService.updateBusStatus(userId, req.body);
+            sendResponse(res, 200, result.messageKey);
+            return;
+
+        // --------------------------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
     }
 
 

@@ -8,7 +8,7 @@ declare class AuthService {
     sendEmailToResetPassword(req: Request, res: Response, targetRole: role): Promise<void>;
     verifyToken(req: Request, res: Response, secretKey: string): Promise<emailInterface | null>;
     resetPassword(req: Request, res: Response): Promise<void>;
-    sendValidateEmail(res: Response, email: string): Promise<void>;
+    sendValidateEmail(email: string): Promise<void>;
     setPassword(req: Request, res: Response): Promise<void>;
 }
 export default AuthService;

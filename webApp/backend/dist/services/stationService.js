@@ -15,21 +15,20 @@ const errors_1 = require("../errors");
 // import helpers
 const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
-const messageTemplate_1 = require("../exceptions/messageTemplate");
 //===================================================================================================
 class StationService {
     //===================================================================================================
     //? function to Add Station
     //===================================================================================================
-    async addStation(req, res) {
+    async addStation(payload) {
         try {
-            await helper.add(stationModel_1.default, req.body, {
+            await helper.add(stationModel_1.default, payload, {
                 nonDuplicateFields: ['stationName'],
                 //----------------------------------------------------------------
                 transform: async (data) => {
                     const out = { ...data };
                     if (out.stationName) {
-                        out.stationName = data.stationName.toLowerCase().trim();
+                        out.stationName = String(data.stationName).toLowerCase().trim();
                     }
                     return out;
                 },
@@ -38,108 +37,50 @@ class StationService {
                     { field: "status", enumObj: stationEnum_1.status },
                 ],
             });
-            return (0, messageTemplate_1.sendResponse)(res, 200, "stations.success.added");
+            return { messageKey: "stations.success.added" };
         }
         catch (error) {
             console.error('Error occured while creating station.', error);
-            if (error instanceof errors_1.ValidationError) {
-                if (error.message === 'fillAllFields')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.fillAllFields');
-                if (error.message === 'invalidField')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
-                if (error.message === 'required')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.noData');
-                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
+            if (error instanceof errors_1.ValidationError ||
+                error instanceof errors_1.ConflictError ||
+                error instanceof errors_1.NotFoundError) {
+                throw error;
             }
-            if (error instanceof errors_1.NotFoundError) {
-                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof errors_1.ConflictError) {
-                return (0, messageTemplate_1.sendResponse)(res, 409, error.message);
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
-                }
-            }
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            throw new errors_1.InternalError('common.errors.internal');
         }
     }
     //===================================================================================================
     //? function to Remove Station
     //===================================================================================================
-    async removeStation(req, res) {
-        try {
-            await helper.remove(stationModel_1.default, 'id', req.body.id);
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'common.crud.removed');
-            //==============================================
-        }
-        catch (error) {
-            console.error('Error occured while removing station.', error);
-            if (error instanceof errors_1.ValidationError) {
-                if (error.message === 'required')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
-                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof errors_1.NotFoundError) {
-                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
-                }
-            }
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
-        }
+    async removeStation(stationId) {
+        await helper.remove(stationModel_1.default, 'id', String(stationId));
+        return { messageKey: 'common.crud.removed' };
     }
     //===================================================================================================
     //? function to Update station
     //===================================================================================================
-    async updateStation(req, res) {
-        try {
-            const result = await helper.update(stationModel_1.default, req.body, {
-                enumFields: [{ field: "status", enumObj: stationEnum_1.status }]
-            });
-            return (0, messageTemplate_1.sendResponse)(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
-            //==============================================
-        }
-        catch (error) {
-            console.error('Error occured while updating station.', error);
-            if (error instanceof errors_1.ValidationError) {
-                if (error.message === 'required')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.noData');
-                if (error.message === 'invalidField')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
-                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof errors_1.NotFoundError) {
-                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
-                }
-            }
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
-        }
+    async updateStation(payload) {
+        const result = await helper.update(stationModel_1.default, payload, {
+            enumFields: [{ field: "status", enumObj: stationEnum_1.status }]
+        });
+        return {
+            updated: result.updated,
+            messageKey: result.updated ? 'common.crud.updated' : 'common.crud.noChanges'
+        };
     }
     //===================================================================================================
     //? function to Fetch All Stations
     //===================================================================================================
-    async fetchAllStations(req, res) {
+    async fetchAllStations() {
         try {
             const stations = await stationModel_1.default.findAll({
                 attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
             });
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'stations.success.fetched', stations);
+            return { messageKey: 'stations.success.fetched', data: stations };
         }
         catch (error) {
             console.error('Error occured while fetching stations.', error);
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            throw new errors_1.InternalError('common.errors.internal');
         }
     }
 }

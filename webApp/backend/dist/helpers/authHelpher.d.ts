@@ -15,7 +15,7 @@ declare class AuthHelper {
     extractJWTData: <tokentInterface>(req: RequestLike, tokenName: string, secretKey: string) => tokentInterface;
     getIPaddressAndUserLocation: (req: RequestLike) => Promise<userIPaddressAndLocation>;
     loginAttempt(req: RequestLike, attemptSuccessful: boolean, userEmail: string): Promise<void>;
-    validateUser(req: RequestLike, id: string): Promise<true>;
+    validateUserById(driverId: number, busId: string): Promise<true>;
 }
 export default AuthHelper;
 //# sourceMappingURL=authHelpher.d.ts.map

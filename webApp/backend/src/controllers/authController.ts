@@ -84,7 +84,7 @@ export class AuthController{
 
     //? 2.1 function to send validate email to set password (for fresh user, like newly added dirver)
     async sendValidateEmail(req: Request, res: Response, email: string): Promise<void>{
-        return authService.sendValidateEmail( res, email);
+        return authService.sendValidateEmail(email);
     }
     //==================================================================================================================================
     //? 2.2.  verify set password token (HEAD)

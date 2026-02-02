@@ -180,37 +180,33 @@ class AuthHelper{
         }
         
     }
+
     // =================================================================================================================================
     // Function to validate that user committing operation is authorized to do that (so no driver changes something for another driver)
     // =================================================================================================================================
-    async validateUser(req: RequestLike, id: string): Promise<true>{
-        try{
-            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
-            if(!jwtLoginKey){
-                console.error('Error in fetching JWT secret key');
-                throw new InternalError('common.errors.internal');
+    async validateUserById(driverId: number, busId: string): Promise<true> {
+        try {
+            if (!busId) {
+                throw new ForbiddenError('common.errors.forbidden');
             }
 
-            // get the logged in user data ---------------------------------------------------
-            const userData = this.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
-
-            //check if the user (logged in ) tryying to change value in bus table, is the same user assinged as driver for that bus
             const userauthorized = await BusModel.findOne({
                 where: {
-                    id: id,
-                    assignedDriver: userData.userID
-                }
-            })
+                    id: busId,
+                    assignedDriver: driverId
+                },
+                attributes: ['id']
+            });
 
-            if(!userauthorized){
+            if (!userauthorized) {
                 throw new ForbiddenError('common.errors.forbidden');
-                
-            };
+            }
 
             return true;
-        //==========================================================================================================================
-        }catch(error){
-            console.error('Error occured while validating login attempt', error);
+
+        // -----------------------------------------------------------------
+        } catch (error) {
+            console.error('Error occured while validating user/bus relation', error);
             throw error;
         }
     }

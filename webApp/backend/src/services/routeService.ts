@@ -2,8 +2,6 @@
 //? Importing
 //===================================================================================================
 
-import {Request, Response } from 'express';
-
 //import Enums
 import {status } from '../enums/routeEnum';
 import {status as busStatus } from '../enums/busEnum';
@@ -14,10 +12,9 @@ import BusModel from "../models/busModel";
 import RouteStationModel from "../models/routeStationModel";
 import stationModel from "../models/stationModel";
 
-import { ConflictError, NotFoundError, ValidationError } from '../errors';
+import { ConflictError, NotFoundError, ValidationError, InternalError  } from '../errors';
 
 import { UserHelper } from "../helpers/userHelper";
-import { sendResponse } from '../exceptions/messageTemplate';
 const helper = new UserHelper();
 
 
@@ -32,17 +29,18 @@ export class RouteService{
     //? function to Add Route
     //===================================================================================================
 
-    async addRoute(req: Request, res: Response){
-        try{
-            const body = req.body || {};
-            const stations: string[] = Array.isArray(body.stations) ? body.stations : [];
+    async addRoute(payload: Record<string, any>): Promise<{ messageKey: string }> {
 
-            const payload = {
-                ...body,
-                totalStops: stations.length
-            };
+        const body = payload || {};
+        const stations: string[] = Array.isArray(body.stations) ? body.stations : [];
 
-            await helper.add(RouteModel, payload,
+        const finalPayload: Record<string, any> = {
+            ...body,
+            totalStops: stations.length
+        };
+
+        try {
+            await helper.add(RouteModel, finalPayload,
                 {
                     //-----------------------------------------------------------
                     transform: async (data) => {
@@ -65,9 +63,9 @@ export class RouteService{
             );
 
             // attach stations to route_stations table if provided
-            if(stations.length > 0){
+            if(stations.length > 0 && finalPayload.title){
                 const createdRoute = await RouteModel.findOne({
-                    where: { title: payload.title.toLowerCase().trim() },
+                    where: { title: String(finalPayload.title).toLowerCase().trim() },
                     attributes: ['id']
                 });
 
@@ -81,85 +79,61 @@ export class RouteService{
                 }
             }
 
-            return sendResponse(res, 200, 'routes.success.added');
-        
-        //======================================================
-        }catch(error){
+            return { messageKey: 'routes.success.added' };
+
+        } catch (error) {
             console.error('Error occured while creating route.', error);
-
-            if (error instanceof ValidationError) {
-                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
-                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            if (
+                error instanceof ValidationError ||
+                error instanceof ConflictError ||
+                error instanceof NotFoundError
+            ) {
+                throw error;
             }
-
-            if (error instanceof ConflictError) {
-                return sendResponse(res, 409, error.message);
-            }
-
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
-
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
 
     //===================================================================================================
     //? function to Remove Route
     //===================================================================================================
-    async removeRoute(req: Request, res: Response){
+    async removeRoute(routeId: unknown): Promise<{ messageKey: string }> {
         try {
-            await helper.remove(RouteModel, 'id', req.body.id);
-            return sendResponse(res, 200, 'common.crud.removed');
+            await helper.remove(RouteModel, 'id', String(routeId));
+            return { messageKey: 'common.crud.removed' };
         
-        //======================================================
+        // ---------------------------------------
         } catch (error) {
             console.error('Error occured while removing route.', error);
-
-            if (error instanceof ValidationError) {
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
-
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw error;
         }
     }
 
     //===================================================================================================
     //? function to Update Route
     //===================================================================================================
-    async updateRoute(req: Request, res: Response){
-        try{
-            const body = req.body || {};
+    async updateRoute(payload: Record<string, any>): Promise<{ messageKey: string }> {
+        try {
+            const body = payload || {};
             const { id, title, color, status: routeStatusValue } = body;
             const stations: string[] = Array.isArray(body.stations) ? body.stations : [];
 
             if(!id){
-                sendResponse(res, 500, 'routes.validation.idRequired');
-                return;
+                throw new ValidationError('routes.validation.idRequired');
             }
 
             // validate status (if provided)
             if(routeStatusValue && !Object.values(status).includes(routeStatusValue)){
-                sendResponse(res, 500, 'common.errors.validation.invalidField');
-                return;
+                throw new ValidationError('common.errors.validation.invalidField');
+            }
+
+            const routeExists = await RouteModel.findOne({
+                where: { id },
+                attributes: ['id']
+            });
+
+            if(!routeExists){
+                throw new NotFoundError('common.errors.notFound');
             }
 
             // normalize title
@@ -177,8 +151,7 @@ export class RouteService{
             });
 
             if(updatedCount === 0){
-                sendResponse(res, 500, 'common.crud.notUpdated');
-                return;
+                throw new ConflictError('common.crud.notUpdated');
             }
 
             // replace stations list
@@ -195,10 +168,12 @@ export class RouteService{
                 await RouteStationModel.bulkCreate(rows);
             }
 
-            sendResponse(res, 200, 'routes.success.updated');
-        }catch(error){
+            return { messageKey: 'routes.success.updated' };
+
+        // ---------------------------------------
+        } catch (error) {
             console.error('Error occured while updating route.', error);
-            sendResponse(res, 500, 'common.errors.internal');
+            throw error;
         }
     }
 
@@ -207,9 +182,10 @@ export class RouteService{
     //===================================================================================================
     //? function to view All routes for operating buses or only Operating(working) routes 
     //===================================================================================================
-    async viewRoutes(req: Request, res: Response, displayAll: boolean){
+    async viewRoutes(displayAll: boolean): Promise<{ messageKey: string; data: unknown }> {
         try{
-            let routes = [];
+
+            let routes: any[] = [];
 
             if(displayAll){
                 routes = await RouteModel.findAll({
@@ -241,8 +217,7 @@ export class RouteService{
                 }
                 
             }else{
-                let routeId;
-                routeId = await BusModel.findAll({
+                const routeId = await BusModel.findAll({
                     where: {
                         status: busStatus.operating
                     },
@@ -266,14 +241,12 @@ export class RouteService{
                 }
             }
 
-            sendResponse(res, 200, null, routes);
+            return { messageKey: 'common.crud.fetched', data: routes };
 
-
-        //===============================================
+        // ---------------------------------------
         }catch(error){
             console.error('Error occured while viewing routes.', error);
-            sendResponse(res, 500, 'common.errors.internal');
-
+            throw new InternalError('common.errors.internal');
         }
     }
 

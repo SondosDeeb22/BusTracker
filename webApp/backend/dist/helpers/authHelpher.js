@@ -11,8 +11,6 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 //import Models
 const loginAttempModel_1 = __importDefault(require("../models/loginAttempModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
-//import Enums ------------------------------------------------------------------------------
-const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const errors_1 = require("../errors");
 class AuthHelper {
     //===========================================================================================================================================
@@ -142,31 +140,26 @@ class AuthHelper {
     // =================================================================================================================================
     // Function to validate that user committing operation is authorized to do that (so no driver changes something for another driver)
     // =================================================================================================================================
-    async validateUser(req, id) {
+    async validateUserById(driverId, busId) {
         try {
-            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
-            if (!jwtLoginKey) {
-                console.error('Error in fetching JWT secret key');
-                throw new errors_1.InternalError('common.errors.internal');
+            if (!busId) {
+                throw new errors_1.ForbiddenError('common.errors.forbidden');
             }
-            // get the logged in user data ---------------------------------------------------
-            const userData = this.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
-            //check if the user (logged in ) tryying to change value in bus table, is the same user assinged as driver for that bus
             const userauthorized = await busModel_1.default.findOne({
                 where: {
-                    id: id,
-                    assignedDriver: userData.userID
-                }
+                    id: busId,
+                    assignedDriver: driverId
+                },
+                attributes: ['id']
             });
             if (!userauthorized) {
                 throw new errors_1.ForbiddenError('common.errors.forbidden');
             }
-            ;
             return true;
-            //==========================================================================================================================
+            // -----------------------------------------------------------------
         }
         catch (error) {
-            console.error('Error occured while validating login attempt', error);
+            console.error('Error occured while validating user/bus relation', error);
             throw error;
         }
     }

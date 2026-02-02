@@ -1,15 +1,14 @@
 //======================================================================================================================
 //? Importing
 //======================================================================================================================
-import { Request, Response } from 'express';
-
-import { sendResponse } from '../exceptions/messageTemplate';
-
 import ServicePatternModel from '../models/servicePatternModel';
 import OperatingHoursModel from '../models/operatingHoursModel';
 import ScheduleModel from '../models/scheduleModel';
 import ScheduledTripsModel from '../models/scheduledTripsModel';
 import { sequelize } from '../config/database';
+
+import { NotFoundError, ValidationError } from '../errors';
+import { InternalError } from '../errors/InternalError';
 
 //======================================================================================================================
 //? Types
@@ -43,7 +42,7 @@ export class ServicePatternService {
     //==================================================================================================================
     //? Fetch all service patterns with their operating hours
     //==================================================================================================================
-    async getServicePatterns(req: Request, res: Response) {
+    async getServicePatterns(): Promise<{ messageKey: string; data: ServicePatternDto[] }> {
         try {
             const rows = await ServicePatternModel.findAll({
                 attributes: ['servicePatternId', 'title'],
@@ -73,29 +72,29 @@ export class ServicePatternService {
                 };
             });
 
-            return sendResponse(res, 200, null, data);
+            return { messageKey: 'common.crud.fetched', data };
         } catch (error) {
             console.error('Error occured while fetching service patterns.', error);
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
 
     //==================================================================================================================
     //? Add service pattern with operating hours
     //==================================================================================================================
-    async addServicePattern(req: Request, res: Response) {
-        const titleRaw = req.body?.title;
-        const selectedHoursRaw = req.body?.hours;
+    async addServicePattern(payload: Record<string, any>): Promise<{ messageKey: string; data: ServicePatternDto }> {
+        const titleRaw = payload?.title;
+        const selectedHoursRaw = payload?.hours;
 
         const title = typeof titleRaw === 'string' ? titleRaw.trim() : '';
         const hoursArray: unknown[] = Array.isArray(selectedHoursRaw) ? selectedHoursRaw : [];
 
         if (!title) {
-            return sendResponse(res, 500, 'servicePatterns.validation.titleRequired');
+            throw new ValidationError('servicePatterns.validation.titleRequired');
         }
 
         if (hoursArray.length === 0) {
-            return sendResponse(res, 500, 'servicePatterns.validation.selectAtLeastOneHour');
+            throw new ValidationError('servicePatterns.validation.selectAtLeastOneHour');
         }
 
         // normalize to unique sorted ints within 0..23
@@ -108,7 +107,7 @@ export class ServicePatternService {
         ).sort((a, b) => a - b);
 
         if (hours.length === 0) {
-            return sendResponse(res, 500, 'servicePatterns.validation.invalidHours');
+            throw new ValidationError('servicePatterns.validation.invalidHours');
         }
 
         try {
@@ -168,35 +167,35 @@ export class ServicePatternService {
                 return createdPattern;
             });
 
-            return sendResponse(res, 200, 'servicePatterns.success.added', created);
+            return { messageKey: 'servicePatterns.success.added', data: created };
         } catch (error) {
             console.error('Error occured while creating service pattern.', error);
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
 
     //==================================================================================================================
     //? Update service pattern (title + operating hours)
     //==================================================================================================================
-    async updateServicePattern(req: Request, res: Response) {
-        const servicePatternIdRaw = req.body?.servicePatternId;
-        const titleRaw = req.body?.title;
-        const selectedHoursRaw = req.body?.hours;
+    async updateServicePattern(payload: Record<string, any>): Promise<{ messageKey: string; data: ServicePatternDto }> {
+        const servicePatternIdRaw = payload?.servicePatternId;
+        const titleRaw = payload?.title;
+        const selectedHoursRaw = payload?.hours;
 
         const servicePatternId = typeof servicePatternIdRaw === 'string' ? servicePatternIdRaw.trim() : '';
         const title = typeof titleRaw === 'string' ? titleRaw.trim() : '';
         const hoursArray: unknown[] = Array.isArray(selectedHoursRaw) ? selectedHoursRaw : [];
 
         if (!servicePatternId) {
-            return sendResponse(res, 500, 'servicePatterns.validation.idRequired');
+            throw new ValidationError('servicePatterns.validation.idRequired');
         }
 
         if (!title) {
-            return sendResponse(res, 500, 'servicePatterns.validation.titleRequired');
+            throw new ValidationError('servicePatterns.validation.titleRequired');
         }
 
         if (hoursArray.length === 0) {
-            return sendResponse(res, 500, 'servicePatterns.validation.selectAtLeastOneHour');
+            throw new ValidationError('servicePatterns.validation.selectAtLeastOneHour');
         }
 
         const hours = Array.from(
@@ -208,7 +207,7 @@ export class ServicePatternService {
         ).sort((a, b) => a - b);
 
         if (hours.length === 0) {
-            return sendResponse(res, 500, 'servicePatterns.validation.invalidHours');
+            throw new ValidationError('servicePatterns.validation.invalidHours');
         }
 
         try {
@@ -266,13 +265,13 @@ export class ServicePatternService {
             });
 
             if (!updated) {
-                return sendResponse(res, 500, 'servicePatterns.errors.notFound');
+                throw new NotFoundError('servicePatterns.errors.notFound');
             }
 
-            return sendResponse(res, 200, 'servicePatterns.success.updated', updated);
+            return { messageKey: 'servicePatterns.success.updated', data: updated };
         } catch (error) {
             console.error('Error occured while updating service pattern.', error);
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw error;
         }
     }
 
@@ -281,12 +280,11 @@ export class ServicePatternService {
     //==================================================================================================================
 
 
-    async deleteServicePattern(req: Request, res: Response) {
-        const servicePatternIdRaw = req.body?.servicePatternId ?? req.body?.id ?? req.query?.servicePatternId;
+    async deleteServicePattern(servicePatternIdRaw: unknown): Promise<{ messageKey: string }> {
         const servicePatternId = typeof servicePatternIdRaw === 'string' ? servicePatternIdRaw.trim() : '';
 
         if (!servicePatternId) {
-            return sendResponse(res, 500, 'servicePatterns.validation.idRequired');
+            throw new ValidationError('servicePatterns.validation.idRequired');
         }
 
         try {
@@ -336,17 +334,14 @@ export class ServicePatternService {
                 return true;
             });
 
-            //--------------------------------------------------------------------
             if (!deleted) {
-                return sendResponse(res, 500, 'servicePatterns.errors.notFound');
+                throw new NotFoundError('servicePatterns.errors.notFound');
             }
 
-            //====================================================================
-
-            return sendResponse(res, 200, 'servicePatterns.success.deleted');
+            return { messageKey: 'servicePatterns.success.deleted' };
         } catch (error) {
             console.error('Error occured while deleting service pattern.', error);
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
     //============================================================================================================================

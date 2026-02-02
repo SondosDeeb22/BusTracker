@@ -17,22 +17,21 @@ const routeStationModel_1 = __importDefault(require("../models/routeStationModel
 const stationModel_1 = __importDefault(require("../models/stationModel"));
 const errors_1 = require("../errors");
 const userHelper_1 = require("../helpers/userHelper");
-const messageTemplate_1 = require("../exceptions/messageTemplate");
 const helper = new userHelper_1.UserHelper();
 //===================================================================================================
 class RouteService {
     //===================================================================================================
     //? function to Add Route
     //===================================================================================================
-    async addRoute(req, res) {
+    async addRoute(payload) {
+        const body = payload || {};
+        const stations = Array.isArray(body.stations) ? body.stations : [];
+        const finalPayload = {
+            ...body,
+            totalStops: stations.length
+        };
         try {
-            const body = req.body || {};
-            const stations = Array.isArray(body.stations) ? body.stations : [];
-            const payload = {
-                ...body,
-                totalStops: stations.length
-            };
-            await helper.add(routeModel_1.default, payload, {
+            await helper.add(routeModel_1.default, finalPayload, {
                 //-----------------------------------------------------------
                 transform: async (data) => {
                     const out = { ...data };
@@ -52,9 +51,9 @@ class RouteService {
                 //-----------------------------------------------------------
             });
             // attach stations to route_stations table if provided
-            if (stations.length > 0) {
+            if (stations.length > 0 && finalPayload.title) {
                 const createdRoute = await routeModel_1.default.findOne({
-                    where: { title: payload.title.toLowerCase().trim() },
+                    where: { title: String(finalPayload.title).toLowerCase().trim() },
                     attributes: ['id']
                 });
                 if (createdRoute) {
@@ -66,79 +65,53 @@ class RouteService {
                     await routeStationModel_1.default.bulkCreate(rows);
                 }
             }
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'routes.success.added');
-            //======================================================
+            return { messageKey: 'routes.success.added' };
         }
         catch (error) {
             console.error('Error occured while creating route.', error);
-            if (error instanceof errors_1.ValidationError) {
-                if (error.message === 'fillAllFields')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.fillAllFields');
-                if (error.message === 'invalidField')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
-                if (error.message === 'required')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.noData');
-                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
+            if (error instanceof errors_1.ValidationError ||
+                error instanceof errors_1.ConflictError ||
+                error instanceof errors_1.NotFoundError) {
+                throw error;
             }
-            if (error instanceof errors_1.ConflictError) {
-                return (0, messageTemplate_1.sendResponse)(res, 409, error.message);
-            }
-            if (error instanceof errors_1.NotFoundError) {
-                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
-                }
-            }
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            throw new errors_1.InternalError('common.errors.internal');
         }
     }
     //===================================================================================================
     //? function to Remove Route
     //===================================================================================================
-    async removeRoute(req, res) {
+    async removeRoute(routeId) {
         try {
-            await helper.remove(routeModel_1.default, 'id', req.body.id);
-            return (0, messageTemplate_1.sendResponse)(res, 200, 'common.crud.removed');
-            //======================================================
+            await helper.remove(routeModel_1.default, 'id', String(routeId));
+            return { messageKey: 'common.crud.removed' };
+            // ---------------------------------------
         }
         catch (error) {
             console.error('Error occured while removing route.', error);
-            if (error instanceof errors_1.ValidationError) {
-                if (error.message === 'required')
-                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
-                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof errors_1.NotFoundError) {
-                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
-                }
-            }
-            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            throw error;
         }
     }
     //===================================================================================================
     //? function to Update Route
     //===================================================================================================
-    async updateRoute(req, res) {
+    async updateRoute(payload) {
         try {
-            const body = req.body || {};
+            const body = payload || {};
             const { id, title, color, status: routeStatusValue } = body;
             const stations = Array.isArray(body.stations) ? body.stations : [];
             if (!id) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'routes.validation.idRequired');
-                return;
+                throw new errors_1.ValidationError('routes.validation.idRequired');
             }
             // validate status (if provided)
             if (routeStatusValue && !Object.values(routeEnum_1.status).includes(routeStatusValue)) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.validation.invalidField');
-                return;
+                throw new errors_1.ValidationError('common.errors.validation.invalidField');
+            }
+            const routeExists = await routeModel_1.default.findOne({
+                where: { id },
+                attributes: ['id']
+            });
+            if (!routeExists) {
+                throw new errors_1.NotFoundError('common.errors.notFound');
             }
             // normalize title
             const normalizedTitle = title ? String(title).toLowerCase().trim() : undefined;
@@ -155,8 +128,7 @@ class RouteService {
                 where: { id }
             });
             if (updatedCount === 0) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.crud.notUpdated');
-                return;
+                throw new errors_1.ConflictError('common.crud.notUpdated');
             }
             // replace stations list
             await routeStationModel_1.default.destroy({
@@ -170,17 +142,18 @@ class RouteService {
                 }));
                 await routeStationModel_1.default.bulkCreate(rows);
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, 'routes.success.updated');
+            return { messageKey: 'routes.success.updated' };
+            // ---------------------------------------
         }
         catch (error) {
             console.error('Error occured while updating route.', error);
-            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            throw error;
         }
     }
     //===================================================================================================
     //? function to view All routes for operating buses or only Operating(working) routes 
     //===================================================================================================
-    async viewRoutes(req, res, displayAll) {
+    async viewRoutes(displayAll) {
         try {
             let routes = [];
             if (displayAll) {
@@ -211,8 +184,7 @@ class RouteService {
                 }
             }
             else {
-                let routeId;
-                routeId = await busModel_1.default.findAll({
+                const routeId = await busModel_1.default.findAll({
                     where: {
                         status: busEnum_1.status.operating
                     },
@@ -234,12 +206,12 @@ class RouteService {
                     }
                 }
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, null, routes);
-            //===============================================
+            return { messageKey: 'common.crud.fetched', data: routes };
+            // ---------------------------------------
         }
         catch (error) {
             console.error('Error occured while viewing routes.', error);
-            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            throw new errors_1.InternalError('common.errors.internal');
         }
     }
 }

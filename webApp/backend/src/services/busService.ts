@@ -2,9 +2,6 @@
 //? Import Sections
 //==========================================================================================================
 
-import {Request, Response } from 'express';
-
-
 //import models
 import BusModel from "../models/busModel";
 import UserModel from "../models/userModel";
@@ -13,12 +10,10 @@ import RouteModel from "../models/routeModel";
 //import Enums
 import { status } from '../enums/busEnum';
 
-import { ConflictError, NotFoundError, ValidationError } from '../errors';
+import { ConflictError, InternalError, NotFoundError, ValidationError } from '../errors';
 
 import { UserHelper } from "../helpers/userHelper";
 const helper = new UserHelper();
-
-import { sendResponse } from '../exceptions/messageTemplate';
 
 
 //===================================================================================================================================================
@@ -30,115 +25,50 @@ export class BusService{
     //? function to Add Bus
     //===================================================================================================
 
-    async addBus(req: Request, res: Response){
-
+    async addBus(payload: Record<string, any>): Promise<{ messageKey: string }> {
         
-        try{
-            await helper.add(BusModel, req.body,{
-                nonDuplicateFields: ['plate'],
-                enumFields: [{ field: "status", enumObj: status }],
-            }
-           );
+        await helper.add(BusModel, payload, {
+            nonDuplicateFields: ['plate'],
+            enumFields: [{ field: "status", enumObj: status }],
+        });
 
-           return sendResponse(res, 200, 'buses.success.added');
-        //----------------------------------------------------------------
-       }catch(error){
-            console.error('Error occured while creating bus.', error);
-
-            if (error instanceof ValidationError) {
-                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
-                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
-            }
-
-            if (error instanceof ConflictError) {
-                return sendResponse(res, 409, error.message);
-            }
-
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
-
-            return sendResponse(res, 500, 'common.errors.internal');
-       }
+        return { messageKey: 'buses.success.added' };
     }
+
 
     //===================================================================================================
     //? function to Remove Bus
     //===================================================================================================
 
-    async removeBus(req: Request, res: Response){
-        try {
-            await helper.remove(BusModel, 'id', req.body.id);
-            return sendResponse(res, 200, 'common.crud.removed');
-        
-     //======================================================
-        } catch (error) {
-            console.error('Error occured while removing bus.', error);
+    async removeBus(busId: unknown): Promise<{ messageKey: string }> {
 
-            if (error instanceof ValidationError) {
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
+        await helper.remove(BusModel, 'id', String(busId));
 
-            return sendResponse(res, 500, 'common.errors.internal');
-        }
+        return { messageKey: 'common.crud.removed' };
     }
 
-    //===================================================================================================
-    //? function to Update Bus
-    //===================================================================================================
-    
-    async updateBus(req: Request, res: Response){
-        try {
-            const result = await helper.update(BusModel, req.body, {
-                enumFields: [{ field: "status", enumObj: status }]
-            });
-            return sendResponse(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
-        
-        //======================================================
-        } catch (error) {
-            console.error('Error occured while updating bus.', error);
 
-            if (error instanceof ValidationError) {
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
-                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
-            return sendResponse(res, 500, 'common.errors.internal');
-        }
+    // ===================================================================================
+    ///? function to update bus data (this is can be used globally, only the new data need to be provided)
+    // ========================================================================
+    async updateBus(values: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
+        
+        const result = await helper.update(BusModel, values, {
+            enumFields: [{ field: "status", enumObj: status }]
+        });
+
+        return {
+            updated: result.updated,
+            messageKey: result.updated ? 'common.crud.updated' : 'common.crud.noChanges'
+        };
     }
+
 
     //===================================================================================================
     //? function to Fetch All Buses
     //===================================================================================================
 
-    async fetchAllBuses(req: Request, res: Response){
+    async fetchAllBuses(): Promise<{ messageKey: string; data: unknown }> {
         try {
             const buses = await BusModel.findAll({
                 attributes: ['id', 'plate', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
@@ -158,13 +88,12 @@ export class BusService{
                 ]
             });
 
-            return sendResponse(res, 200, 'buses.success.fetched', buses);
+            return { messageKey: 'buses.success.fetched', data: buses };
         
-        //======================================================
+        // --------------------------------------------------
         } catch (error) {
             console.error('Error occured while fetching buses.', error);
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
-    
 }

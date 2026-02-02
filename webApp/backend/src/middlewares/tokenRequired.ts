@@ -41,6 +41,13 @@ export const accessRequireToken = ( tokenName: string) => {
         sendResponse(res, 401, 'common.auth.invalidToken');
         return ;
       }
+
+      // store user data in req.user
+      req.user = {
+        id: userData.userID,
+        name: userData.userName,
+        role: userData.userRole
+      };
       
 
       next(); // Pass control to the next middleware/route

@@ -1,8 +1,17 @@
-import { Request, Response } from 'express';
 export declare class DriverService {
-    addDriver(req: Request, res: Response): Promise<void>;
-    removeDriver(req: Request, res: Response): Promise<void>;
-    updateDriver(req: Request, res: Response): Promise<void>;
-    fetchAllDrivers(req: Request, res: Response): Promise<void>;
+    addDriver(payload: Record<string, any>): Promise<{
+        messageKey: string;
+    }>;
+    removeDriver(driverId: unknown): Promise<{
+        messageKey: string;
+    }>;
+    updateDriver(payload: Record<string, any>): Promise<{
+        updated: boolean;
+        messageKey: string;
+    }>;
+    fetchAllDrivers(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
 }
 //# sourceMappingURL=driverService.d.ts.map

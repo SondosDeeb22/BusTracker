@@ -2,18 +2,14 @@
 //? Importing
 //===================================================================================================
 
-import {Request, Response } from 'express';
 //import models
 import UserModel from "../models/userModel";
 
 //import Enums
 import {role, gender, status} from '../enums/userEnum';
 
-
 // import exceptions 
-import { sendResponse } from "../exceptions/messageTemplate";
-
-import { ConflictError, NotFoundError, ValidationError } from '../errors';
+import { ConflictError, InternalError, NotFoundError, ValidationError } from '../errors';
 
 // services 
 import AuthService from './authService';
@@ -29,10 +25,15 @@ const helper = new UserHelper();
 
 export class DriverService{  
 
-    async addDriver(req: Request, res: Response) {
+    //===================================================================================================
+    //? function to Add Driver
+    //===================================================================================================
+
+    async addDriver(payload: Record<string, any>): Promise<{ messageKey: string }> {
         try {
-            await helper.add(UserModel, req.body, {
+            await helper.add(UserModel, payload, {
                 nonDuplicateFields: ['email'],
+
                 enumFields: [
                     { field: "status", enumObj: status },
                     { field: "role", enumObj: role },
@@ -47,31 +48,24 @@ export class DriverService{
             });
 
             // Send validation email
-            await authService.sendValidateEmail(res, req.body.email);
+            if (payload?.email) {
+                await authService.sendValidateEmail(String(payload.email));
+            }
 
-            return sendResponse(res, 200, 'drivers.success.added');
-
-        //======================================================
+            return { messageKey: 'drivers.success.added' };
+        
+        // --------------------------------------------------------
         } catch (error) {
-            console.error('Error occured while adding driver.', error);
-
             if (error instanceof ValidationError) {
-                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
-                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                throw error;
             }
-
             if (error instanceof ConflictError) {
-                return sendResponse(res, 409, 'common.errors.validation.duplicateEmail');
+                throw new ConflictError('common.errors.validation.duplicateEmail');
             }
-
             if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
+                throw error;
             }
-
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
 
@@ -81,87 +75,49 @@ export class DriverService{
     //? function to Remove Driver
     //===================================================================================================
 
-    async removeDriver(req: Request, res: Response){
-        try {
-            await helper.remove(UserModel, 'id', req.body.id);
-            return sendResponse(res, 200, 'common.crud.removed');
-        
-        // ======================================================================
-        } catch (error) {
-            console.error('Error occured while removing driver.', error);
+    async removeDriver(driverId: unknown): Promise<{ messageKey: string }> {
 
-            if (error instanceof ValidationError) {
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
+            await helper.remove(UserModel, 'id', String(driverId));
 
-            return sendResponse(res, 500, 'common.errors.internal');
-        }
+            return { messageKey: 'common.crud.removed' }
     }
 
     //===================================================================================================
     //? function to Update Driver
     //===================================================================================================
-    async updateDriver(req: Request, res: Response){
-        try {
-            const result = await helper.update(UserModel, req.body, {
-                enumFields: [
-                    { field: "status", enumObj: status },
-                    { field: "role", enumObj: role },
-                ]
-            });
+    async updateDriver(payload: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
+ 
+        const result = await helper.update(UserModel, payload, {
+            enumFields: [
+                { field: "status", enumObj: status },
+                { field: "role", enumObj: role },
+            ]
+          }
+        );
 
-            return sendResponse(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
-        } catch (error) {
-            console.error('Error occured while updating driver.', error);
-
-            if (error instanceof ValidationError) {
-                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
-                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
-                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
-                return sendResponse(res, 400, 'common.errors.validation.invalidField');
-            }
-            if (error instanceof NotFoundError) {
-                return sendResponse(res, 404, 'common.crud.notFound');
-            }
-            if (error instanceof Error) {
-                if (error.message.startsWith('common.')) {
-                    return sendResponse(res, 500, error.message);
-                }
-            }
-
-            return sendResponse(res, 500, 'common.errors.internal');
-        }
+        return {
+            updated: result.updated,
+            messageKey: result.updated ? 'common.crud.updated' : 'common.crud.noChanges'
+        };
+   
     }
 
     //===================================================================================================
     //? function to Fetch All Drivers
     //===================================================================================================
 
-    async fetchAllDrivers(req: Request, res: Response){
+    async fetchAllDrivers(): Promise<{ messageKey: string; data: unknown }> {
         try {
-            const drivers = await UserModel.findAll({
-                where: { role: role.driver },
-                attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
-            });
+        const drivers = await UserModel.findAll({
+            where: { role: role.driver },
+            attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
+        });
 
-            return sendResponse(res, 200, 'drivers.success.fetched', drivers);
-            
-        // ======================================================================
+        return { messageKey: 'drivers.success.fetched', data: drivers };
+        
+        // --------------------------------------------------------------------------
         } catch (error) {
-            console.error('Error occured while fetching drivers.', error);
-            return sendResponse(res, 500, 'common.errors.internal');
+            throw new InternalError('common.errors.internal');
         }
     }
-
-
-
 }

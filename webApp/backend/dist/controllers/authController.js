@@ -67,7 +67,7 @@ class AuthController {
     //? 2. Set Password 
     //? 2.1 function to send validate email to set password (for fresh user, like newly added dirver)
     async sendValidateEmail(req, res, email) {
-        return authService.sendValidateEmail(res, email);
+        return authService.sendValidateEmail(email);
     }
     //==================================================================================================================================
     //? 2.2.  verify set password token (HEAD)

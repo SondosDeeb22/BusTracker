@@ -32,7 +32,7 @@ const authHelper = new AuthHelper();
 
 import {sendEmail} from "../helpers/sendEmail";
 
-import { UnauthorizedError } from '../errors';
+import { InternalError, UnauthorizedError } from '../errors';
 
 //==========================================================================================================
 //? Function we have in this class
@@ -405,33 +405,22 @@ class AuthService{
     }
 
     //====================================================================================================
-    //? send Validation Email for new user (in order to set his password) 
+    //? send Validation Email for new user (in order to set his password)
     //=========================================================================================
-    async sendValidateEmail(res: Response, email: string, ){
-        try{
-            //create token WITHOUT storing in cookie (only in URL)----------------------------------------------------------------------------------
-            let setPasswordTokenCreation: string;
-            try{
-                //check if JWT exists in .env file
-                const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
-                if (!jwtSetPasswordKey) {
-                    sendResponse(res, 500, `JWT_SET_PASSWORD_KEY is not defined : ${jwtSetPasswordKey}`);
-                    return;
-                 }   
-                setPasswordTokenCreation = authHelper.createJWTtoken( res, setPasswordToken, jwtSetPasswordKey
-                , {email: email}, 1200000, false);// 1,200,000 millisecond = 20 minutes
-                
-                
-            }catch(error){
-                console.log('Error occured while creating token:', error);
-                return;
-            }
+    async sendValidateEmail(email: string): Promise<void> {
+        // check if JWT exists in .env file
+        const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
+        if (!jwtSetPasswordKey) {
+            throw new InternalError('common.errors.internal');
+        }
 
-            // ==============================================================================================================================
-            const mailSubject: string = "Set your Password";
-            // ---------------------------------------------------------------------
-            const setLink = `http://localhost:3000/set-password?token=${setPasswordTokenCreation}`; 
-            const htmlContent = `
+        // create token WITHOUT storing in cookie (only in URL)----------------------------------------------------------------------------------␍
+
+        const setPasswordTokenCreation = jwt.sign({ email }, jwtSetPasswordKey, { expiresIn: 1200000 / 1000 });// 1,200,000 millisecond = 20 minutes␍
+
+        const mailSubject: string = "Set your Password";
+        const setLink = `http://localhost:3000/set-password?token=${setPasswordTokenCreation}`;
+        const htmlContent = `
             <p>Hello,</p>
 
             <p>Your account was created in NEU Bus Tracker platform.</p>
@@ -448,20 +437,12 @@ class AuthService{
                 cursor: pointer;
                 padding: 12px 24px;">Set Password</a>
             <br><br>
-
-            
+       
             <br><br>
+
             <p>Please note that this link will expire in 20 minutes</p>`;
 
-            
-            await sendEmail(email, mailSubject, htmlContent);
-            console.log('this is sendEmailSResponse from sendValidation Email function authServices --------');
-           
-
-        //=========================================================================================
-        }catch(error){
-            console.log('Error occured while sending validation email. ', error);
-        }
+        await sendEmail(email, mailSubject, htmlContent);
     }
     
     //===================================================================================================================================
