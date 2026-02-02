@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../.env') });
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const errors_1 = require("../errors");
 //==========================================================================================================
 const sendEmail = async (email, mailSubject, mailBody) => {
     try {
@@ -37,12 +38,12 @@ const sendEmail = async (email, mailSubject, mailBody) => {
         };
         // send the email------------------------------------------------------------------------------------
         await transporter.sendMail(emailDetails);
-        return 'Confirmation email was sent successfully';
-        //=========================================================================================================
+        return;
+        // ----------------------------------------------------------------------------------------
     }
     catch (error) {
         console.log("Error occured while sending Email");
-        return "Error occured while sending Email";
+        throw new errors_1.EmailServiceError('common.errors.emailService');
     }
 };
 exports.sendEmail = sendEmail;

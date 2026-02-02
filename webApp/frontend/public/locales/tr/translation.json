@@ -3,7 +3,18 @@
     "errors": {
       "internal": "Sunucu hatası",
       "unauthorized": "Yetkisiz",
-      "forbidden": "Erişim reddedildi"
+      "forbidden": "Erişim reddedildi",
+      "emailService": "E-posta gönderimi sırasında bir hata oluştu",
+      "notFound": "Kayıt bulunamadı",
+
+      "validation": {
+        "missingField": "Zorunlu alan eksik",
+        "fillAllFields": "Lütfen tüm alanları doldurun",
+        "invalidField": "Geçersiz alan, Lütfen sunulan seçeneklerden birini seçin",
+        "duplicate": "Aynı bilgilere sahip bir kayıt zaten bulunmaktadır",
+        "duplicateEmail": "Bu e-posta adresiyle kayıtlı bir hesap bulunmaktadır"
+      }
+      
     },
     "pages": {
       "errorScreen": {
@@ -29,20 +40,14 @@
       "sessionExpired": "Oturum süresi doldu, lütfen tekrar giriş yapın",
       "invalidToken": "Geçersiz token"
     },
-    "validation": {
-      "fillAllFields": "Lütfen tüm alanları doldurun",
-      "invalidField": "Geçersiz alan",
-      "required": "Gerekli alan eksik",
-      "noData": "Veri sağlanmadı",
-      "duplicate": "Yinelenen kayıt"
-    },
     "crud": {
       "added": "Başarıyla eklendi",
       "updated": "Başarıyla güncellendi",
       "removed": "Başarıyla kaldırıldı",
       "notFound": "Bulunamadı",
-      "notUpdated": "Güncellenmedi",
-      "notRemoved": "Kaldırılamadı",
+      "notCreated": "Kayıt oluşturulamadı",
+      "notUpdated": "Kayıt güncellenemedi",
+      "notRemoved": "Kayıt silinemedi",
       "noChanges": "Değişiklik yok"
     }
   },

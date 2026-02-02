@@ -15,94 +15,15 @@ import RouteModel from '../models/routeModel';
 import UserModel from '../models/userModel';
 import BusModel from '../models/busModel';
 
+
+//helper
 import { UserHelper } from '../helpers/userHelper';
-const helper = new UserHelper();
+const  userHelper = new UserHelper();
 
-//===================================================================================================
-//? Helper
-//===================================================================================================
+import { ScheduleHelper } from '../helpers/scheduleHelper';
+const schedulehelper = new ScheduleHelper();
 
-const normalizeTime = (value: unknown): string => {
-    if (!value) return '';
-
-    const s = String(value).trim();
-    if (!s) return '';
-
-    const parts = s.split(':');
-    const hh = (parts[0] ?? '00').padStart(2, '0');
-    const mm = (parts[1] ?? '00').padStart(2, '0');
-    const ss = (parts[2] ?? '00').padStart(2, '0');
-    return `${hh}:${mm}:${ss}`;
-};
-
-const calcDayFromDate = (dateStr: string): string => {
-    const d = new Date(dateStr);
-    if (Number.isNaN(d.getTime())) return '';
-
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[d.getDay()] ?? '';
-};
-
-// Normalize day key for grouping 
-const normalizeDayKey = (value: unknown): string => {
-    const raw = String(value ?? '')
-        .trim()
-        .toLowerCase();
-
-    switch (raw) {
-        case 'monday':
-            return 'monday';
-        case 'tuesday':
-            return 'tuesday';
-        case 'wednesday':
-        case 'wedensday':
-            return 'wednesday';
-        case 'thursday':
-            return 'thursday';
-        case 'friday':
-            return 'friday';
-        case 'saturday':
-            return 'saturday';
-        case 'sunday':
-            return 'sunday';
-        default:
-            return raw;
-    }
-};
-
-
-// ==========================================================================
-// Format date for mobile UI
-const formatDateForMobileUi = (value: unknown): string => {
-    const s = String(value ?? '').trim();
-    const d = new Date(s);
-    if (Number.isNaN(d.getTime())) return s;
-
-    const two = (v: number) => String(v).padStart(2, '0');
-    return `${two(d.getDate())}/${two(d.getMonth() + 1)}/${d.getFullYear()}`;
-};
-
-// ==========================================================================
-// Normalize time to hour:minute format
-const normalizeTimeToHourMinute = (value: unknown): string => {
-    const t = normalizeTime(value);
-    if (!t) return '';
-    const parts = t.split(':');
-    const hh = (parts[0] ?? '00').padStart(2, '0');
-    const mm = (parts[1] ?? '00').padStart(2, '0');
-    return `${hh}:${mm}`;
-};
-
-// ==========================================================================
-// Parse color to ARGB int
-
-const parseColorToArgbInt = (raw: unknown): number => {
-    const s = String(raw ?? '').trim();
-    const hex = s.startsWith('#') ? s.slice(1) : s;
-    if (!/^[0-9a-fA-F]{6}$/.test(hex)) return 0xFF9E9E9E;
-    return (0xFF000000 | parseInt(hex, 16)) >>> 0;
-};
-
+import { ConflictError, NotFoundError, ValidationError } from '../errors';
 
 //===================================================================================================
 //? schedule class
@@ -188,13 +109,13 @@ export class ScheduleService {
 
                 const buckets = new Map<string, { time: string; trips: any[] }>();
                 for (const oh of operatingHours) {
-                    const t = normalizeTime(oh.hour);
+                    const t = schedulehelper.normalizeTime(oh.hour);
                     if (!t) continue;
                     if (!buckets.has(t)) buckets.set(t, { time: t, trips: [] });
                 }
                 const trips: any[] = row?.trips ?? [];
                 for (const trip of trips) {
-                    const tripTime = normalizeTime(trip?.time);
+                    const tripTime = schedulehelper.normalizeTime(trip?.time);
                     const bucket = buckets.get(tripTime);
                     if (bucket) {
                         bucket.trips.push(trip);
@@ -214,6 +135,8 @@ export class ScheduleService {
             });
 
             return sendResponse(res, 200, null, mapped);
+        
+        //==============================================
         } catch (error) {
             console.error('Error occured while fetching schedule', error);
             return sendResponse(res, 500, 'common.errors.internal');
@@ -289,13 +212,13 @@ export class ScheduleService {
 
                 const buckets = new Map<string, { time: string; trips: any[] }>();
                 for (const oh of operatingHours) {
-                    const t = normalizeTime(oh.hour);
+                    const t = schedulehelper.normalizeTime(oh.hour);
                     if (!t) continue;
                     if (!buckets.has(t)) buckets.set(t, { time: t, trips: [] });
                 }
                 const trips: any[] = row?.trips ?? [];
                 for (const trip of trips) {
-                    const tripTime = normalizeTime(trip?.time);
+                    const tripTime = schedulehelper.normalizeTime(trip?.time);
                     const bucket = buckets.get(tripTime);
 
                     // Keep the trip object simplified for user UI consumption.
@@ -366,8 +289,8 @@ export class ScheduleService {
             for (const schedule of mapped) {
 
                 // extract day and date information and normailzing them to united format 
-                const dayKey = normalizeDayKey(schedule?.day);
-                const dateStr = formatDateForMobileUi(schedule?.date);
+                const dayKey = schedulehelper.normalizeDayKey(schedule?.day);
+                const dateStr = schedulehelper.formatDateForMobileUi(schedule?.date);
                 const dayId = `${dayKey}|${dateStr}`;
 
                 //________________________________________________
@@ -401,7 +324,7 @@ export class ScheduleService {
                         ? schedule.servicePattern.operatingHours
                         : [];
                     const operatingTimes = operatingHoursRaw
-                        .map((oh) => normalizeTimeToHourMinute(oh?.hour))
+                        .map((oh) => schedulehelper.normalizeTimeToHourMinute(oh?.hour))
                         .filter((t) => Boolean(t))
                         .sort((a, b) => String(a).localeCompare(String(b)));
 
@@ -425,7 +348,7 @@ export class ScheduleService {
                     if (!routeName) return;
 
                     // get trip time
-                    const time = normalizeTimeToHourMinute(trip?.time);
+                    const time = schedulehelper.normalizeTimeToHourMinute(trip?.time);
                     if (!time) return;
 
                     // check if the route exists already, if not create new entry to that route within this service pattern within this day
@@ -501,7 +424,7 @@ export class ScheduleService {
         try {
             const detailedScheduleId = typeof req.body?.detailedScheduleId === 'string' ? req.body.detailedScheduleId.trim() : '';
             if (!detailedScheduleId) {
-                return sendResponse(res, 500, 'common.validation.required');
+                return sendResponse(res, 500, 'common.errors.validation.required');
             }
 
             const deletedCount = await ScheduledTripsModel.destroy({ where: { detailedScheduleId } });
@@ -530,18 +453,43 @@ export class ScheduleService {
             const servicePatternId = typeof body.servicePatternId === 'string' ? body.servicePatternId.trim() : '';
 
             if (!date || !servicePatternId) {
-                return sendResponse(res, 500, 'common.validation.fillAllFields');
+                return sendResponse(res, 500, 'common.errors.validation.fillAllFields');
             }
 
-            const day = calcDayFromDate(date);
+            const day = schedulehelper.calcDayFromDate(date);
             if (!day) {
                 return sendResponse(res, 500, 'schedule.errors.invalidDate');
             }
 
-            await helper.add(req, res, ScheduleModel, { date, day, servicePatternId });
-            return;
+            await userHelper.add(ScheduleModel, { date, day, servicePatternId });
+            return sendResponse(res, 200, 'common.crud.added');
+        
+        //==============================================
         } catch (error) {
             console.error('Error occured while creating schedule.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+
+            if (error instanceof ConflictError) {
+                return sendResponse(res, 409, error.message);
+            }
+
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
             return sendResponse(res, 500, 'common.errors.internal');
         }
     }
@@ -562,13 +510,13 @@ export class ScheduleService {
             };
 
             const scheduleId = typeof body.scheduleId === 'string' ? body.scheduleId.trim() : '';
-            const time = normalizeTime(body.time);
+            const time = schedulehelper.normalizeTime(body.time);
             const routeId = typeof body.routeId === 'string' ? body.routeId.trim() : '';
             const driverId = typeof body.driverId === 'string' ? body.driverId.trim() : '';
             const busId = typeof body.busId === 'string' ? body.busId.trim() : '';
 
             if (!scheduleId || !time || !routeId || !driverId || !busId) {
-                return sendResponse(res, 500, 'common.validation.fillAllFields');
+                return sendResponse(res, 500, 'common.errors.validation.fillAllFields');
             }
 
             const scheduleExists = await ScheduleModel.findOne({
@@ -620,16 +568,35 @@ export class ScheduleService {
                 return sendResponse(res, 200, 'tripForm.success.updated');
             }
 
-            await helper.add(
-                req,
-                res,
-                ScheduledTripsModel,
-                { scheduleId, time, routeId, driverId, busId },
-                { successMessageKey: 'tripForm.success.saved' }
-            );
-            return;
+            await userHelper.add(ScheduledTripsModel, { scheduleId, time, routeId, driverId, busId });
+            return sendResponse(res, 200, 'tripForm.success.saved');
+        
+        //==============================================
         } catch (error) {
             console.error('Error occured while creating scheduled trip.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+
+            if (error instanceof ConflictError) {
+                return sendResponse(res, 409, error.message);
+            }
+
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
             return sendResponse(res, 500, 'common.errors.internal');
         }
     }
@@ -644,14 +611,14 @@ export class ScheduleService {
             const body = req.body || {};
             const scheduleId = typeof body.scheduleId === 'string' ? body.scheduleId.trim() : '';
             if (!scheduleId) {
-                return sendResponse(res, 500, 'common.validation.required');
+                return sendResponse(res, 500, 'common.errors.validation.required');
             }
 
             const updates: any = { scheduleId };
 
             if (body.date) {
                 const date = String(body.date).trim();
-                const day = calcDayFromDate(date);
+                const day = schedulehelper.calcDayFromDate(date);
                 if (!day) return sendResponse(res, 500, 'schedule.errors.invalidDate');
                 updates.date = date;
                 updates.day = day;
@@ -661,10 +628,34 @@ export class ScheduleService {
                 updates.servicePatternId = String(body.servicePatternId).trim();
             }
 
-            await helper.update(req, res, ScheduleModel, updates);
-            return;
+            const result = await userHelper.update(ScheduleModel, updates);
+            return sendResponse(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
+        
+        //==============================================
         } catch (error) {
             console.error('Error occured while updating schedule.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+
+            if (error instanceof ConflictError) {
+                return sendResponse(res, 409, error.message);
+            }
+
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
             return sendResponse(res, 500, 'common.errors.internal');
         }
     }
@@ -678,13 +669,29 @@ export class ScheduleService {
         try {
             const scheduleId = typeof req.body?.scheduleId === 'string' ? req.body.scheduleId.trim() : '';
             if (!scheduleId) {
-                return sendResponse(res, 500, 'common.validation.required');
+                return sendResponse(res, 500, 'common.errors.validation.required');
             }
 
-            await helper.remove(req, res, ScheduleModel, 'scheduleId', scheduleId);
-            return;
+            await userHelper.remove(ScheduleModel, 'scheduleId', scheduleId);
+            return sendResponse(res, 200, 'common.crud.removed');
+        
+        //==============================================
         } catch (error) {
             console.error('Error occured while removing schedule.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
             return sendResponse(res, 500, 'common.errors.internal');
         }
     }

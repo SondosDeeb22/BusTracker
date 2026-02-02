@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
 import { Model, ModelStatic } from 'sequelize';
 export declare class UserHelper {
-    add(req: Request, res: Response, model: ModelStatic<Model<any, any>>, payload: Record<string, any>, options?: {
+    add(model: ModelStatic<Model<any, any>>, payload: Record<string, any>, options?: {
         nonDuplicateFields?: string[];
         enumFields?: Array<{
             field: string;
@@ -9,10 +8,9 @@ export declare class UserHelper {
             optional?: boolean;
         }>;
         transform?: (data: any) => Promise<any> | any;
-        successMessageKey?: string;
     }): Promise<void>;
-    remove(req: Request, res: Response, model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: string): Promise<void>;
-    update(req: Request, res: Response, model: ModelStatic<Model<any, any>>, values: Record<string, any>, options?: {
+    remove(model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: string): Promise<number>;
+    update(model: ModelStatic<Model<any, any>>, values: Record<string, any>, options?: {
         enumFields?: Array<{
             field: string;
             enumObj: object;
@@ -20,6 +18,9 @@ export declare class UserHelper {
         }>;
         disallowFields?: string[];
         transform?: (vals: any) => Promise<any> | any;
-    }): Promise<void>;
+    }): Promise<{
+        updated: boolean;
+        updatedCount: number;
+    }>;
 }
 //# sourceMappingURL=userHelper.d.ts.map

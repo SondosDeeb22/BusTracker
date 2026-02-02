@@ -184,7 +184,10 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{tBusSchedule('tripForm.driver')}</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {tBusSchedule('tripForm.driver')}
+              <span className="text-red-600"> *</span>
+            </label>
             {loadingLists ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{tBusSchedule('tripForm.loadingLists')}</div>
             ) : (
@@ -205,7 +208,10 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{tBusSchedule('tripForm.bus')}</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {tBusSchedule('tripForm.bus')}
+              <span className="text-red-600"> *</span>
+            </label>
             {loadingLists ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{tBusSchedule('tripForm.loadingLists')}</div>
             ) : (

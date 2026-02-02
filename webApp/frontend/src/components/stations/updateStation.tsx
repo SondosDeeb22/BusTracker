@@ -27,7 +27,7 @@ interface UpdateStationProps {
 //? UpdateStation
 //======================================================================================
 const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stationId }) => {
-  const { t } = useTranslation('stations');
+  const { t, i18n } = useTranslation(['stations', 'translation']);
   const [formData, setFormData] = useState<StationData>({
     id: stationId,
     stationName: '',
@@ -124,7 +124,8 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || t('updateForm.error'));
+      const messageKey = err.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -147,6 +148,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.stationName')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -162,6 +164,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.pickLocation')}
+              <span className="text-red-600"> *</span>
             </label>
             <div className="h-64 w-full rounded-md overflow-hidden border">
               {/* Map controller: initializes map, view, and context --------------------------------------------------------------------------- */}
@@ -211,6 +214,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"

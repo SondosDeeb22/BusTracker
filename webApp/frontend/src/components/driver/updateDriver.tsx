@@ -16,7 +16,7 @@ interface UpdateDriverProps {
 
 //================================================================================
 const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess }) => {
-  const { t } = useTranslation('drivers');
+  const { t, i18n } = useTranslation(['drivers', 'translation']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -62,10 +62,13 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
       console.log('Error status:', err.response?.status);
       console.log('Error data:', err.response?.data);
       
-      const errorMessage = err.response?.data?.message || 
-                          err.response?.data?.error || 
-                          err.message || 
-                          t('updateForm.error');
+      const messageKey = err.response?.data?.message;
+      if (messageKey) {
+        setError(i18n.t(messageKey));
+        return;
+      }
+
+      const errorMessage = err.response?.data?.error || err.message || t('updateForm.error');
       setError(errorMessage);
     } finally {
       setIsLoading(false);

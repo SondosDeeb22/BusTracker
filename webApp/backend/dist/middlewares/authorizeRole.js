@@ -14,6 +14,7 @@ const authHelpher_1 = __importDefault(require("../helpers/authHelpher"));
 const authHelper = new authHelpher_1.default();
 // import exceptions --------------------------------------------------------------------
 const messageTemplate_1 = require("../exceptions/messageTemplate");
+const errors_1 = require("../errors");
 //=======================================================================================
 //? function that will protect cetain pages from unauthorized access 
 // strict the access for some page 
@@ -28,11 +29,21 @@ const authorizeRole = (role) => {
             (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
-        const tokenData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
-        if (typeof tokenData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-            (0, messageTemplate_1.sendResponse)(res, 401, tokenData);
+        let tokenData;
+        // =======================================================
+        try {
+            tokenData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
+            // -------------------------------------------------------------------------
+        }
+        catch (error) {
+            if (error instanceof errors_1.UnauthorizedError) {
+                (0, messageTemplate_1.sendResponse)(res, 401, error.message);
+                return;
+            }
+            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
+        // =======================================================
         // check the user role
         if (tokenData.userRole !== role) {
             (0, messageTemplate_1.sendResponse)(res, 403, 'common.errors.forbidden');

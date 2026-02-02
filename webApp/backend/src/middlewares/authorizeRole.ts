@@ -16,6 +16,7 @@ const authHelper = new AuthHelper();
 
 // import exceptions --------------------------------------------------------------------
 import { sendResponse } from "../exceptions/messageTemplate";
+import { UnauthorizedError } from '../errors';
 
 
 //=======================================================================================
@@ -36,11 +37,22 @@ export const authorizeRole = (role: string) => {
         return;
     }
                 
-    const tokenData = authHelper.extractJWTData<JWTdata>(req, loginToken,jwtLoginKey);
-    if(typeof tokenData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-        sendResponse(res, 401, tokenData);
+    let tokenData: JWTdata;
+    
+    // =======================================================
+    try {
+        tokenData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
+
+    // -------------------------------------------------------------------------
+    } catch (error) {
+        if (error instanceof UnauthorizedError) {
+            sendResponse(res, 401, error.message);
+            return;
+        }
+        sendResponse(res, 500, 'common.errors.internal');
         return;
     }
+    // =======================================================
 
     // check the user role
     if(tokenData.userRole !== role){

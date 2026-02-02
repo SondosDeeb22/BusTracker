@@ -13,9 +13,10 @@ import RouteModel from "../models/routeModel";
 //import Enums
 import { status } from '../enums/busEnum';
 
+import { ConflictError, NotFoundError, ValidationError } from '../errors';
+
 import { UserHelper } from "../helpers/userHelper";
 const helper = new UserHelper();
-
 
 import { sendResponse } from '../exceptions/messageTemplate';
 
@@ -33,17 +34,40 @@ export class BusService{
 
         
         try{
-            await helper.add(req, res, BusModel, req.body,{
+            await helper.add(BusModel, req.body,{
                 nonDuplicateFields: ['plate'],
                 enumFields: [{ field: "status", enumObj: status }],
             }
            );
 
-           sendResponse(res, 200, 'buses.success.added');
+           return sendResponse(res, 200, 'buses.success.added');
         //----------------------------------------------------------------
        }catch(error){
             console.error('Error occured while creating bus.', error);
-            sendResponse(res, 500, 'common.errors.internal');
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+
+            if (error instanceof ConflictError) {
+                return sendResponse(res, 409, error.message);
+            }
+
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
+            return sendResponse(res, 500, 'common.errors.internal');
        }
     }
 
@@ -52,7 +76,29 @@ export class BusService{
     //===================================================================================================
 
     async removeBus(req: Request, res: Response){
-        await helper.remove(req, res, BusModel, 'id', req.body.id);
+        try {
+            await helper.remove(BusModel, 'id', req.body.id);
+            return sendResponse(res, 200, 'common.crud.removed');
+        
+     //======================================================
+        } catch (error) {
+            console.error('Error occured while removing bus.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
+            return sendResponse(res, 500, 'common.errors.internal');
+        }
     }
 
     //===================================================================================================
@@ -60,11 +106,32 @@ export class BusService{
     //===================================================================================================
     
     async updateBus(req: Request, res: Response){
-        await helper.update(req, res, BusModel, req.body, 
-            {
+        try {
+            const result = await helper.update(BusModel, req.body, {
                 enumFields: [{ field: "status", enumObj: status }]
+            });
+            return sendResponse(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
+        
+        //======================================================
+        } catch (error) {
+            console.error('Error occured while updating bus.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
             }
-        );
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+            return sendResponse(res, 500, 'common.errors.internal');
+        }
     }
 
     //===================================================================================================
@@ -92,6 +159,8 @@ export class BusService{
             });
 
             return sendResponse(res, 200, 'buses.success.fetched', buses);
+        
+        //======================================================
         } catch (error) {
             console.error('Error occured while fetching buses.', error);
             return sendResponse(res, 500, 'common.errors.internal');

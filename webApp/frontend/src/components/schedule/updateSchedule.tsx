@@ -38,7 +38,7 @@ type UpdateScheduleProps = {
 //======================================================================================
 
 const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, record, onClose, onSuccess, onRefresh }) => {
-  const { t } = useTranslation('busScedule');
+  const { t, i18n } = useTranslation(['busScedule', 'translation']);
 
   //====================================================================================
   //? State
@@ -104,7 +104,8 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
       onClose();
       await onRefresh();
     } catch (err: any) {
-      setError(err?.response?.data?.message || t('updateForm.error'));
+      const messageKey = err?.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -126,23 +127,31 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{t('updateForm.date')}</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {t('updateForm.date')}
+              <span className="text-red-600"> *</span>
+            </label>
             <input
               type="date"
               value={date}
               onChange={(ev) => setDate(ev.target.value)}
+              required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{t('updateForm.servicePattern')}</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {t('updateForm.servicePattern')}
+              <span className="text-red-600"> *</span>
+            </label>
             {loadingPatterns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{t('updateForm.loadingServicePatterns')}</div>
             ) : (
               <select
                 value={servicePatternId}
                 onChange={(ev) => setServicePatternId(ev.target.value)}
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">{t('updateForm.selectServicePattern')}</option>

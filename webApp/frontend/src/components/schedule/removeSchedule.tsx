@@ -34,7 +34,7 @@ const RemoveSchedule: React.FC<RemoveScheduleProps> = ({
   onSuccess,
   onRefresh,
 }) => {
-  const { t } = useTranslation('busScedule');
+  const { t, i18n } = useTranslation(['busScedule', 'translation']);
 
   //====================================================================================
   //? State
@@ -63,7 +63,8 @@ const RemoveSchedule: React.FC<RemoveScheduleProps> = ({
       onClose();
       await onRefresh();
     } catch (err: any) {
-      setError(err?.response?.data?.message || t('removeDialog.error'));
+      const messageKey = err?.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('removeDialog.error'));
     } finally {
       setLoading(false);
     }

@@ -32,6 +32,8 @@ const authHelper = new AuthHelper();
 
 import {sendEmail} from "../helpers/sendEmail";
 
+import { UnauthorizedError } from '../errors';
+
 //==========================================================================================================
 //? Function we have in this class
 // - store loginAttempt
@@ -63,16 +65,17 @@ class AuthService{
            
             const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, loginToken, jwtLoginKey);
 
-            if(typeof userData === "string"){
-                sendResponse(res, 401, userData);
-                return;
-            }
-
             sendResponse(res, 200, 'auth.currentUser.success', userData);
             return;
             
         } catch (error) {
             console.error('Error retrieving user data.', error);
+
+            if (error instanceof UnauthorizedError) {
+                sendResponse(res, 401, error.message);
+                return;
+            }
+
             sendResponse(res, 500, 'common.errors.internal');
             return;
         }
@@ -94,7 +97,7 @@ class AuthService{
 
             //check if the user provided all the needed data
             if( !email || !password){
-                sendResponse(res, 500, 'common.validation.fillAllFields');
+                sendResponse(res, 500, 'common.errors.validation.fillAllFields');
                 return;
             }
             const userEmail = email.trim();
@@ -154,8 +157,9 @@ class AuthService{
                 status = 401;
             }
 
-            authHelper.loginAttempt(req, res, attemptSuccessful, email, status, resultMessage);
+            void authHelper.loginAttempt(req, attemptSuccessful, email);
 
+            sendResponse(res, status, attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials');
             return;
             
         } catch (error) {
@@ -180,12 +184,7 @@ class AuthService{
                 return;
             }
            
-            const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
-
-            if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
-                return;
-            }
+            authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
             authHelper.removeCookieToken(res, loginToken)
 
@@ -197,6 +196,12 @@ class AuthService{
         // ===============================================================================================================================
         } catch (error) {
             console.error('Error during logout.', error);
+
+            if (error instanceof UnauthorizedError) {
+                sendResponse(res, 401, error.message);
+                return;
+            }
+
             sendResponse(res, 500, 'common.errors.internal');
             return;
         }
@@ -286,9 +291,8 @@ class AuthService{
             <p>Please note that this Reset Link will expire in 10 minutes</p>`;
 
             
-            const sendEmailSResponse = await sendEmail(email, mailSubject, htmlContent);
+            await sendEmail(email, mailSubject, htmlContent);
 
-            void sendEmailSResponse;
             sendResponse(res, 200, 'auth.passwordReset.success.emailSent');
             return ;
             //======================================================================================================
@@ -450,8 +454,8 @@ class AuthService{
             <p>Please note that this link will expire in 20 minutes</p>`;
 
             
-            const sendEmailSResponse = await sendEmail(email, mailSubject, htmlContent);
-            console.log('this is sendEmailSResponse from sendValidation Email function authServices --------', sendEmailSResponse);
+            await sendEmail(email, mailSubject, htmlContent);
+            console.log('this is sendEmailSResponse from sendValidation Email function authServices --------');
            
 
         //=========================================================================================

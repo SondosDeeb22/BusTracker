@@ -15,6 +15,7 @@ const routeModel_1 = __importDefault(require("../models/routeModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
 const routeStationModel_1 = __importDefault(require("../models/routeStationModel"));
 const stationModel_1 = __importDefault(require("../models/stationModel"));
+const errors_1 = require("../errors");
 const userHelper_1 = require("../helpers/userHelper");
 const messageTemplate_1 = require("../exceptions/messageTemplate");
 const helper = new userHelper_1.UserHelper();
@@ -31,7 +32,7 @@ class RouteService {
                 ...body,
                 totalStops: stations.length
             };
-            await helper.add(req, res, routeModel_1.default, payload, {
+            await helper.add(routeModel_1.default, payload, {
                 //-----------------------------------------------------------
                 transform: async (data) => {
                     const out = { ...data };
@@ -65,18 +66,62 @@ class RouteService {
                     await routeStationModel_1.default.bulkCreate(rows);
                 }
             }
-            (0, messageTemplate_1.sendResponse)(res, 200, 'routes.success.added');
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'routes.success.added');
+            //======================================================
         }
         catch (error) {
             console.error('Error occured while creating route.', error);
-            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+            if (error instanceof errors_1.ValidationError) {
+                if (error.message === 'fillAllFields')
+                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.fillAllFields');
+                if (error.message === 'invalidField')
+                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
+                if (error.message === 'required')
+                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData')
+                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.noData');
+                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof errors_1.ConflictError) {
+                return (0, messageTemplate_1.sendResponse)(res, 409, error.message);
+            }
+            if (error instanceof errors_1.NotFoundError) {
+                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
+                }
+            }
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }
     }
     //===================================================================================================
     //? function to Remove Route
     //===================================================================================================
     async removeRoute(req, res) {
-        await helper.remove(req, res, routeModel_1.default, 'id', req.body.id);
+        try {
+            await helper.remove(routeModel_1.default, 'id', req.body.id);
+            return (0, messageTemplate_1.sendResponse)(res, 200, 'common.crud.removed');
+            //======================================================
+        }
+        catch (error) {
+            console.error('Error occured while removing route.', error);
+            if (error instanceof errors_1.ValidationError) {
+                if (error.message === 'required')
+                    return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.required');
+                return (0, messageTemplate_1.sendResponse)(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof errors_1.NotFoundError) {
+                return (0, messageTemplate_1.sendResponse)(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return (0, messageTemplate_1.sendResponse)(res, 500, error.message);
+                }
+            }
+            return (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
+        }
     }
     //===================================================================================================
     //? function to Update Route
@@ -92,7 +137,7 @@ class RouteService {
             }
             // validate status (if provided)
             if (routeStatusValue && !Object.values(routeEnum_1.status).includes(routeStatusValue)) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.invalidField');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.validation.invalidField');
                 return;
             }
             // normalize title

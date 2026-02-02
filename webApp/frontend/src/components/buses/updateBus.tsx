@@ -27,7 +27,7 @@ interface UpdateBusProps {
 //? UpdateBus
 //======================================================================================
 const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
-  const { t } = useTranslation('buses');
+  const { t, i18n } = useTranslation(['buses', 'translation']);
   const [formData, setFormData] = useState<BusData>({
     id: busId,
     plate: '',
@@ -123,7 +123,8 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || t('updateForm.error'));
+      const messageKey = err.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -156,6 +157,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.plate')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -171,6 +173,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.brand')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -188,6 +191,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.assignedRoute')}
+              <span className="text-red-600"> *</span>
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
@@ -216,6 +220,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.assignedDriver')}
+              <span className="text-red-600"> *</span>
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
@@ -243,12 +248,14 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
               <option value="">{t('updateForm.selectStatus')}</option>
               {Object.values(busStatus).map((statusValue) => (

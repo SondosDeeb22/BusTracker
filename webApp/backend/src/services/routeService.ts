@@ -14,6 +14,8 @@ import BusModel from "../models/busModel";
 import RouteStationModel from "../models/routeStationModel";
 import stationModel from "../models/stationModel";
 
+import { ConflictError, NotFoundError, ValidationError } from '../errors';
+
 import { UserHelper } from "../helpers/userHelper";
 import { sendResponse } from '../exceptions/messageTemplate';
 const helper = new UserHelper();
@@ -40,7 +42,7 @@ export class RouteService{
                 totalStops: stations.length
             };
 
-            await helper.add(req, res, RouteModel, payload,
+            await helper.add(RouteModel, payload,
                 {
                     //-----------------------------------------------------------
                     transform: async (data) => {
@@ -79,11 +81,35 @@ export class RouteService{
                 }
             }
 
-            sendResponse(res, 200, 'routes.success.added');
+            return sendResponse(res, 200, 'routes.success.added');
         
+        //======================================================
         }catch(error){
             console.error('Error occured while creating route.', error);
-            sendResponse(res, 500, 'common.errors.internal');
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'fillAllFields') return sendResponse(res, 400, 'common.errors.validation.fillAllFields');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+
+            if (error instanceof ConflictError) {
+                return sendResponse(res, 409, error.message);
+            }
+
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -91,7 +117,29 @@ export class RouteService{
     //? function to Remove Route
     //===================================================================================================
     async removeRoute(req: Request, res: Response){
-        await helper.remove(req, res, RouteModel, 'id', req.body.id);
+        try {
+            await helper.remove(RouteModel, 'id', req.body.id);
+            return sendResponse(res, 200, 'common.crud.removed');
+        
+        //======================================================
+        } catch (error) {
+            console.error('Error occured while removing route.', error);
+
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+
+            return sendResponse(res, 500, 'common.errors.internal');
+        }
     }
 
     //===================================================================================================
@@ -110,7 +158,7 @@ export class RouteService{
 
             // validate status (if provided)
             if(routeStatusValue && !Object.values(status).includes(routeStatusValue)){
-                sendResponse(res, 500, 'common.validation.invalidField');
+                sendResponse(res, 500, 'common.errors.validation.invalidField');
                 return;
             }
 

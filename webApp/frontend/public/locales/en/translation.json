@@ -3,7 +3,17 @@
     "errors": {
       "internal": "Internal server error",
       "unauthorized": "Unauthorized",
-      "forbidden": "Access denied"
+      "forbidden": "Access denied",
+      "emailService": "Error occured while sending Email",
+      "notFound": "Record was not found",
+      "validation": {
+            "missingField": "required field is Missing",
+            "fillAllFields": "Fill all fields please",
+            "invalidField": "Invalid field, Please choose from provided options",
+            "duplicate": "A record with the same data already exists",
+            "duplicateEmail": "An account with this email already exists"
+      }
+
     },
     "pages": {
       "errorScreen": {
@@ -29,20 +39,15 @@
       "sessionExpired": "Session expired, please log in again",
       "invalidToken": "Invalid token"
     },
-    "validation": {
-      "fillAllFields": "Fill all fields please",
-      "invalidField": "Invalid field",
-      "required": "Required field is missing",
-      "noData": "No data provided",
-      "duplicate": "Duplicate entry"
-    },
+    
     "crud": {
       "added": "Added successfully",
       "updated": "Updated successfully",
       "removed": "Removed successfully",
       "notFound": "Not found",
-      "notUpdated": "Not updated",
-      "notRemoved": "Not removed",
+      "notCreated": "Record was not created",
+      "notUpdated": "Record was not updated",
+      "notRemoved": "Record was not removed",
       "noChanges": "No changes detected"
     }
   },

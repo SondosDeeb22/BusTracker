@@ -9,7 +9,10 @@ import 'package:app_links/app_links.dart';
 import 'driver/screen/auth/login/login_page.dart';
 import 'driver/screen/auth/reset_password/reset_password.dart';
 import 'driver/screen/auth/reset_password/invalid_reset_link_page.dart';
+import 'driver/screen/auth/set_password/set_password.dart';
+import 'driver/screen/auth/set_password/invalid_set_password_link_page.dart';
 import 'driver/service/auth/reset_password/reset_password_service.dart';
+import 'driver/service/auth/set_password/set_password_service.dart';
 import 'driver/service/localization/localization_service.dart';
 
 //========================================================
@@ -81,15 +84,26 @@ class _DriverAppState extends State<DriverApp> {
   }
 
   void _handleIncomingUri(Uri uri) {
-    // Expected: myapp://reset-password/<token>
+    // Expected:
+    // - myapp://reset-password/<token>
+    // - myapp://set-password/<token>
     if (uri.scheme != 'myapp') return;
 
     String? token;
+    String? type;
 
     // Variant A (recommended): myapp://reset-password/<token>
     if (uri.host == 'reset-password') {
       if (uri.pathSegments.isNotEmpty) {
         token = uri.pathSegments.first.trim();
+        type = 'reset-password';
+      }
+    }
+
+    if (uri.host == 'set-password') {
+      if (uri.pathSegments.isNotEmpty) {
+        token = uri.pathSegments.first.trim();
+        type = 'set-password';
       }
     }
 
@@ -98,24 +112,50 @@ class _DriverAppState extends State<DriverApp> {
       final segments = uri.pathSegments;
       if (segments.length >= 2 && segments.first == 'reset-password') {
         token = segments[1].trim();
+        type = 'reset-password';
+      }
+    }
+
+    if (token == null) {
+      final segments = uri.pathSegments;
+      if (segments.length >= 2 && segments.first == 'set-password') {
+        token = segments[1].trim();
+        type = 'set-password';
       }
     }
 
     if (token == null || token.isEmpty) return;
     final nonNullToken = token;
+    final nonNullType = type;
+    if (nonNullType == null) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future<void>(() async {
-        final service = ResetPasswordService();
-        final errorKeyOrMessage = await service.validateResetPasswordToken(
-          token: nonNullToken,
-        );
+        late final MaterialPageRoute route;
 
-        final route = (errorKeyOrMessage == null)
-            ? MaterialPageRoute(
-                builder: (_) => ResetPasswrodPage(token: nonNullToken),
-              )
-            : MaterialPageRoute(builder: (_) => const InvalidResetLinkPage());
+        if (nonNullType == 'reset-password') {
+          final service = ResetPasswordService();
+          final errorKeyOrMessage = await service.validateResetPasswordToken(
+            token: nonNullToken,
+          );
+          route = (errorKeyOrMessage == null)
+              ? MaterialPageRoute(
+                  builder: (_) => ResetPasswrodPage(token: nonNullToken),
+                )
+              : MaterialPageRoute(builder: (_) => const InvalidResetLinkPage());
+        } else {
+          final service = SetPasswordService();
+          final errorKeyOrMessage = await service.validateSetPasswordToken(
+            token: nonNullToken,
+          );
+          route = (errorKeyOrMessage == null)
+              ? MaterialPageRoute(
+                  builder: (_) => SetPasswordPage(token: nonNullToken),
+                )
+              : MaterialPageRoute(
+                  builder: (_) => const InvalidSetPasswordLinkPage(),
+                );
+        }
 
         _navigatorKey.currentState?.pushReplacement(route);
       });

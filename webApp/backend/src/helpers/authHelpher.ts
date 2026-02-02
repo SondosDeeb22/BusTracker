@@ -2,8 +2,6 @@
 //? Import 
 //==========================================================================================================
 
-import { Request, Response } from "express";
-
 import { LocationData , userIPaddressAndLocation} from "../interfaces/helper&middlewareInterface";
 
 
@@ -14,25 +12,34 @@ import jwt from 'jsonwebtoken';
 import LoginAttemptModel from '../models/loginAttempModel';
 import BusModel from '../models/busModel';
 
-// to send responses
-import { sendResponse } from '../exceptions/messageTemplate';
-
 //import Enums ------------------------------------------------------------------------------
 import { loginToken } from "../enums/tokenNameEnum";
 
 // import interfaces ------------------------------------------------------------------------
 import { JWTdata } from "../interfaces/helper&middlewareInterface";
 
+import { ForbiddenError, InternalError, UnauthorizedError } from '../errors';
 
 import path from "path";
 //===========================================================================================================================
+
+type RequestLike = {
+    cookies: Record<string, string | undefined>;
+    ip?: string | undefined;
+};
+
+type ResponseLike = {
+    cookie: (name: string, value: string, options?: Record<string, unknown>) => unknown;
+    clearCookie: (name: string, options?: Record<string, unknown>) => unknown;
+};
+
 class AuthHelper{
 
     //===========================================================================================================================================
     // Function to Create JWT
     //===========================================================================================================================================
 
-    createJWTtoken(res: Response, 
+    createJWTtoken(res: ResponseLike, 
         tokenName: string, 
         secretKey: string,  
         components: { [key: string]: number | string | boolean}, 
@@ -58,7 +65,7 @@ class AuthHelper{
     //===========================================================================================================================================
     // Function to remove a cookie
     //===========================================================================================================================================
-    removeCookieToken(res: Response, tokenName: string): null {
+    removeCookieToken(res: ResponseLike, tokenName: string): null {
         // remove current cookie variant (matches how we set it)
         res.clearCookie(tokenName, {
             httpOnly: true,
@@ -85,33 +92,34 @@ class AuthHelper{
     //===========================================================================================================================================
     // Function to Extract a token data
     //============================================================================================================================================
-    extractJWTData =  <tokentInterface>(req: Request,  tokenName: string, secretKey: string): tokentInterface | string => {
+    extractJWTData =  <tokentInterface>(req: RequestLike,  tokenName: string, secretKey: string): tokentInterface => {
         try{
-
-
             // take the token from the cookie 
-            const token: string = req.cookies[tokenName];
+            const token: string | undefined = req.cookies[tokenName];
     
             if(!token){
-                return 'common.auth.sessionExpired';
+                throw new UnauthorizedError('common.auth.sessionExpired');
             }
             
             const user_data = jwt.verify(token, secretKey) as tokentInterface;
             if(!user_data || typeof user_data !== "object"){
-                return 'common.auth.invalidToken';
+                throw new UnauthorizedError('common.auth.invalidToken');
             }
             return user_data;
     
         //---------------------------------------------------------------------------------------------------------------------    
         }catch(error){
-            return 'common.errors.unauthorized';
+            if (error instanceof UnauthorizedError) {
+                throw error;
+            }
+            throw new UnauthorizedError('common.errors.unauthorized');
         }
     } 
     //===========================================================================================================================================
     // Function to get the user IP address and use it to get his location info
     //============================================================================================================================================
     
-    getIPaddressAndUserLocation = async (req: Request): Promise< userIPaddressAndLocation > =>{
+    getIPaddressAndUserLocation = async (req: RequestLike): Promise< userIPaddressAndLocation > =>{
         const unknownResult: userIPaddressAndLocation = { ip: null, location: null };
 
         try{
@@ -140,6 +148,7 @@ class AuthHelper{
             const location: string = `${city}, ${region}, ${country}`
             return {ip, location};
         
+        // ----------------------------------------------------------------------------
         }catch(error){
             console.warn('Error occured while getting location data from the IP address');
             return unknownResult;
@@ -149,7 +158,7 @@ class AuthHelper{
     // Function that store the login attempts
     // =================================================================================================================================
 
-    async loginAttempt(req: Request, res: Response, attemptSuccessful: boolean, userEmail: string, status: number, resultMessage: string):Promise<void>{
+    async loginAttempt(req: RequestLike, attemptSuccessful: boolean, userEmail: string):Promise<void>{
         try{
             const IPaddressAndLocation= await this.getIPaddressAndUserLocation(req);
 
@@ -164,13 +173,9 @@ class AuthHelper{
                 attemptTime:  new Date().toTimeString().slice(0, 8),
                 attemptDate: new Date()
             })
-
-            // resultMessage is user-facing; do not return raw text
-            sendResponse(res, status, attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials');
             //=================================================================================================================================
         }catch(error){
             console.error('Error occured while storing login attempt.', error);
-            sendResponse(res, 500, 'common.errors.internal');
             return;
         }
         
@@ -178,34 +183,27 @@ class AuthHelper{
     // =================================================================================================================================
     // Function to validate that user committing operation is authorized to do that (so no driver changes something for another driver)
     // =================================================================================================================================
-    async validateUser(req: Request, res: Response, id: string): Promise<boolean>{
+    async validateUser(req: RequestLike, id: string): Promise<true>{
         try{
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if(!jwtLoginKey){
                 console.error('Error in fetching JWT secret key');
-                sendResponse(res, 500, 'common.errors.internal');
-                return false;
+                throw new InternalError('common.errors.internal');
             }
 
             // get the logged in user data ---------------------------------------------------
             const userData = this.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
-            if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                sendResponse(res, 401, userData);
-                return false;
-            }
-
             //check if the user (logged in ) tryying to change value in bus table, is the same user assinged as driver for that bus
-            const user = await BusModel.findOne({
+            const userauthorized = await BusModel.findOne({
                 where: {
                     id: id,
                     assignedDriver: userData.userID
                 }
             })
 
-            if(!user){
-                sendResponse(res, 403, 'common.errors.forbidden');
-                return false;
+            if(!userauthorized){
+                throw new ForbiddenError('common.errors.forbidden');
                 
             };
 
@@ -213,8 +211,7 @@ class AuthHelper{
         //==========================================================================================================================
         }catch(error){
             console.error('Error occured while validating login attempt', error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return false;
+            throw error;
         }
     }
 

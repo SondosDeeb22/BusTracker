@@ -39,7 +39,7 @@ const AddServicePattern = ({
   onCreated,
   onRefresh,
 }: AddServicePatternProps) => {
-  const { t } = useTranslation('servicePatterns');
+  const { t, i18n } = useTranslation(['servicePatterns', 'translation']);
   const [title, setTitle] = useState('');
   const [selectedHours, setSelectedHours] = useState<number[]>([]);
   const [creating, setCreating] = useState(false);
@@ -106,15 +106,12 @@ const AddServicePattern = ({
       await onRefresh();
     } catch (err: unknown) {
       const maybeAxiosError = err as {
+        response?: { status?: number; data?: { message?: unknown } };
         message?: unknown;
-        response?: { status?: unknown; data?: { message?: unknown } };
       };
-
-      const backendMsg =
-        typeof maybeAxiosError?.response?.data?.message === 'string' ? maybeAxiosError.response.data.message : '';
-
-      const status = typeof maybeAxiosError?.response?.status === 'number' ? maybeAxiosError.response.status : null;
-
+      const status = typeof maybeAxiosError?.response?.status === 'number' ? maybeAxiosError.response.status : undefined;
+      const backendMsgRaw = typeof maybeAxiosError?.response?.data?.message === 'string' ? maybeAxiosError.response.data.message : '';
+      const backendMsg = backendMsgRaw ? i18n.t(backendMsgRaw) : '';
       const fallbackMsg = typeof maybeAxiosError?.message === 'string' ? maybeAxiosError.message : '';
 
       const msg = backendMsg || fallbackMsg || t('addForm.errors.failed');
@@ -136,7 +133,10 @@ const AddServicePattern = ({
         <form onSubmit={onCreate}>
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2">{t('addForm.patternTitle')}</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                {t('addForm.patternTitle')}
+                <span className="text-red-600"> *</span>
+              </label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -148,7 +148,10 @@ const AddServicePattern = ({
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-bold text-gray-700">{t('addForm.coveredHours')}</div>
+                <div className="text-sm font-bold text-gray-700">
+                  {t('addForm.coveredHours')}
+                  <span className="text-red-600"> *</span>
+                </div>
                 <div className="text-xs text-gray-500">{t('addForm.hoursHint')}</div>
               </div>
 

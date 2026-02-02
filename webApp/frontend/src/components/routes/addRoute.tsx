@@ -29,7 +29,7 @@ interface AddRouteProps {
 //? AddRoute
 //======================================================================================
 const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
-  const { t } = useTranslation('routes');
+  const { t, i18n } = useTranslation(['routes', 'translation']);
   const [formData, setFormData] = useState<RouteData>({
     title: '',
     color: '#000000',
@@ -83,7 +83,8 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || t('addForm.error'));
+      const messageKey = err.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,8 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
         });
         setStations(response.data.data || response.data || []);
       } catch (err: any) {
-        setError(err.response?.data?.message || t('addForm.stationsLoadError'));
+        const messageKey = err.response?.data?.message;
+        setError(messageKey ? i18n.t(messageKey) : t('addForm.stationsLoadError'));
       }
     };
 
@@ -121,6 +123,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.titleLabel')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -135,6 +138,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.color')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="color"
@@ -171,6 +175,7 @@ const AddRoute: React.FC<AddRouteProps> = ({ onClose, onSuccess }) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"

@@ -33,7 +33,7 @@ interface DriverData{
 //=======================================================================================
 
 const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
-  const { t } = useTranslation('drivers');
+  const { t, i18n } = useTranslation(['drivers', 'translation']);
   const [driverData, setDriverData] = useState<DriverData>({
     name: '',
     gender: '',
@@ -82,7 +82,8 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
       onClose(); //close the model
       //-----------------------------------------------
     } catch (error:any) {
-      setError(error.response?.data?.message || t('addForm.error'));
+      const messageKey = error.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -112,6 +113,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.name')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -126,6 +128,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.gender')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="gender"
@@ -150,6 +153,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.phone')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="tel"
@@ -164,6 +168,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.email')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="email"
@@ -178,6 +183,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.birthDate')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="date"
@@ -192,6 +198,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.licenseNumber')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -206,6 +213,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.licenseExpiryDate')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="date"
@@ -220,6 +228,7 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('addForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"

@@ -61,16 +61,19 @@ class ResetPasswordController extends ChangeNotifier {
     // ----------------------------------------------------------------
     try {
       final service = ResetPasswordService();
-      final result = await service.resetPassword(
+
+      final result = await service.resetPassword( // make the reset password request
         token: _token,
         newPassword: newPassword,
         confirmPassword: confirmPassword,
       );
 
+      // if the reset password request failed  ___________________________________
       if (!result.passwordReset) {
         final rawMessage = result.message.trim();
         final translated = rawMessage.isEmpty ? '' : rawMessage.translate;
 
+        // the token is invalid, so we redirect user to login page
         if (rawMessage == 'common.auth.invalidToken' ||
             translated == 'common.auth.invalidToken') {
           _shouldRedirectInvalidToken = true;
@@ -79,13 +82,16 @@ class ResetPasswordController extends ChangeNotifier {
           return false;
         }
 
+        // token is valid, the request failed for other reasons , so we show general error message 
         _errorMessage = rawMessage.isEmpty
             ? 'driver_reset_password_error_try_later'.translate
             : (translated == rawMessage ? rawMessage : translated);
         notifyListeners();
         return false;
       }
+      // ___________________________________
 
+      
       _successMessage = result.message.trim().isEmpty
           ? 'driver_reset_password_success_message'.translate
           : result.message;

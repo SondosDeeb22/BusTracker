@@ -30,7 +30,7 @@ interface UpdateRouteProps {
 //? UpdateRoute
 //======================================================================================
 const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }) => {
-  const { t } = useTranslation('routes');
+  const { t, i18n } = useTranslation(['routes', 'translation']);
   const [formData, setFormData] = useState<RouteData>({
     id: routeId,
     title: '',
@@ -80,7 +80,8 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
         });
         setStations(response.data.data || response.data || []);
       } catch (err: any) {
-        setError(err.response?.data?.message || t('updateForm.stationsLoadError'));
+        const messageKey = err.response?.data?.message;
+        setError(messageKey ? i18n.t(messageKey) : t('updateForm.stationsLoadError'));
       }
     };
 
@@ -129,7 +130,8 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || t('updateForm.error'));
+      const messageKey = err.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
     } finally {
       setLoading(false);
     }
@@ -152,6 +154,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.titleLabel')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -166,6 +169,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.color')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="color"
@@ -203,6 +207,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"

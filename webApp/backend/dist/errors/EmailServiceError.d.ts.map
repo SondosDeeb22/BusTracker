@@ -1,0 +1,1 @@
+{"version":3,"file":"EmailServiceError.d.ts","sourceRoot":"","sources":["../../src/errors/EmailServiceError.ts"],"names":[],"mappings":"AAAA,qBAAa,iBAAkB,SAAQ,KAAK;IAC1C,SAAgB,UAAU,OAAO;IACjC,SAAgB,UAAU,+BAA+B;gBAE7C,OAAO,SAAyB,EAAE,KAAK,CAAC,EAAE,OAAO;CAK9D"}

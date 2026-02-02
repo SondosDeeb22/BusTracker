@@ -30,7 +30,7 @@ type AddScheduleProps = {
 //======================================================================================
 
 const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose, onSuccess, onRefresh }) => {
-  const { t } = useTranslation('busScedule');
+  const { t, i18n } = useTranslation(['busScedule', 'translation']);
 
   //====================================================================================
   //? State
@@ -99,7 +99,8 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
       resetAndClose();
       await onRefresh();
     } catch (err: any) {
-      setError(err?.response?.data?.message || t('addForm.error'));
+      const messageKey = err?.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -121,7 +122,10 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{t('addForm.date')}</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {t('addForm.date')}
+              <span className="text-red-600"> *</span>
+            </label>
             <input
               type="date"
               value={date}
@@ -132,7 +136,10 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{t('addForm.servicePattern')}</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {t('addForm.servicePattern')}
+              <span className="text-red-600"> *</span>
+            </label>
             {loadingPatterns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{t('addForm.loadingServicePatterns')}</div>
             ) : (

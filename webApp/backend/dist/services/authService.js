@@ -19,6 +19,7 @@ const messageTemplate_1 = require("../exceptions/messageTemplate");
 const authHelpher_1 = __importDefault(require("../helpers/authHelpher"));
 const authHelper = new authHelpher_1.default();
 const sendEmail_1 = require("../helpers/sendEmail");
+const errors_1 = require("../errors");
 //==========================================================================================================
 //? Function we have in this class
 // - store loginAttempt
@@ -42,15 +43,15 @@ class AuthService {
                 return;
             }
             const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
-            if (typeof userData === "string") {
-                (0, messageTemplate_1.sendResponse)(res, 401, userData);
-                return;
-            }
             (0, messageTemplate_1.sendResponse)(res, 200, 'auth.currentUser.success', userData);
             return;
         }
         catch (error) {
             console.error('Error retrieving user data.', error);
+            if (error instanceof errors_1.UnauthorizedError) {
+                (0, messageTemplate_1.sendResponse)(res, 401, error.message);
+                return;
+            }
             (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
@@ -65,7 +66,7 @@ class AuthService {
             const { email, password } = body;
             //check if the user provided all the needed data
             if (!email || !password) {
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.validation.fillAllFields');
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.validation.fillAllFields');
                 return;
             }
             const userEmail = email.trim();
@@ -115,7 +116,8 @@ class AuthService {
                 resultMessage = "password is wrong, please try again";
                 status = 401;
             }
-            authHelper.loginAttempt(req, res, attemptSuccessful, email, status, resultMessage);
+            void authHelper.loginAttempt(req, attemptSuccessful, email);
+            (0, messageTemplate_1.sendResponse)(res, status, attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials');
             return;
         }
         catch (error) {
@@ -136,11 +138,7 @@ class AuthService {
                 (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
                 return;
             }
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
-            if (typeof userData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                (0, messageTemplate_1.sendResponse)(res, 500, userData); // userData here is Error message , check authHelper.ts file
-                return;
-            }
+            authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
             authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
             (0, messageTemplate_1.sendResponse)(res, 200, 'auth.logout.success');
             return;
@@ -148,6 +146,10 @@ class AuthService {
         }
         catch (error) {
             console.error('Error during logout.', error);
+            if (error instanceof errors_1.UnauthorizedError) {
+                (0, messageTemplate_1.sendResponse)(res, 401, error.message);
+                return;
+            }
             (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
@@ -217,8 +219,7 @@ class AuthService {
                 padding: 12px 24px;">Reset Password</a>
             <br><br>
             <p>Please note that this Reset Link will expire in 10 minutes</p>`;
-            const sendEmailSResponse = await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
-            void sendEmailSResponse;
+            await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
             (0, messageTemplate_1.sendResponse)(res, 200, 'auth.passwordReset.success.emailSent');
             return;
             //======================================================================================================
@@ -351,8 +352,8 @@ class AuthService {
             
             <br><br>
             <p>Please note that this link will expire in 20 minutes</p>`;
-            const sendEmailSResponse = await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
-            console.log('this is sendEmailSResponse from sendValidation Email function authServices --------', sendEmailSResponse);
+            await (0, sendEmail_1.sendEmail)(email, mailSubject, htmlContent);
+            console.log('this is sendEmailSResponse from sendValidation Email function authServices --------');
             //=========================================================================================
         }
         catch (error) {

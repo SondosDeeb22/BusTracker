@@ -11,11 +11,9 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 //import Models
 const loginAttempModel_1 = __importDefault(require("../models/loginAttempModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
-// to send responses
-const messageTemplate_1 = require("../exceptions/messageTemplate");
 //import Enums ------------------------------------------------------------------------------
 const tokenNameEnum_1 = require("../enums/tokenNameEnum");
-//===========================================================================================================================
+const errors_1 = require("../errors");
 class AuthHelper {
     //===========================================================================================================================================
     // Function to Create JWT
@@ -68,17 +66,20 @@ class AuthHelper {
             // take the token from the cookie 
             const token = req.cookies[tokenName];
             if (!token) {
-                return 'common.auth.sessionExpired';
+                throw new errors_1.UnauthorizedError('common.auth.sessionExpired');
             }
             const user_data = jsonwebtoken_1.default.verify(token, secretKey);
             if (!user_data || typeof user_data !== "object") {
-                return 'common.auth.invalidToken';
+                throw new errors_1.UnauthorizedError('common.auth.invalidToken');
             }
             return user_data;
             //---------------------------------------------------------------------------------------------------------------------    
         }
         catch (error) {
-            return 'common.errors.unauthorized';
+            if (error instanceof errors_1.UnauthorizedError) {
+                throw error;
+            }
+            throw new errors_1.UnauthorizedError('common.errors.unauthorized');
         }
     };
     //===========================================================================================================================================
@@ -107,6 +108,7 @@ class AuthHelper {
             const region = locationJSONdata.region || 'Unknown Region';
             const location = `${city}, ${region}, ${country}`;
             return { ip, location };
+            // ----------------------------------------------------------------------------
         }
         catch (error) {
             console.warn('Error occured while getting location data from the IP address');
@@ -116,7 +118,7 @@ class AuthHelper {
     // =================================================================================================================================
     // Function that store the login attempts
     // =================================================================================================================================
-    async loginAttempt(req, res, attemptSuccessful, userEmail, status, resultMessage) {
+    async loginAttempt(req, attemptSuccessful, userEmail) {
         try {
             const IPaddressAndLocation = await this.getIPaddressAndUserLocation(req);
             //---------------------------------------------------------------------
@@ -130,43 +132,34 @@ class AuthHelper {
                 attemptTime: new Date().toTimeString().slice(0, 8),
                 attemptDate: new Date()
             });
-            // resultMessage is user-facing; do not return raw text
-            (0, messageTemplate_1.sendResponse)(res, status, attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials');
             //=================================================================================================================================
         }
         catch (error) {
             console.error('Error occured while storing login attempt.', error);
-            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
             return;
         }
     }
     // =================================================================================================================================
     // Function to validate that user committing operation is authorized to do that (so no driver changes something for another driver)
     // =================================================================================================================================
-    async validateUser(req, res, id) {
+    async validateUser(req, id) {
         try {
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
             if (!jwtLoginKey) {
                 console.error('Error in fetching JWT secret key');
-                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
-                return false;
+                throw new errors_1.InternalError('common.errors.internal');
             }
             // get the logged in user data ---------------------------------------------------
             const userData = this.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
-            if (typeof userData === "string") { // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                (0, messageTemplate_1.sendResponse)(res, 401, userData);
-                return false;
-            }
             //check if the user (logged in ) tryying to change value in bus table, is the same user assinged as driver for that bus
-            const user = await busModel_1.default.findOne({
+            const userauthorized = await busModel_1.default.findOne({
                 where: {
                     id: id,
                     assignedDriver: userData.userID
                 }
             });
-            if (!user) {
-                (0, messageTemplate_1.sendResponse)(res, 403, 'common.errors.forbidden');
-                return false;
+            if (!userauthorized) {
+                throw new errors_1.ForbiddenError('common.errors.forbidden');
             }
             ;
             return true;
@@ -174,8 +167,7 @@ class AuthHelper {
         }
         catch (error) {
             console.error('Error occured while validating login attempt', error);
-            (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
-            return false;
+            throw error;
         }
     }
 }

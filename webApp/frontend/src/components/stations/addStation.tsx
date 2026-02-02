@@ -25,7 +25,7 @@ interface AddStationProps {
 //? AddStation
 //======================================================================================
 const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
-  const { t } = useTranslation('stations');
+  const { t, i18n } = useTranslation(['stations', 'translation']);
   const [formData, setFormData] = useState<StationData>({
     stationName: '',
     latitude: null,
@@ -97,7 +97,8 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || t('addForm.error'));
+      const messageKey = err.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -120,6 +121,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.stationName')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -136,6 +138,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.pickLocation')}
+              <span className="text-red-600"> *</span>
             </label>
             <div className="h-72 w-full rounded-md overflow-hidden border">
 
@@ -189,6 +192,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"

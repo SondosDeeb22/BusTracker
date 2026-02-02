@@ -1,21 +1,10 @@
-//import libraries
-import {Request, Response} from 'express';
-// import exceptions
-import { sendResponse } from "../exceptions/messageTemplate";
-
 //import helper 
 import { validateEnum } from './validateEnumValue';
 import { Model, ModelStatic, UniqueConstraintError } from 'sequelize';
 
 //import Enums ------------------------------------------------------------------------------
 
-// import interfaces ------------------------------------------------------------------------
-import { JWTdata } from "../interfaces/helper&middlewareInterface";
-
-// import helpers --------------------------------------------------------------------
-import AuthHelper from "../helpers/authHelpher";
-const authHelper = new AuthHelper();
-
+import { ConflictError, NotFoundError, ValidationError, InternalError } from "../errors";
 //===================================================================================================================================================
 //===================================================================================================================================================
 
@@ -24,175 +13,172 @@ const authHelper = new AuthHelper();
 export class UserHelper{
     //?==========================================================================================================
     //? function to ADD data
-    //==========================================================================================================
+    //========================================================================================================
 
     async add(
-        req: Request,
-        res: Response,
-        model: ModelStatic<Model<any, any>>,
-        payload: Record<string, any>,
-
-        options?: {
-            nonDuplicateFields?: string[],
-            enumFields?: Array<{ field: string; enumObj: object; optional?: boolean }>;
-            transform?: (data: any) => Promise<any> | any;
-            successMessageKey?: string;
-        }
+    model: ModelStatic<Model<any, any>>,
+    payload: Record<string, any>,
+    options?: {
+        nonDuplicateFields?: string[],
+        enumFields?: Array<{ field: string; enumObj: object; optional?: boolean }>;
+        transform?: (data: any) => Promise<any> | any;
+    }
     ): Promise<void> {
-        //----------------------------------------------------------------
 
-        const modelClassName = model.name;
-        const dataName = (modelClassName?.replace(/Model$/,'') || '').toLowerCase();
+        const attrs = model.getAttributes();
+        const body = { ...payload };
 
         try {
-            const body = (payload ?? req.body) as Record<string, any>;
+            // ---------------------------------------------------------------------
+            // required fields (from model metadata)
 
-            // get required/unique from model metadata when not provided
-            const attrs = model.getAttributes();
+            const requiredFields: string[] = [];
 
-            const requiredFromModel: string[] = [];
-
-            // collect required fields
             for (const [name, attr] of Object.entries(attrs)) {
-                const allowNull = (attr as any).allowNull === true;
-                const hasDefault = (attr as any).defaultValue !== undefined;
-                const autoInc = (attr as any).autoIncrement === true;
-                const isPK = (attr as any).primaryKey === true;
-
-                if (!allowNull && !hasDefault && !autoInc && !isPK) {
-                    requiredFromModel.push(name);
+                const a = attr as any;
+                if (!a.allowNull && a.defaultValue === undefined && !a.autoIncrement && !a.primaryKey) {
+                    requiredFields.push(name);
                 }
             }
-
-            const requiredFields = requiredFromModel;
 
             for (const field of requiredFields) {
                 if (body[field] === undefined || body[field] === null || body[field] === "") {
-                    const status = 500;
-                    sendResponse(res, status, 'common.validation.fillAllFields');
-                    return; 
+                    throw new ValidationError('common.errors.validation.fillAllFields');
                 }
             }
 
-            // normalize empty strings to null for nullable columns
-            for(const field in body) {
-                if(!requiredFields.includes(field) && body[field] === "" ) { // to ensure column field is optional and it's empty string, so we make it Null
-                    body[field] = null;
+            // Normalize empty strings to null (only for optional fields)
+            for (const key of Object.keys(body)) {
+                if (!requiredFields.includes(key) && body[key] === "") {
+                    body[key] = null;
                 }
             }
 
-            // Enum validation
-            if (options?.enumFields && options.enumFields.length > 0) {
+            // ---------------------------------------------------------------------
+            // enum validation
+
+            if (options?.enumFields) {
                 for (const rule of options.enumFields) {
                     const value = body[rule.field];
-                    if (value === undefined || value === null || value === "") {
-                        if (!rule.optional) {
-                            const status = 500;
-                            sendResponse(res, status, 'common.validation.invalidField');
-                            return;
-                        }
-                    } else if (!validateEnum(value, rule.enumObj as any)) {
-                        const status = 500;
-                        sendResponse(res, status, 'common.validation.invalidField');
-                        return;
+                    if ((value === undefined || value === null || value === "") && !rule.optional) {
+                        throw new ValidationError('common.errors.validation.missingField');
+                    }
+                    if (value != null && !validateEnum(value, rule.enumObj as any)) {
+                        throw new ValidationError('common.errors.validation.invalidField');
                     }
                 }
             }
 
-            // Primary Key settings --------------------------------------------------------------------------------
+            // ---------------------------------------------------------------------
+            // primary key generation
 
-            const pkEntry = Object.entries(attrs).find(([_, a]) => (a as any).primaryKey === true);
+            const pkEntry = Object.entries(attrs).find(([_, a]) => (a as any).primaryKey);
 
             if (pkEntry) {
                 const [pkName, pkAttr] = pkEntry as [string, any];
-                // pkName is the actual primary-key column name for the given model (e.g. 'scheduleId', 'busId', ...)
-                // We avoid assuming a generic 'id' column because different tables might use different PK names
-                const hasPk = body[pkName] !== undefined && body[pkName] !== null && body[pkName] !== "";
-                const autoInc = pkAttr.autoIncrement === true;
-                const hasDefault = pkAttr.defaultValue !== undefined;
+                const hasPk = body[pkName] != null && body[pkName] !== "";
 
-                if (!hasPk && !autoInc && !hasDefault) {
-                    // If the PK isn't provided, isn't auto-increment, and has no default value,
-                    //we generate a new PK value using the model name prefix(First letter) + next numeric suffix.
-                    const modelName = model.name.toLocaleUpperCase()[0];
+        
+                // If the PK isn't provided, isn't auto-increment, and has no default value,
+                //we generate a new PK value using the model name prefix(First letter) + next numeric suffix
+                if (!hasPk && !pkAttr.autoIncrement && pkAttr.defaultValue === undefined) {
+
+                    const prefix = model.name.toUpperCase()[0];
+                    let generatedId: string | null = null;
+                    let found = false;
 
                     // Deterministic collision-safe generation:
                     // Try IDs from 100 -> 999 and pick the first one that does NOT exist in DB
-                    // This keeps the old behavior of "check if used before" without randomness
-                    let finalId = '';
                     for (let n = 100; n <= 999; n++) {
-                        const candidate = `${modelName}${String(n).padStart(3, '0')}`;
+                        generatedId = `${prefix}${String(n).padStart(3, '0')}`;
                         const exists = await model.findOne({
-                            where: { [pkName]: candidate } as any,
+                            where: { [pkName]: generatedId } as any,
                             attributes: [pkName],
                         });
 
                         if (!exists) {
-                            finalId = candidate;
+                            body[pkName] = generatedId;
+                            found = true;
                             break;
                         }
                     }
 
-                    if (!finalId) {
-                        console.error('Cannot generate a new primary key. ID space is exhausted.');
-                        sendResponse(res, 500, 'common.errors.internal');
-                        return;
+                    // ID space exhausted → server design failure
+                    if (!found) {
+                        throw new InternalError('common.errors.idSpaceExhausted');
                     }
-
-                    body[pkName] = finalId;
                 }
             }
-            //-----------------------------------------------------------------------------------------------------
 
-            // non-duplicate checks -----------------------------------------------------------------------------
-            if (options?.nonDuplicateFields && options.nonDuplicateFields.length > 0) {
+            // ---------------------------------------------------------------------
+            // apply transform (if existed) and create and Create record in the database
+            // 
+            const finalData = options?.transform
+                ? await options.transform(body)
+                : body;
+
+            // ---------------------------------------------------------------------
+            // non-duplicate checks (run AFTER transform so normalized values are checked)
+            if (options?.nonDuplicateFields) {
                 for (const field of options.nonDuplicateFields) {
-                    const duplicated = await model.findOne({
-                        where: { [field]: body[field] }
+                    const value = (finalData as any)?.[field];
+                    if (value == null || value === '') continue;
+
+                    const exists = await model.findOne({
+                        where: { [field]: value } as any,
+                        attributes: [field],
                     });
 
-                    if (duplicated) {
-                        const status = 500;
-                        sendResponse(res, status, 'common.validation.duplicate');
-                        return;
+                    if (exists) {
+                        throw new ConflictError('common.errors.validation.duplicate');
                     }
                 }
             }
-            //-----------------------------------------------------------------------------------------------------
 
-            // apply transform (if existed) and create
-            const finalData = options?.transform ? await options.transform(body) : body;
             await model.create(finalData as any);
 
-            sendResponse(res, 200, options?.successMessageKey ?? 'common.crud.added');
-            console.log(`${dataName} was added successfully`);
+        // ---------------------------------------------------------------
+        } catch (error) {
 
-            return;
+            // ---------------------------------------------------------------------
+            // centralized error mapping
+            if (
+                error instanceof ValidationError ||
+                error instanceof ConflictError ||
+                error instanceof InternalError
+            ) {
+                throw error;
+            }
 
-        //==========================================================================================================
-        } catch (error) {sendResponse
-            console.error(`Error occured while creating ${dataName}.`, error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return;
+            if (error instanceof UniqueConstraintError) {
+                throw new ConflictError('common.errors.validation.duplicate');
+            }
+
+            console.error('DB create failed:', error);
+            throw new InternalError('common.errors.internal');
         }
     }
+
+
+
+
+
 
 
     //?==========================================================================================================
     //? function to Remove data
     //==========================================================================================================
  
-    async remove(req: Request, res: Response, model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: string):Promise<void>{
+    async remove(model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: string):Promise<number>{
+        // unique value is basically the primary key of the model
   
         const modelClassName = model.name;
 
         const dataName = (modelClassName?.replace(/Model$/,'') || '').toLowerCase(); // remove the word 'Model' from the name 
    
         try{      
-                
             if(!uniqueValue){
-                sendResponse(res, 500, 'common.validation.required');
-                return;
+                throw new ValidationError('common.errors.missingField');
             }
             //ensure the user exists -----------------------------------------------------
             const fieldExists = await model.findOne({
@@ -203,8 +189,7 @@ export class UserHelper{
             });
             
             if(!fieldExists){
-                sendResponse(res, 500, 'common.crud.notFound');
-                return;
+                throw new NotFoundError('common.errors.notFound');
             }
 
             // Delete the user from the database ---------------------------------------------------
@@ -215,18 +200,15 @@ export class UserHelper{
             });
 
             if(deletedField === 0 ){
-                sendResponse(res, 500, 'common.crud.notRemoved');
-                return;
+                throw new ConflictError('common.crud.notRemoved');
             }
 
             //if the user was removed 
-            sendResponse(res, 200, 'common.crud.removed');
-            return;
-            // ======================================================================
+            return deletedField;
+            // ------------------------------------------------------------------------
         }catch(error){
             console.error(`Error occured while removing ${dataName}.`, error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return;
+            throw error;
         }
 
     }
@@ -235,13 +217,13 @@ export class UserHelper{
     //? function to Update data
     //==========================================================================================================
     
-    async update( req: Request, res: Response, model: ModelStatic<Model<any, any>>, values: Record<string, any>,
+    async update(model: ModelStatic<Model<any, any>>, values: Record<string, any>,
         options?: {
             enumFields?: Array<{ field: string; enumObj: object; optional?: boolean }>;
             disallowFields?: string[];
             transform?: (vals: any) => Promise<any> | any;
         }
-    ):Promise<void>{
+    ):Promise<{ updated: boolean; updatedCount: number }>{
         
         //get the name of the model
         const modelClassName = model.name;
@@ -249,22 +231,18 @@ export class UserHelper{
 
         try{
 
-            const body= req.body;
-
             const attrsForPk = model.getAttributes();
             const pkEntry = Object.entries(attrsForPk).find(([_, a]) => (a as any).primaryKey === true);
             const uniqueField = pkEntry ? (pkEntry[0] as string) : 'id';
-            const uniqueValue = body?.[uniqueField] ?? values?.[uniqueField];
+            const uniqueValue = values?.[uniqueField];
   
             // check that uniqueValue is not empty --------------------------------------------------
             if(uniqueValue === undefined || uniqueValue === null || uniqueValue === ""){
-                sendResponse(res, 500, 'common.validation.required');
-                return;
+                throw new ValidationError('common.errors.validation.fillAllFields');
             }
             //check that updated values exists 
             if(!values || Object.keys(values).length === 0){
-                    sendResponse(res, 500, 'common.validation.noData');
-                return;
+                throw new ValidationError('common.errors.validation.fillAllFields');
             }
 
             // normalize empty strings to null for nullable columns -------------------------------------
@@ -284,17 +262,14 @@ export class UserHelper{
             if (options?.enumFields && options.enumFields.length > 0) {
                 for (const rule of options.enumFields) {
                     const value = values[rule.field];
-                    if (value === undefined || value === null || value === "") {
-                        if (!rule.optional) {
-                            continue;
-                        }
-                    } else if (!validateEnum(value, rule.enumObj as any)) {
-                        sendResponse(res, 500, 'common.validation.invalidField');
-                        return;
+                    if ((value === undefined || value === null || value === "") && !rule.optional) {
+                        throw new ValidationError('common.errors.validation.missingField');
+                    }
+                    if (value != null && !validateEnum(value, rule.enumObj as any)) {
+                        throw new ValidationError('common.errors.validation.invalidField');
                     }
                 }
             }
-
 
             //check reocred exists --------------------------------------------------------------------
             const record = await model.findOne({
@@ -305,8 +280,7 @@ export class UserHelper{
             });
 
             if(!record){
-                sendResponse(res, 500, 'common.crud.notFound');
-                return;
+                throw new NotFoundError('common.errors.notFound');
             }
 
             //----------------------------------------------------------------------------------------------
@@ -330,8 +304,7 @@ export class UserHelper{
 
 
             if (changedKeys.length === 0) {
-                sendResponse(res, 200, 'common.crud.noChanges');
-                return;
+                return { updated: false, updatedCount: 0 };
             }
             
 
@@ -346,18 +319,15 @@ export class UserHelper{
                     }
                 });
             if(updatedCount === 0){
-                sendResponse(res, 500, 'common.crud.notUpdated');
-                    return;
-                }
-            sendResponse(res, 200, 'common.crud.updated');
-            return;
+                throw new ConflictError('common.crud.notUpdated');
+            }
+            return { updated: true, updatedCount };
 
             //===================================================================================
             }catch(error){
 
                 console.error(`Error occured while updating ${dataName}.`, error);
-                sendResponse(res, 500, 'common.errors.internal');
-                return;
+                throw error;
             }
         }
 }

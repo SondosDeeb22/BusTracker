@@ -20,7 +20,7 @@ interface BusData{
 //? AddBus
 //======================================================================================
 const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) => {
-  const { t } = useTranslation('buses');
+  const { t, i18n } = useTranslation(['buses', 'translation']);
   const [formData, setFormData] = useState<BusData>({
     plate: '',
     brand: '',
@@ -88,7 +88,8 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || t('addForm.error'));
+      const messageKey = err.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
     } finally {
       setLoading(false);
     }
@@ -111,6 +112,7 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.plate')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -126,6 +128,7 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.brand')}
+              <span className="text-red-600"> *</span>
             </label>
             <input
               type="text"
@@ -196,12 +199,14 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.status')}
+              <span className="text-red-600"> *</span>
             </label>
             <select
               name="status"
               value={formData.status}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
               <option value="">{t('addForm.selectStatus')}</option>
               {Object.values(busStatus).map((statusValue) => (

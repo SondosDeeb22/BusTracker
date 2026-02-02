@@ -19,6 +19,7 @@ class DriverLocalizationService extends ChangeNotifier {
     'auth/login.json',
     'auth/forgot_password.json',
     'auth/reset_password.json',
+    'auth/set_password.json',
   ];
 
   static Map<String, dynamic>? _translations;

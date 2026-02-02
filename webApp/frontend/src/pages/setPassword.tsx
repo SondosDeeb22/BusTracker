@@ -17,7 +17,7 @@ const SetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation('auth/setPasswordPage');
+  const { t, i18n } = useTranslation(['auth/setPasswordPage', 'translation']);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -45,7 +45,8 @@ const SetPassword = () => {
       return;
 
     } catch (error: any) {
-      setError(error?.response?.data?.message || t('errors.invalidPassword'));
+      const messageKey = error?.response?.data?.message;
+      setError(messageKey ? i18n.t(messageKey) : t('errors.invalidPassword'));
       console.error('Error occured while Setting Password:', error);
 
     } finally {

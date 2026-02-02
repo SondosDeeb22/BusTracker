@@ -31,6 +31,8 @@ import { sendResponse } from "../exceptions/messageTemplate";
 import BusScheduleModel from '../models/busScheduleModel';
 import RouteModel from '../models/routeModel';
 
+import { ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '../errors';
+
 //===================================================================================================
 
 
@@ -54,19 +56,31 @@ export class UserService{
             }
             
             const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
-        
-            if(typeof userData === "string"){ // when userData is string (so it's not object that contains users data ). then, we  return the error message and stop the function 
-                    sendResponse(res, 500, userData);// userData here is Error message , check authHelper.ts file
-                    return;
-                }
 
-            // await userhelper.update(req, res, userModel, 'id', userData.userID, {language: body.language} )
-            await userhelper.update(req, res, userModel, {language: body.language} )
+            const result = await userhelper.update(userModel, { id: userData.userID, language: body.language });
+            return sendResponse(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
 
+        //=========================================================================================     
         }catch(error){
             console.error('Error occured while changing language.', error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return;
+            if (error instanceof UnauthorizedError) {
+                return sendResponse(res, 401, error.message);
+            }
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+            return sendResponse(res, 500, 'common.errors.internal');
     }
 
     }
@@ -90,21 +104,33 @@ export class UserService{
             
             const userData = authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
 
-            if(typeof userData === "string"){ 
-                sendResponse(res, 500, userData);
-                return;
-            }
+            const result = await userhelper.update(userModel, { id: userData.userID, appearance: body.appearance });
+            return sendResponse(res, 200, result.updated ? 'common.crud.updated' : 'common.crud.noChanges');
 
-            // await userhelper.update(req, res, userModel, 'id', userData.userID, {appearance: body.appearance} )
-
-            await userhelper.update(req, res, userModel,  {appearance: body.appearance} )
-
+        //===============================================     
         }catch(error){
             console.error('Error occured while changing appearance.', error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return;
+            if (error instanceof UnauthorizedError) {
+                return sendResponse(res, 401, error.message);
+            }
+            if (error instanceof ValidationError) {
+                if (error.message === 'required') return sendResponse(res, 400, 'common.errors.validation.required');
+                if (error.message === 'noData') return sendResponse(res, 400, 'common.errors.validation.noData');
+                if (error.message === 'invalidField') return sendResponse(res, 400, 'common.errors.validation.invalidField');
+                return sendResponse(res, 400, 'common.errors.validation.invalidField');
+            }
+            if (error instanceof NotFoundError) {
+                return sendResponse(res, 404, 'common.crud.notFound');
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
+
 
     // =================================================================================================================================
     //? change route (by driver)
@@ -112,18 +138,24 @@ export class UserService{
 
     async changeRoute(req: Request, res: Response){
         try{
-            const legitDriver = await authHelper.validateUser(req, res, req.body.id);
-        
-            if(!legitDriver){
-                return;
-            }
+            await authHelper.validateUser(req, req.body.id);
 
             await busService.updateBus(req, res);
         //====================================================================
         }catch(error){
             console.error('Error occured while changing route.', error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return;
+            if (error instanceof UnauthorizedError) {
+                return sendResponse(res, 401, error.message);
+            }
+            if (error instanceof ForbiddenError) {
+                return sendResponse(res, 403, error.message);
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
@@ -134,18 +166,24 @@ export class UserService{
 
     async updateBusStatus(req: Request, res: Response){
         try{
-            const legitDriver = await authHelper.validateUser(req, res, req.body.id);
-        
-            if(!legitDriver){
-                return;
-            }
+            await authHelper.validateUser(req, req.body.id);
 
             await busService.updateBus(req, res)
         //====================================================================
         }catch(error){
             console.error('Error occured while updating bus status.', error);
-            sendResponse(res, 500, 'common.errors.internal');
-            return;
+            if (error instanceof UnauthorizedError) {
+                return sendResponse(res, 401, error.message);
+            }
+            if (error instanceof ForbiddenError) {
+                return sendResponse(res, 403, error.message);
+            }
+            if (error instanceof Error) {
+                if (error.message.startsWith('common.')) {
+                    return sendResponse(res, 500, error.message);
+                }
+            }
+            return sendResponse(res, 500, 'common.errors.internal');
         }
     }
 
