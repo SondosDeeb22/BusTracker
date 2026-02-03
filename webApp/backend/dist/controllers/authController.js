@@ -16,28 +16,38 @@ class AuthController {
     //=================================================================================================================================
     // Login function
     async login(req, res) {
-        return authService.login(req, res);
+        const result = await authService.login(req, res);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     //=================================================================================================================================
     // Get current user data
     async getCurrentUser(req, res) {
-        return authService.getCurrentUser(req, res);
+        const result = await authService.getCurrentUser(req, res);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     //=================================================================================================================================
     // Logout function
     async logout(req, res) {
-        return authService.logout(req, res);
+        const result = await authService.logout(req, res);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     // =================================================================================================================================
     //? 1. Reset Password (Forgot password page)
     // 1.1. function send email for user for password resetting
     async sendEmailToResetAdminPassword(req, res) {
-        return authService.sendEmailToResetPassword(req, res, userEnum_1.role.admin);
+        const result = await authService.sendEmailToResetPassword(req, res, userEnum_1.role.admin);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     //==================================================================================================================================
     // 1.2. function send email for user for password resetting
     async sendEmailToResetDriverPassword(req, res) {
-        return authService.sendEmailToResetPassword(req, res, userEnum_1.role.driver);
+        const result = await authService.sendEmailToResetPassword(req, res, userEnum_1.role.driver);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     //==================================================================================================================================
     // 1.3. verify reset password token (HEAD)
@@ -59,7 +69,9 @@ class AuthController {
     //=================================================================================================================================
     // 1.4. function to rest the password
     async resetPassword(req, res) {
-        return authService.resetPassword(req, res);
+        const result = await authService.resetPassword(req, res);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     //==================================================================================================================================
     //? ==================================================================================================================================
@@ -67,7 +79,9 @@ class AuthController {
     //? 2. Set Password 
     //? 2.1 function to send validate email to set password (for fresh user, like newly added dirver)
     async sendValidateEmail(req, res, email) {
-        return authService.sendValidateEmail(email);
+        const result = await authService.sendValidateEmail(email);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
     //==================================================================================================================================
     //? 2.2.  verify set password token (HEAD)
@@ -89,7 +103,9 @@ class AuthController {
     //==================================================================================================================================
     //? 2.3. function to set password (if it's new user, e.x: new driver )
     async setPassword(req, res) {
-        return authService.setPassword(req, res);
+        const result = await authService.setPassword(req, res);
+        (0, messageTemplate_1.sendResponse)(res, result.status, result.messageKey, result.data);
+        return;
     }
 }
 exports.AuthController = AuthController;
