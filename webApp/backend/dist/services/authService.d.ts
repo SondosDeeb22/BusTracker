@@ -7,8 +7,6 @@ type AuthServiceResult<T = undefined> = {
     data?: T;
 };
 declare class AuthService {
-    private toHelperReq;
-    private toHelperRes;
     getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{
         userID: number;
         userRole: string;
@@ -17,7 +15,8 @@ declare class AuthService {
     login(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
     logout(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
     sendEmailToResetPassword(req: AuthRequest, res: AuthResponse, targetRole: role): Promise<AuthServiceResult>;
-    verifyToken(req: AuthRequest, res: AuthResponse, secretKey: string): Promise<emailInterface | null>;
+    verifyResetPasswordToken(req: AuthRequest): Promise<emailInterface | null>;
+    verifySetPasswordToken(req: AuthRequest): Promise<emailInterface | null>;
     resetPassword(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
     sendValidateEmail(email: string): Promise<AuthServiceResult>;
     setPassword(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;

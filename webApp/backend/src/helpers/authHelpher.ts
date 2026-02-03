@@ -24,16 +24,160 @@ import path from "path";
 //===========================================================================================================================
 
 type RequestLike = {
-    cookies: Record<string, string | undefined>;
+    cookies?: Record<string, string | undefined>;
     ip?: string | undefined;
+    params?: any;
+    query?: any;
 };
 
 type ResponseLike = {
-    cookie: (name: string, value: string, options?: Record<string, unknown>) => unknown;
+    cookie?: (name: string, value: string, options?: Record<string, unknown>) => unknown;
+    setCookie?: (name: string, value: string, options?: Record<string, unknown>) => unknown;
     clearCookie: (name: string, options?: Record<string, unknown>) => unknown;
 };
 
 class AuthHelper{
+
+    // ==================================================================================
+    //? function to create login session
+    // ==================================================================================
+    createLoginSession(res: ResponseLike, payload: JWTdata): string {
+        const secretKey = this.getEnvSecretKey('JWT_LOGIN_KEY');
+
+        return this.createJWTtoken(res, loginToken, secretKey, {
+            userID: payload.userID,
+            userRole: payload.userRole,
+            userName: payload.userName,
+        }, 3600000, true);
+    }
+
+    // ================================================================================
+    //? function to clear login session
+    // ==================================================================================
+    clearLoginSession(res: ResponseLike): null {
+        return this.removeCookieToken(res, loginToken);
+    }
+
+    // ====================================================================================
+    //? function to verify login token
+    // ====================================================================================
+    getUserData(req: RequestLike): JWTdata {
+        const secretKey = this.getEnvSecretKey('JWT_LOGIN_KEY');
+        return this.extractJWTData<JWTdata>(req, loginToken, secretKey);
+    }
+
+
+
+
+
+
+    // ==================================================================================
+    // function to get cookie setter
+    // ==================================================================================
+    private getCookieSetter(res: ResponseLike): (name: string, value: string, options?: Record<string, unknown>) => unknown {
+        const setter = res.cookie ?? res.setCookie;
+        if (!setter) {
+            throw new InternalError('common.errors.internal');
+        }
+        return setter;
+    }
+
+
+    // ====================================================================================
+    // function to get env secret key
+    // ====================================================================================
+    private getEnvSecretKey(envKeyName: string): string {
+        const value = process.env[envKeyName];
+        const secretKey = typeof value === 'string' ? value.trim() : '';
+        if (!secretKey) {
+            throw new InternalError('common.errors.internal');
+        }
+        return secretKey;
+    }
+
+
+    // ====================================================================================
+    // ====================================================================================
+    //? function to create token (email url)
+    // 
+    createEmailUrlToken(email: string, envKeyName: string, expiresInMs: number = 1200000): string {
+
+        const secretKey = this.getEnvSecretKey(envKeyName);
+
+        return jwt.sign({ email }, secretKey, { expiresIn: expiresInMs / 1000 });
+    }
+
+    // ------------------------------------------------------------------------------------
+    // function to create token for  ( RESET password url)
+    
+    createResetPasswordUrlToken(email: string): string {
+
+        return this.createEmailUrlToken(email, 'JWT_RESET_PASSWORD_KEY');
+    }
+
+    // ------------------------------------------------------------------------------------
+    // function to create token for ( SET password url )  
+
+    createSetPasswordUrlToken(email: string): string {
+        return this.createEmailUrlToken(email, 'JWT_SET_PASSWORD_KEY');
+    }
+
+
+    // ====================================================================================
+    // ====================================================================================
+    //? function to verify (url token)
+
+    verifyUrlToken<T extends object>(token: string, secretKey: string): T | null {
+        try {
+            const data = jwt.verify(token, secretKey) as T;
+            if (!data || typeof data !== 'object') {
+                return null;
+            }
+            return data;
+
+        } catch (error) {
+            return null;
+        }
+    }
+
+    // ----------------------------------------------------------------------------------
+    // function to verify (url token from request)
+    verifyUrlTokenFromRequest<T extends object>(req: RequestLike, secretKey: string): T | null {
+        const token = String(req.params?.token || req.query?.token);
+        if (!token) {
+            return null;
+        }
+        return this.verifyUrlToken<T>(token, secretKey);
+    }
+
+    
+
+    // ====================================================================================
+    // ====================================================================================
+    //? function to verify (url token from request )
+    // 
+
+    verifyUrlTokenFromRequestWithEnvKey<T extends object>(req: RequestLike, envKeyName: string): T | null {
+        const secretKey = this.getEnvSecretKey(envKeyName);
+        return this.verifyUrlTokenFromRequest<T>(req, secretKey);
+    }
+
+    // ------------------------------------------------------------------------------------
+    // function to verify (RESET password url token from request)
+
+    verifyResetPasswordUrlTokenFromRequest<T extends object>(req: RequestLike): T | null {
+        return this.verifyUrlTokenFromRequestWithEnvKey<T>(req, 'JWT_RESET_PASSWORD_KEY');
+    }
+
+    // -----------------------------------------------------------------------------------
+    // function to verify (SET password url token from request)
+
+    verifySetPasswordUrlTokenFromRequest<T extends object>(req: RequestLike): T | null {
+        return this.verifyUrlTokenFromRequestWithEnvKey<T>(req, 'JWT_SET_PASSWORD_KEY');
+    }
+    // ====================================================================================
+
+
 
     //===========================================================================================================================================
     // Function to Create JWT
@@ -51,7 +195,8 @@ class AuthHelper{
     
         // Only set cookie if explicitly requested------------------------------------------------------------------------------------
         if(storeCookie){
-            res.cookie(tokenName, token, {
+            const cookieSetter = this.getCookieSetter(res);
+            cookieSetter(tokenName, token, {
             httpOnly: true,
             secure: true,
             sameSite: "strict",
@@ -95,7 +240,7 @@ class AuthHelper{
     extractJWTData =  <tokentInterface>(req: RequestLike,  tokenName: string, secretKey: string): tokentInterface => {
         try{
             // take the token from the cookie 
-            const token: string | undefined = req.cookies[tokenName];
+            const token: string | undefined = req.cookies?.[tokenName];
     
             if(!token){
                 throw new UnauthorizedError('common.auth.sessionExpired');

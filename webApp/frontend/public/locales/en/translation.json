@@ -54,7 +54,8 @@
   "auth": {
     "login": {
       "success": "Login successful",
-      "invalidCredentials": "Invalid credentials"
+      "invalidCredentials": "Invalid credentials",
+      "userNotFound": "User not registered in our system"
     },
     "currentUser": {
       "success": "User data retrieved successfully"

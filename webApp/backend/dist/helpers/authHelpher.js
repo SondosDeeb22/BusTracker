@@ -11,8 +11,116 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 //import Models
 const loginAttempModel_1 = __importDefault(require("../models/loginAttempModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
+//import Enums ------------------------------------------------------------------------------
+const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const errors_1 = require("../errors");
 class AuthHelper {
+    // ==================================================================================
+    //? function to create login session
+    // ==================================================================================
+    createLoginSession(res, payload) {
+        const secretKey = this.getEnvSecretKey('JWT_LOGIN_KEY');
+        return this.createJWTtoken(res, tokenNameEnum_1.loginToken, secretKey, {
+            userID: payload.userID,
+            userRole: payload.userRole,
+            userName: payload.userName,
+        }, 3600000, true);
+    }
+    // ================================================================================
+    //? function to clear login session
+    // ==================================================================================
+    clearLoginSession(res) {
+        return this.removeCookieToken(res, tokenNameEnum_1.loginToken);
+    }
+    // ====================================================================================
+    //? function to verify login token
+    // ====================================================================================
+    getUserData(req) {
+        const secretKey = this.getEnvSecretKey('JWT_LOGIN_KEY');
+        return this.extractJWTData(req, tokenNameEnum_1.loginToken, secretKey);
+    }
+    // ==================================================================================
+    // function to get cookie setter
+    // ==================================================================================
+    getCookieSetter(res) {
+        const setter = res.cookie ?? res.setCookie;
+        if (!setter) {
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+        return setter;
+    }
+    // ====================================================================================
+    // function to get env secret key
+    // ====================================================================================
+    getEnvSecretKey(envKeyName) {
+        const value = process.env[envKeyName];
+        const secretKey = typeof value === 'string' ? value.trim() : '';
+        if (!secretKey) {
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+        return secretKey;
+    }
+    // ====================================================================================
+    // ====================================================================================
+    //? function to create token (email url)
+    // 
+    createEmailUrlToken(email, envKeyName, expiresInMs = 1200000) {
+        const secretKey = this.getEnvSecretKey(envKeyName);
+        return jsonwebtoken_1.default.sign({ email }, secretKey, { expiresIn: expiresInMs / 1000 });
+    }
+    // ------------------------------------------------------------------------------------
+    // function to create token for  ( RESET password url)
+    createResetPasswordUrlToken(email) {
+        return this.createEmailUrlToken(email, 'JWT_RESET_PASSWORD_KEY');
+    }
+    // ------------------------------------------------------------------------------------
+    // function to create token for ( SET password url )  
+    createSetPasswordUrlToken(email) {
+        return this.createEmailUrlToken(email, 'JWT_SET_PASSWORD_KEY');
+    }
+    // ====================================================================================
+    // ====================================================================================
+    //? function to verify (url token)
+    verifyUrlToken(token, secretKey) {
+        try {
+            const data = jsonwebtoken_1.default.verify(token, secretKey);
+            if (!data || typeof data !== 'object') {
+                return null;
+            }
+            return data;
+        }
+        catch (error) {
+            return null;
+        }
+    }
+    // ----------------------------------------------------------------------------------
+    // function to verify (url token from request)
+    verifyUrlTokenFromRequest(req, secretKey) {
+        const token = String(req.params?.token || req.query?.token);
+        if (!token) {
+            return null;
+        }
+        return this.verifyUrlToken(token, secretKey);
+    }
+    // ====================================================================================
+    // ====================================================================================
+    //? function to verify (url token from request )
+    // 
+    verifyUrlTokenFromRequestWithEnvKey(req, envKeyName) {
+        const secretKey = this.getEnvSecretKey(envKeyName);
+        return this.verifyUrlTokenFromRequest(req, secretKey);
+    }
+    // ------------------------------------------------------------------------------------
+    // function to verify (RESET password url token from request)
+    verifyResetPasswordUrlTokenFromRequest(req) {
+        return this.verifyUrlTokenFromRequestWithEnvKey(req, 'JWT_RESET_PASSWORD_KEY');
+    }
+    // -----------------------------------------------------------------------------------
+    // function to verify (SET password url token from request)
+    verifySetPasswordUrlTokenFromRequest(req) {
+        return this.verifyUrlTokenFromRequestWithEnvKey(req, 'JWT_SET_PASSWORD_KEY');
+    }
+    // ====================================================================================
     //===========================================================================================================================================
     // Function to Create JWT
     //===========================================================================================================================================
@@ -21,7 +129,8 @@ class AuthHelper {
         const token = jsonwebtoken_1.default.sign(components, secretKey, { expiresIn: maximumAge / 1000 });
         // Only set cookie if explicitly requested------------------------------------------------------------------------------------
         if (storeCookie) {
-            res.cookie(tokenName, token, {
+            const cookieSetter = this.getCookieSetter(res);
+            cookieSetter(tokenName, token, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "strict",
@@ -62,7 +171,7 @@ class AuthHelper {
     extractJWTData = (req, tokenName, secretKey) => {
         try {
             // take the token from the cookie 
-            const token = req.cookies[tokenName];
+            const token = req.cookies?.[tokenName];
             if (!token) {
                 throw new errors_1.UnauthorizedError('common.auth.sessionExpired');
             }

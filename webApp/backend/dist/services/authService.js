@@ -7,10 +7,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcrypt_1 = __importDefault(require("bcrypt"));
-//import Enums ------------------------------------------------------------------------------
-const tokenNameEnum_1 = require("../enums/tokenNameEnum");
-//importing libraries
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // import Models ------------------------------------------------------------------------
 const userModel_1 = __importDefault(require("../models/userModel"));
 // import helpers --------------------------------------------------------------------
@@ -28,35 +24,12 @@ const errors_1 = require("../errors");
 //- set password (for freash user , e.x: drivers created by admin)
 //==========================================================================================================
 class AuthService {
-    // ==========================================================================================================
-    // Convert AuthRequest to HelperRequest
-    // use to pass data to helper functions (e.x: extractJWTdata, loginAttempt )
-    toHelperReq(req) {
-        return {
-            cookies: req.cookies ?? {},
-            ip: req.ip,
-        };
-    }
-    // Convert AuthResponse to HelperResponse
-    // used to pass response methods to helper functions (e.x:  createJWTtoken, removeCookieToken)
-    toHelperRes(res) {
-        return {
-            cookie: res.setCookie,
-            clearCookie: res.clearCookie,
-        };
-    }
     //==========================================================================================================
     //? Get Current User 
     //==========================================================================================================
     async getCurrentUser(req, res) {
         try {
-            //check if JWT exists in .env file
-            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
-            if (!jwtLoginKey) {
-                console.error('JWT_LOGIN_KEY is not defined');
-                return { status: 500, messageKey: 'common.errors.internal' };
-            }
-            const userData = authHelper.extractJWTData(this.toHelperReq(req), tokenNameEnum_1.loginToken, jwtLoginKey);
+            const userData = authHelper.getUserData(req);
             return { status: 200, messageKey: 'auth.currentUser.success', data: userData };
             // ----------------------------------------
         }
@@ -89,7 +62,7 @@ class AuthService {
                 }
             });
             if (!userExists) {
-                return { status: 500, messageKey: 'auth.login.userNotFound' };
+                return { status: 404, messageKey: 'auth.login.userNotFound' };
             }
             //=================================================================================================================================================
             // validate the provided password 
@@ -98,23 +71,7 @@ class AuthService {
             let resultMessage;
             let status;
             if (validPassword) {
-                //---------------------------------------------------------------------------------------------------------------------------------------------
-                // Create JWT 
-                try {
-                    //check if JWT exists in .env file
-                    const jwtLoginKey = process.env.JWT_LOGIN_KEY;
-                    if (!jwtLoginKey) {
-                        console.error('JWT_LOGIN_KEY is not defined');
-                        return { status: 500, messageKey: 'common.errors.internal' };
-                    }
-                    authHelper.createJWTtoken(this.toHelperRes(res), tokenNameEnum_1.loginToken, jwtLoginKey, { userID: userExists.id, userRole: userExists.role, userName: userExists.name
-                    }, 3600000, true); // 3,600,000 millisecond = 60 minutes
-                    // ---------------------------------------------------------
-                }
-                catch (error) {
-                    console.error('Error occured while creating JWT token.', error);
-                    return { status: 500, messageKey: 'common.errors.internal' };
-                }
+                authHelper.createLoginSession(res, { userID: Number(userExists.id), userRole: userExists.role, userName: userExists.name });
                 attemptSuccessful = true;
                 resultMessage = `${userExists.name} logged in`;
                 status = 200;
@@ -125,7 +82,7 @@ class AuthService {
                 resultMessage = "password is wrong, please try again";
                 status = 401;
             }
-            void authHelper.loginAttempt(this.toHelperReq(req), attemptSuccessful, email);
+            void authHelper.loginAttempt(req, attemptSuccessful, email);
             return { status, messageKey: attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials' };
         }
         catch (error) {
@@ -138,14 +95,8 @@ class AuthService {
     // =================================================================================================================================
     async logout(req, res) {
         try {
-            //check if JWT exists in .env file
-            const jwtLoginKey = process.env.JWT_LOGIN_KEY;
-            if (!jwtLoginKey) {
-                console.error('JWT_LOGIN_KEY is not defined');
-                return { status: 500, messageKey: 'common.errors.internal' };
-            }
-            authHelper.extractJWTData(this.toHelperReq(req), tokenNameEnum_1.loginToken, jwtLoginKey);
-            authHelper.removeCookieToken(this.toHelperRes(res), tokenNameEnum_1.loginToken);
+            authHelper.getUserData(req);
+            authHelper.clearLoginSession(res);
             return { status: 200, messageKey: 'auth.logout.success' };
             // -----------------------------------------------------------
         }
@@ -185,12 +136,7 @@ class AuthService {
             //create token and store it in cookie----------------------------------------------------------------------------------
             let resetPasswordTokenCreation;
             try {
-                const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY?.trim();
-                if (!jwtResetPasswordKey) {
-                    console.error('JWT_RESET_PASSWORD_KEY is not defined');
-                    return { status: 500, messageKey: 'common.errors.internal' };
-                }
-                resetPasswordTokenCreation = authHelper.createJWTtoken(this.toHelperRes(res), tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey, { email: email }, 1200000, false); // 1,200,000 millisecond = 20 minutes
+                resetPasswordTokenCreation = authHelper.createResetPasswordUrlToken(email);
             }
             catch (error) {
                 console.error('Error occured while creating reset password token.', error);
@@ -227,17 +173,27 @@ class AuthService {
         }
     }
     // =================================================================================================================================
-    //? Function to verify token (for frontend HEAD checks)
+    //? Function to verify reset password token (for frontend HEAD checks)
     // =================================================================================================================================
-    async verifyToken(req, res, secretKey) {
+    async verifyResetPasswordToken(req) {
         try {
-            //get token from url 
-            const token = String(req.params.token || req.query.token);
-            if (!token) {
+            const userData = authHelper.verifyResetPasswordUrlTokenFromRequest(req);
+            if (!userData || typeof userData !== "object" || !userData.email) {
                 return null;
             }
-            // check that token has the email address
-            const userData = jsonwebtoken_1.default.verify(token, secretKey);
+            return userData;
+        }
+        catch (error) {
+            console.error('Error occured while verifying token.', error);
+            return null;
+        }
+    }
+    // =================================================================================================================================
+    //? Function to verify set password token (for frontend HEAD checks)
+    // =================================================================================================================================
+    async verifySetPasswordToken(req) {
+        try {
+            const userData = authHelper.verifySetPasswordUrlTokenFromRequest(req);
             if (!userData || typeof userData !== "object" || !userData.email) {
                 return null;
             }
@@ -253,14 +209,8 @@ class AuthService {
     // =================================================================================================================================
     async resetPassword(req, res) {
         try {
-            // ensure that JWT_RESET_PASSWORD_KEY exists in .env
-            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY;
-            if (!jwtResetPasswordKey) {
-                console.error('JWT_RESET_PASSWORD_KEY is not defined');
-                return { status: 500, messageKey: 'common.errors.internal' };
-            }
             // ensure token was provided 
-            const userData = await this.verifyToken(req, res, jwtResetPasswordKey);
+            const userData = await this.verifyResetPasswordToken(req);
             if (!userData) {
                 return { status: 401, messageKey: 'common.auth.invalidToken' };
             }
@@ -298,13 +248,7 @@ class AuthService {
     //? send Validation Email for new user (in order to set his password)
     //=========================================================================================
     async sendValidateEmail(email) {
-        // check if JWT exists in .env file
-        const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
-        if (!jwtSetPasswordKey) {
-            throw new errors_1.InternalError('common.errors.internal');
-        }
-        // create token WITHOUT storing in cookie (only in URL)----------------------------------------------------------------------------------␍
-        const setPasswordTokenCreation = jsonwebtoken_1.default.sign({ email }, jwtSetPasswordKey, { expiresIn: 1200000 / 1000 }); // 1,200,000 millisecond = 20 minutes␍
+        const setPasswordTokenCreation = authHelper.createSetPasswordUrlToken(email);
         const mailSubject = "Set your Password";
         const setLink = `http://localhost:3000/set-password?token=${setPasswordTokenCreation}`;
         const htmlContent = `
@@ -336,14 +280,8 @@ class AuthService {
     //===================================================================================================================================
     async setPassword(req, res) {
         try {
-            // ensure that JWT_RESET_PASSWORD_KEY exists in .env
-            const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
-            if (!jwtSetPasswordKey) {
-                console.error('JWT_SET_PASSWORD_KEY is not defined');
-                return { status: 500, messageKey: 'common.errors.internal' };
-            }
             // ensure token was provided 
-            const userData = await this.verifyToken(req, res, jwtSetPasswordKey);
+            const userData = await this.verifySetPasswordToken(req);
             if (!userData) {
                 return { status: 401, messageKey: 'common.auth.invalidToken' };
             }
@@ -370,7 +308,7 @@ class AuthService {
                 return { status: 500, messageKey: 'auth.setPassword.errors.notUpdated' };
             }
             // Clear any existing login session on this browser 
-            authHelper.removeCookieToken(this.toHelperRes(res), tokenNameEnum_1.loginToken);
+            authHelper.clearLoginSession(res);
             return { status: 200, messageKey: 'auth.setPassword.success.updated' };
             //======================================================================================================
         }

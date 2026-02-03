@@ -66,7 +66,16 @@ const Login = () => {
       
 
     } catch (error) {
-      setError(t('errors.invalidCredentials'));
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        if (status === 404) {
+          setError(t('errors.userNotFound'));
+        } else {
+          setError(t('errors.invalidCredentials'));
+        }
+      } else {
+        setError(t('errors.invalidCredentials'));
+      }
       console.error('Login error:', error);
 
     } finally {

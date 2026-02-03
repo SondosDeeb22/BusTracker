@@ -88,15 +88,7 @@ export class AuthController{
     // 1.3. verify reset password token (HEAD)
 
     verifyResetPasswordToken = async (req: Request, res: Response): Promise<emailInterface | null> => {
-        // ensure that JWT_RESET_PASSWORD_KEY exists in .env
-            const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY?.trim();
-            if (!jwtResetPasswordKey) {
-                console.error('JWT_RESET_PASSWORD_KEY is not defined');
-                sendResponse(res, 500, 'common.errors.internal');
-                return null;
-            }
-
-        const userData = await authService.verifyToken(this.toAuthReq(req), this.toAuthRes(res), jwtResetPasswordKey);
+        const userData = await authService.verifyResetPasswordToken(this.toAuthReq(req));
         if (!userData) {
             return null;
         }
@@ -128,15 +120,7 @@ export class AuthController{
     //? 2.2.  verify set password token (HEAD)
 
     verifySetPasswordToken = async (req: Request, res: Response): Promise<emailInterface | null> => {
-        // ensure that JWT_RESET_PASSWORD_KEY exists in .env
-            const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
-            if (!jwtSetPasswordKey) {
-                console.error('JWT_SET_PASSWORD_KEY is not defined');
-                sendResponse(res, 500, 'common.errors.internal');
-                return null;
-            }
-
-        const userData = await authService.verifyToken(this.toAuthReq(req), this.toAuthRes(res), jwtSetPasswordKey);
+        const userData = await authService.verifySetPasswordToken(this.toAuthReq(req));
         if (!userData) {
             return null;
         }
