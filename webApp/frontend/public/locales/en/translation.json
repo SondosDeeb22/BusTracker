@@ -2,8 +2,8 @@
   "common": {
     "errors": {
       "internal": "Internal server error",
-      "unauthorized": "Unauthorized",
-      "forbidden": "Access denied",
+      "unauthorized": "Access Denied, unauthorized user",
+      "forbidden": "Access denied, you are not authorized to perform this action",
       "emailService": "Error occured while sending Email",
       "notFound": "Record was not found",
       "validation": {
@@ -44,6 +44,7 @@
       "added": "Added successfully",
       "updated": "Updated successfully",
       "removed": "Removed successfully",
+      "sent": "Sent successfully",
       "notFound": "Not found",
       "notCreated": "Record was not created",
       "notUpdated": "Record was not updated",
@@ -51,11 +52,19 @@
       "noChanges": "No changes detected"
     }
   },
+
+
+
+
+
+
+
+
   "auth": {
     "login": {
       "success": "Login successful",
-      "invalidCredentials": "Invalid credentials",
-      "userNotFound": "User not registered in our system"
+      "invalidCredentials": "Email or password is incorrect, please try again",
+      "userNotFound": "this Email is not registered in our system"
     },
     "currentUser": {
       "success": "User data retrieved successfully"
@@ -95,6 +104,10 @@
       }
     }
   },
+
+
+
+
   "servicePatterns": {
     "validation": {
       "idRequired": "Service pattern id is required",
@@ -111,18 +124,27 @@
       "deleted": "Service pattern deleted successfully"
     }
   },
+
+
+
   "schedule": {
     "errors": {
       "invalidDate": "Invalid date",
       "notFound": "Schedule not found"
     }
   },
+
+
+
   "stations": {
     "success": {
       "added": "Station added successfully",
       "fetched": "Stations fetched successfully"
     }
   },
+
+
+
   "tripForm": {
     "success": {
       "saved": "Trip saved successfully",
@@ -138,6 +160,11 @@
       "notRemoved": "Trip was not removed"
     }
   },
+
+
+
+
+
   "routes": {
     "validation": {
       "idRequired": "Route id is required"
@@ -147,12 +174,20 @@
       "updated": "Route updated successfully"
     }
   },
+
+
+
+
   "buses": {
     "success": {
       "added": "Bus added successfully",
       "fetched": "Buses fetched successfully"
     }
   },
+
+
+
+  
   "drivers": {
     "success": {
       "added": "Driver added successfully",

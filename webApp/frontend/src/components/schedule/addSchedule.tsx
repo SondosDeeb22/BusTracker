@@ -30,7 +30,8 @@ type AddScheduleProps = {
 //======================================================================================
 
 const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose, onSuccess, onRefresh }) => {
-  const { t, i18n } = useTranslation(['busScedule', 'translation']);
+  const { t: tBusSchedule } = useTranslation('busScedule');
+  const { t: tGlobal } = useTranslation('translation');
 
   //====================================================================================
   //? State
@@ -65,7 +66,8 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
       const rows: ServicePattern[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setPatterns(rows);
     } catch (e: any) {
-      setError(e?.message || t('addForm.error'));
+      void e;
+      setError(tBusSchedule('addForm.error'));
       setPatterns([]);
     } finally {
       setLoadingPatterns(false);
@@ -95,12 +97,16 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
       );
 
-      onSuccess(t('success.added'));
+      onSuccess(tBusSchedule('success.added'));
       resetAndClose();
       await onRefresh();
     } catch (err: any) {
-      const messageKey = err?.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : tBusSchedule('addForm.error'));
+      } else {
+        setError(tBusSchedule('addForm.error'));
+      }
     } finally {
       setLoading(false);
     }
@@ -112,7 +118,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">{t('addForm.title')}</h2>
+          <h2 className="text-xl font-bold">{tBusSchedule('addForm.title')}</h2>
           <button onClick={resetAndClose} className="text-gray-500 hover:text-gray-700">
             <XMarkIcon className="w-6 h-6" />
           </button>
@@ -123,7 +129,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('addForm.date')}
+              {tBusSchedule('addForm.date')}
               <span className="text-red-600"> *</span>
             </label>
             <input
@@ -137,11 +143,11 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('addForm.servicePattern')}
+              {tBusSchedule('addForm.servicePattern')}
               <span className="text-red-600"> *</span>
             </label>
             {loadingPatterns ? (
-              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{t('addForm.loadingServicePatterns')}</div>
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{tBusSchedule('addForm.loadingServicePatterns')}</div>
             ) : (
               <select
                 value={servicePatternId}
@@ -149,7 +155,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">{t('addForm.selectServicePattern')}</option>
+                <option value="">{tBusSchedule('addForm.selectServicePattern')}</option>
                 {patterns.map((p) => (
                   <option key={p.servicePatternId} value={p.servicePatternId}>
                     {p.title}
@@ -161,7 +167,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
 
           <div className="flex justify-end space-x-2">
             <button type="button" onClick={resetAndClose} className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-              {t('addForm.cancel')}
+              {tBusSchedule('addForm.cancel')}
             </button>
             <button
               type="submit"
@@ -169,7 +175,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
               className="px-4 py-2 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
               style={{ background: COLORS.burgundy }}
             >
-              {loading ? t('addForm.loading') : t('addForm.submit')}
+              {loading ? tBusSchedule('addForm.loading') : tBusSchedule('addForm.submit')}
             </button>
           </div>
         </form>

@@ -33,7 +33,8 @@ interface DriverData{
 //=======================================================================================
 
 const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
-  const { t, i18n } = useTranslation(['drivers', 'translation']);
+  const { t } = useTranslation('drivers');
+  const { t: tGlobal } = useTranslation('translation');
   const [driverData, setDriverData] = useState<DriverData>({
     name: '',
     gender: '',
@@ -82,8 +83,12 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
       onClose(); //close the model
       //-----------------------------------------------
     } catch (error:any) {
-      const messageKey = error.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
+      if (axios.isAxiosError(error)) {
+        const messageKey = error.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('addForm.error'));
+      } else {
+        setError(t('addForm.error'));
+      }
     } finally {
       setLoading(false);
     }

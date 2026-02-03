@@ -17,7 +17,7 @@ const SetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { t, i18n } = useTranslation(['auth/setPasswordPage', 'translation']);
+  const { t } = useTranslation('auth/setPasswordPage');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -45,8 +45,16 @@ const SetPassword = () => {
       return;
 
     } catch (error: any) {
-      const messageKey = error?.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('errors.invalidPassword'));
+      if (axios.isAxiosError(error)) {
+        const backendMessageKey = error.response?.data?.message as string | undefined;
+        if (backendMessageKey) {
+          setError(t(backendMessageKey, { ns: 'translation' }));
+        } else {
+          setError(t('common.errors.internal', { ns: 'translation' }));
+        }
+      } else {
+        setError(t('common.errors.internal', { ns: 'translation' }));
+      }
       console.error('Error occured while Setting Password:', error);
 
     } finally {

@@ -49,9 +49,9 @@ const Login = () => {
             { withCredentials: true }
           );
           navigate('/', { replace: true });
-          setError(t('errors.unauthorized'));
+          setError(t('common.errors.forbidden', { ns: 'translation' }));
          }catch(error){
-          setError(t('errors.internal'))
+          setError(t('common.errors.internal', { ns: 'translation' }))
          }
        
         }else{
@@ -60,7 +60,7 @@ const Login = () => {
         }
       } catch (error) {
         console.log(error);
-        setError(t('errors.internal'))
+        setError(t('common.errors.internal', { ns: 'translation' }))
       }
 
       
@@ -69,12 +69,16 @@ const Login = () => {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         if (status === 404) {
-          setError(t('errors.userNotFound'));
+          setError(t('auth.login.userNotFound', { ns: 'translation' }));
+        } else if (status === 401) {
+          setError(t('auth.login.invalidCredentials', { ns: 'translation' }));
+        } else if (status === 500) {
+          setError(t('common.errors.internal', { ns: 'translation' }));
         } else {
-          setError(t('errors.invalidCredentials'));
+          setError(t('common.errors.internal', { ns: 'translation' }));
         }
       } else {
-        setError(t('errors.invalidCredentials'));
+        setError(t('common.errors.internal', { ns: 'translation' }));
       }
       console.error('Login error:', error);
 

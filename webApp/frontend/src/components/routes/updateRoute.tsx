@@ -30,7 +30,8 @@ interface UpdateRouteProps {
 //? UpdateRoute
 //======================================================================================
 const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }) => {
-  const { t, i18n } = useTranslation(['routes', 'translation']);
+  const { t } = useTranslation('routes');
+  const { t: tGlobal } = useTranslation('translation');
   const [formData, setFormData] = useState<RouteData>({
     id: routeId,
     title: '',
@@ -80,8 +81,12 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
         });
         setStations(response.data.data || response.data || []);
       } catch (err: any) {
-        const messageKey = err.response?.data?.message;
-        setError(messageKey ? i18n.t(messageKey) : t('updateForm.stationsLoadError'));
+        if (axios.isAxiosError(err)) {
+          const messageKey = err.response?.data?.message as string | undefined;
+          setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('updateForm.stationsLoadError'));
+        } else {
+          setError(t('updateForm.stationsLoadError'));
+        }
       }
     };
 
@@ -130,8 +135,12 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
       onSuccess();
       onClose();
     } catch (err: any) {
-      const messageKey = err.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('updateForm.error'));
+      } else {
+        setError(t('updateForm.error'));
+      }
     } finally {
       setLoading(false);
     }

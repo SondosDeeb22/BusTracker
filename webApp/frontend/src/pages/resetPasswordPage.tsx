@@ -43,12 +43,22 @@ const ResetPassword = () => {
       return;
 
     } catch (error: any) {
-      // If 401 error, token is invalid/expired
-      if (error.response?.status === 401) {
-        setError(t('errors.expired'));
-        setTimeout(() => navigate('/forgot-password'), 2000);
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const backendMessageKey = error.response?.data?.message as string | undefined;
+
+        if (backendMessageKey) {
+          setError(t(backendMessageKey, { ns: 'translation' }));
+        } else {
+          setError(t('common.errors.internal', { ns: 'translation' }));
+        }
+
+        // If 401 error, token is invalid/expired
+        if (status === 401) {
+          setTimeout(() => navigate('/forgot-password'), 2000);
+        }
       } else {
-        setError(t('errors.generic'));
+        setError(t('common.errors.internal', { ns: 'translation' }));
       }
       console.error('Error occurred while resetting password:', error);
 

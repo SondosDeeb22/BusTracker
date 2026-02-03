@@ -12,11 +12,5 @@
   "forgotPassword": "Şifrenizi mi unuttunuz?",
 
   "login": "Giriş Yap",
-  "signingIn": "Giriş yapılıyor...",
-
-  "errors": {
-    "unauthorized": "Erişim reddedildi, yetkisiz kullanıcı",
-    "internal": "Sunucu içi hata",
-    "invalidCredentials": "E-posta veya şifre hatalı. Lütfen tekrar deneyin."
-  }
+  "signingIn": "Giriş yapılıyor..."
 }

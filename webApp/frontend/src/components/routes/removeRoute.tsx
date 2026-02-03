@@ -23,6 +23,7 @@ const RemoveRoute: React.FC<RemoveRouteProps> = ({
   onSuccess 
 }) => {
   const { t } = useTranslation('routes');
+  const { t: tGlobal } = useTranslation('translation');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,7 +43,12 @@ const RemoveRoute: React.FC<RemoveRouteProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('removeDialog.error'));
+      if (axios.isAxiosError(err)) {
+        const backendMessageKey = err.response?.data?.message as string | undefined;
+        setError(backendMessageKey ? tGlobal(backendMessageKey, { defaultValue: backendMessageKey }) : t('removeDialog.error'));
+      } else {
+        setError(t('removeDialog.error'));
+      }
     } finally {
       setIsLoading(false);
     }

@@ -17,6 +17,7 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
   onSuccess 
 }) => {
   const { t } = useTranslation('drivers');
+  const { t: tGlobal } = useTranslation('translation');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -35,7 +36,12 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('removeDialog.error'));
+      if (axios.isAxiosError(err)) {
+        const backendMessageKey = err.response?.data?.message as string | undefined;
+        setError(backendMessageKey ? tGlobal(backendMessageKey, { defaultValue: backendMessageKey }) : t('removeDialog.error'));
+      } else {
+        setError(t('removeDialog.error'));
+      }
     } finally {
       setIsLoading(false);
     }

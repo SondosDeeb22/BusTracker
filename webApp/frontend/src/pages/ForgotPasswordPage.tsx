@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = () => {
   const { t } = useTranslation('auth/forgot-passwordPage');
-  const { t: tGlobal } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [EmailSent, setEmailSent] = useState(false);
@@ -40,19 +39,15 @@ const ForgotPassword = () => {
       
       
     } catch (error) {
-      const backendMessage = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
-
-      if (backendMessage === 'auth.passwordReset.errors.notTargetedRole') {
-        setError(tGlobal('auth.passwordReset.errors.notTargetedRole'));
-        
-      } else if (backendMessage === 'auth.forgot-password.error.missingEmail') {
-        setError(t('errors.missingEmail'));
-
-      } else if (backendMessage === 'auth.passwordReset.errors.emailNotRegistered') {
-        setError(tGlobal('auth.passwordReset.errors.emailNotRegistered'));
-
+      if (axios.isAxiosError(error)) {
+        const backendMessageKey = error.response?.data?.message as string | undefined;
+        if (backendMessageKey) {
+          setError(t(backendMessageKey, { ns: 'translation' }));
+        } else {
+          setError(t('common.errors.internal', { ns: 'translation' }));
+        }
       } else {
-        setError(tGlobal('auth.passwordReset.errors.emailNotRegistered'));
+        setError(t('common.errors.internal', { ns: 'translation' }));
       }
 
       console.error('forgot password error:', error);

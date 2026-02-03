@@ -27,7 +27,8 @@ interface UpdateStationProps {
 //? UpdateStation
 //======================================================================================
 const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stationId }) => {
-  const { t, i18n } = useTranslation(['stations', 'translation']);
+  const { t } = useTranslation('stations');
+  const { t: tGlobal } = useTranslation('translation');
   const [formData, setFormData] = useState<StationData>({
     id: stationId,
     stationName: '',
@@ -124,8 +125,12 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
       onSuccess();
       onClose();
     } catch (err: any) {
-      const messageKey = err.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('updateForm.error'));
+      } else {
+        setError(t('updateForm.error'));
+      }
     } finally {
       setLoading(false);
     }

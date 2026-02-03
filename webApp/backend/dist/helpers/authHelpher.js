@@ -14,6 +14,32 @@ const busModel_1 = __importDefault(require("../models/busModel"));
 //import Enums ------------------------------------------------------------------------------
 const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const errors_1 = require("../errors");
+// ==================================================================================
+//? AuthHelper class
+// Login/ Logout  ------------------------------------------------------------
+// create login session (createLoginSession)
+// clear login session (clearLoginSession)
+// verify login token (getUserData)
+// Create Tokens ------------------------------------------------------------
+// function to create token for email url (createEmailUrlToken)
+// funciton to create token for RESET password (createResetPasswordUrlToken)
+// function to create token for SET password (createSetPasswordUrlToken)
+// Verify Tokens ---------------------------------------------------------------------
+// function to verify url Token (verifyUrlTokenFromRequest)
+// verify email url token from request (verifyUrlTokenFromRequestWithEnvKey)
+// verify url token for RESET password operation (verifyResetPasswordUrlTokenFromRequest)
+// verify url token for SEST password operation (verifySetPasswordUrlTokenFromRequest)
+// Driver ------------------------------------------------------------------------
+// validate driver authority to change bus data by id (validateUserById)
+// general functions -------------------------------------------------
+// verify token (verifyUrlToken)
+// function to get env secret key (getEnvSecretKey)
+// extract JWT data (extractJWTData)
+// function to get cookie setter (getCookieSetter)
+// remove the cookie that contains a specific token(removeCookieToken)
+// create JWT token using given data  (createJWTtoken)
+// functin to get user data (getUserData)
+// ==================================================================================
 class AuthHelper {
     // ==================================================================================
     //? function to create login session
@@ -248,6 +274,7 @@ class AuthHelper {
     }
     // =================================================================================================================================
     // Function to validate that user committing operation is authorized to do that (so no driver changes something for another driver)
+    // (by operation her i mean changin bus data)
     // =================================================================================================================================
     async validateUserById(driverId, busId) {
         try {

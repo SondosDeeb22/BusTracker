@@ -2,6 +2,7 @@
 //? Importing
 //===============================================================================================
 
+import { useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,9 @@ const RemoveServicePattern = ({
   onRefresh,
 }: RemoveServicePatternProps) => {
   const { t } = useTranslation('servicePatterns');
+  const { t: tGlobal } = useTranslation('translation');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   if (!open || !servicePatternId) {
     return null;
   }
@@ -41,15 +45,27 @@ const RemoveServicePattern = ({
   const label = title?.trim() ? title.trim() : servicePatternId;
 
   const onConfirm = async () => {
-    const res = await axios.delete(`${backendBaseUrl}/api/admin/service-pattern/remove`, {
-      withCredentials: true,
-      data: { servicePatternId },
-    });
+    setLoading(true);
+    setError('');
+    try {
+      await axios.delete(`${backendBaseUrl}/api/admin/service-pattern/remove`, {
+        withCredentials: true,
+        data: { servicePatternId },
+      });
 
-    void res;
-    onDeleted(t('success.removed'));
-    onClose();
-    await onRefresh();
+      onDeleted(t('success.removed'));
+      onClose();
+      await onRefresh();
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const backendMessageKey = err.response?.data?.message as string | undefined;
+        setError(backendMessageKey ? tGlobal(backendMessageKey, { defaultValue: backendMessageKey }) : t('removeDialog.error'));
+      } else {
+        setError(t('removeDialog.error'));
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,6 +73,8 @@ const RemoveServicePattern = ({
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-3">{t('removeDialog.title')}</h2>
         <div className="text-gray-700 mb-6">{t('removeDialog.confirmText', { label })}</div>
+
+        {error ? <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{error}</div> : null}
 
         <div className="flex justify-end gap-2">
           <button
@@ -69,10 +87,11 @@ const RemoveServicePattern = ({
           <button
             type="button"
             onClick={onConfirm}
+            disabled={loading}
             className="px-4 py-2 text-white rounded-md"
             style={{ background: COLORS.burgundy }}
           >
-            {t('removeDialog.confirm')}
+            {loading ? t('removeDialog.loading') : t('removeDialog.confirm')}
           </button>
         </div>
       </div>

@@ -44,6 +44,7 @@
       "added": "Başarıyla eklendi",
       "updated": "Başarıyla güncellendi",
       "removed": "Başarıyla kaldırıldı",
+      "sent": "Başarıyla gönderildi",
       "notFound": "Bulunamadı",
       "notCreated": "Kayıt oluşturulamadı",
       "notUpdated": "Kayıt güncellenemedi",
@@ -54,7 +55,8 @@
   "auth": {
     "login": {
       "success": "Giriş başarılı",
-      "invalidCredentials": "Geçersiz kimlik bilgileri"
+      "invalidCredentials": "Geçersiz kimlik bilgileri",
+      "userNotFound": "Kullanıcı sistemimizde kayıtlı değil"
     },
     "currentUser": {
       "success": "Kullanıcı bilgileri alındı"

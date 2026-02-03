@@ -16,6 +16,7 @@ interface Route {
 
 const OperatingBuses = () => {
   const { t } = useTranslation('homepage/operatingBuses')
+  const { t: tGlobal } = useTranslation('translation')
   const [routes, setRoutes] = useState<Route[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -24,6 +25,7 @@ const OperatingBuses = () => {
     const getOperatingRoutes = async () => {
       try {
         const response = await axios.get('http://localhost:3001/api/user/routes/operating')
+
         //console.log('API Response:', response.data)
         const actualData = response.data.data || []
         setRoutes(actualData)
@@ -31,7 +33,8 @@ const OperatingBuses = () => {
         //console.log([response.data] )
         //console.log(routes);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        void err;
+        setError(tGlobal('common.errors.internal'))
       } finally {
         setLoading(false)
       }

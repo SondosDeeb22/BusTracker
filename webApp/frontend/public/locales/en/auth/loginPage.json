@@ -14,12 +14,5 @@
   "forgotPassword": "Forgot password?",
   
   "login": "Login",
-  "signingIn": "Signing in...",
-  
-  "errors": {
-    "unauthorized": "Access Denied, unauthorized user",
-    "internal": "Internal server error",
-    "invalidCredentials": "Email or Password is incorrect, Please try again",
-    "userNotFound": "User not registered in our system"
-  }
+  "signingIn": "Signing in..."
 }

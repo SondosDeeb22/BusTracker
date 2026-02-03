@@ -39,7 +39,8 @@ const AddServicePattern = ({
   onCreated,
   onRefresh,
 }: AddServicePatternProps) => {
-  const { t, i18n } = useTranslation(['servicePatterns', 'translation']);
+  const { t } = useTranslation('servicePatterns');
+  const { t: tGlobal } = useTranslation('translation');
   const [title, setTitle] = useState('');
   const [selectedHours, setSelectedHours] = useState<number[]>([]);
   const [creating, setCreating] = useState(false);
@@ -111,10 +112,8 @@ const AddServicePattern = ({
       };
       const status = typeof maybeAxiosError?.response?.status === 'number' ? maybeAxiosError.response.status : undefined;
       const backendMsgRaw = typeof maybeAxiosError?.response?.data?.message === 'string' ? maybeAxiosError.response.data.message : '';
-      const backendMsg = backendMsgRaw ? i18n.t(backendMsgRaw) : '';
-      const fallbackMsg = typeof maybeAxiosError?.message === 'string' ? maybeAxiosError.message : '';
-
-      const msg = backendMsg || fallbackMsg || t('addForm.errors.failed');
+      const backendMsg = backendMsgRaw ? tGlobal(backendMsgRaw, { defaultValue: backendMsgRaw }) : '';
+      const msg = backendMsg || tGlobal('common.errors.internal');
       setCreateError(status ? `${msg} (HTTP ${status})` : msg);
     } finally {
       setCreating(false);

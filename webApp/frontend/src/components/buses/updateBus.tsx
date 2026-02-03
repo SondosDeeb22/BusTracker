@@ -27,7 +27,8 @@ interface UpdateBusProps {
 //? UpdateBus
 //======================================================================================
 const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
-  const { t, i18n } = useTranslation(['buses', 'translation']);
+  const { t } = useTranslation('buses');
+  const { t: tGlobal } = useTranslation('translation');
   const [formData, setFormData] = useState<BusData>({
     id: busId,
     plate: '',
@@ -123,8 +124,12 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      const messageKey = err.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('updateForm.error'));
+      } else {
+        setError(t('updateForm.error'));
+      }
     } finally {
       setLoading(false);
     }

@@ -25,6 +25,7 @@ import { COLORS } from '../styles/colorPalette';
 const BusSchedulePage = () => {
 
   const { t } = useTranslation('busScedule');
+  const { t: tGlobal } = useTranslation('translation');
 
   const backendBaseUrl = 'http://localhost:3001';
 
@@ -129,7 +130,8 @@ const BusSchedulePage = () => {
       const rows: ScheduleResponseRow[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setSchedules(rows);
     } catch (e: any) {
-      setError(e?.message || t('states.loadError'));
+      void e;
+      setError(tGlobal('common.errors.internal'));
       setSchedules([]);
     } finally {
       setLoading(false);

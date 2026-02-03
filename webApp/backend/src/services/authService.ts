@@ -99,7 +99,7 @@ class AuthService{
             })
 
             if(!userExists){
-                return { status: 404, messageKey: 'errors.userNotFound' }; // from loginPage.json
+                return { status: 404, messageKey: 'auth.login.userNotFound' };
             }
             //=================================================================================================================================================
             // validate the provided password 

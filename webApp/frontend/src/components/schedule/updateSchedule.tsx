@@ -38,7 +38,8 @@ type UpdateScheduleProps = {
 //======================================================================================
 
 const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, record, onClose, onSuccess, onRefresh }) => {
-  const { t, i18n } = useTranslation(['busScedule', 'translation']);
+  const { t: tBusSchedule } = useTranslation('busScedule');
+  const { t: tGlobal } = useTranslation('translation');
 
   //====================================================================================
   //? State
@@ -75,7 +76,8 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
       const rows: ServicePattern[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setPatterns(rows);
     } catch (e: any) {
-      setError(e?.message || t('updateForm.error'));
+      void e;
+      setError(tBusSchedule('updateForm.error'));
       setPatterns([]);
     } finally {
       setLoadingPatterns(false);
@@ -100,12 +102,16 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
       );
 
-      onSuccess(t('success.updated'));
+      onSuccess(tBusSchedule('success.updated'));
       onClose();
       await onRefresh();
     } catch (err: any) {
-      const messageKey = err?.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('updateForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : tBusSchedule('updateForm.error'));
+      } else {
+        setError(tBusSchedule('updateForm.error'));
+      }
     } finally {
       setLoading(false);
     }
@@ -117,7 +123,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">{t('updateForm.title')}</h2>
+          <h2 className="text-xl font-bold">{tBusSchedule('updateForm.title')}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <XMarkIcon className="w-6 h-6" />
           </button>
@@ -128,7 +134,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('updateForm.date')}
+              {tBusSchedule('updateForm.date')}
               <span className="text-red-600"> *</span>
             </label>
             <input
@@ -142,11 +148,11 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('updateForm.servicePattern')}
+              {tBusSchedule('updateForm.servicePattern')}
               <span className="text-red-600"> *</span>
             </label>
             {loadingPatterns ? (
-              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{t('updateForm.loadingServicePatterns')}</div>
+              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">{tBusSchedule('updateForm.loadingServicePatterns')}</div>
             ) : (
               <select
                 value={servicePatternId}
@@ -154,7 +160,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">{t('updateForm.selectServicePattern')}</option>
+                <option value="">{tBusSchedule('updateForm.selectServicePattern')}</option>
                 {patterns.map((p) => (
                   <option key={p.servicePatternId} value={p.servicePatternId}>
                     {p.title}
@@ -166,7 +172,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
 
           <div className="flex justify-end space-x-2">
             <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-              {t('updateForm.cancel')}
+              {tBusSchedule('updateForm.cancel')}
             </button>
             <button
               type="submit"
@@ -174,7 +180,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
               className="px-4 py-2 text-white rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-900 disabled:opacity-50"
               style={{ background: COLORS.burgundy }}
             >
-              {loading ? t('updateForm.loading') : t('updateForm.submit')}
+              {loading ? tBusSchedule('updateForm.loading') : tBusSchedule('updateForm.submit')}
             </button>
           </div>
         </form>

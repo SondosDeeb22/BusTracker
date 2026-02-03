@@ -20,7 +20,8 @@ interface BusData{
 //? AddBus
 //======================================================================================
 const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) => {
-  const { t, i18n } = useTranslation(['buses', 'translation']);
+  const { t } = useTranslation('buses');
+  const { t: tGlobal } = useTranslation('translation');
   const [formData, setFormData] = useState<BusData>({
     plate: '',
     brand: '',
@@ -88,8 +89,12 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
       onSuccess();
       onClose();
     } catch (err: any) {
-      const messageKey = err.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('addForm.error'));
+      } else {
+        setError(t('addForm.error'));
+      }
     } finally {
       setLoading(false);
     }

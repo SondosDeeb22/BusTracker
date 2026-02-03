@@ -25,7 +25,8 @@ interface AddStationProps {
 //? AddStation
 //======================================================================================
 const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
-  const { t, i18n } = useTranslation(['stations', 'translation']);
+  const { t } = useTranslation('stations');
+  const { t: tGlobal } = useTranslation('translation');
   const [formData, setFormData] = useState<StationData>({
     stationName: '',
     latitude: null,
@@ -97,8 +98,12 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
       onSuccess();
       onClose();
     } catch (err: any) {
-      const messageKey = err.response?.data?.message;
-      setError(messageKey ? i18n.t(messageKey) : t('addForm.error'));
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        setError(messageKey ? tGlobal(messageKey, { defaultValue: messageKey }) : t('addForm.error'));
+      } else {
+        setError(t('addForm.error'));
+      }
     } finally {
       setLoading(false);
     }
