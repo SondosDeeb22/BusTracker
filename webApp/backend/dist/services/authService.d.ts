@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { AuthRequest, AuthResponse } from "../types/express/auth";
 import { emailInterface } from "../interfaces/authServiceInterface";
 import { role } from '../enums/userEnum';
 type AuthServiceResult<T = undefined> = {
@@ -7,18 +7,20 @@ type AuthServiceResult<T = undefined> = {
     data?: T;
 };
 declare class AuthService {
-    getCurrentUser(req: Request, res: Response): Promise<AuthServiceResult<{
+    private toHelperReq;
+    private toHelperRes;
+    getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{
         userID: number;
         userRole: string;
         userName: string;
     }>>;
-    login(req: Request, res: Response): Promise<AuthServiceResult>;
-    logout(req: Request, res: Response): Promise<AuthServiceResult>;
-    sendEmailToResetPassword(req: Request, res: Response, targetRole: role): Promise<AuthServiceResult>;
-    verifyToken(req: Request, res: Response, secretKey: string): Promise<emailInterface | null>;
-    resetPassword(req: Request, res: Response): Promise<AuthServiceResult>;
+    login(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
+    logout(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
+    sendEmailToResetPassword(req: AuthRequest, res: AuthResponse, targetRole: role): Promise<AuthServiceResult>;
+    verifyToken(req: AuthRequest, res: AuthResponse, secretKey: string): Promise<emailInterface | null>;
+    resetPassword(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
     sendValidateEmail(email: string): Promise<AuthServiceResult>;
-    setPassword(req: Request, res: Response): Promise<AuthServiceResult>;
+    setPassword(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>;
 }
 export default AuthService;
 //# sourceMappingURL=authService.d.ts.map

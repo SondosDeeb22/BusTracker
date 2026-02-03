@@ -2,8 +2,9 @@
 //? Import Sections
 //==========================================================================================================
 
-import { Request, Response } from "express"
 import bcrypt from "bcrypt";
+
+import { AuthRequest, AuthResponse } from "../types/express/auth";
 
 //import Enums ------------------------------------------------------------------------------
 import { loginToken, resetPasswordToken, setPasswordToken } from "../enums/tokenNameEnum";
@@ -53,10 +54,29 @@ type AuthServiceResult<T = undefined> = {
 
 class AuthService{
 
+    // ==========================================================================================================
+    // Convert AuthRequest to HelperRequest
+    // use to pass data to helper functions (e.x: extractJWTdata, loginAttempt )
+    private toHelperReq(req: AuthRequest): { cookies: Record<string, string | undefined>; ip?: string | undefined } {
+        return {
+            cookies: req.cookies ?? {},
+            ip: req.ip,
+        };
+    }
+
+    // Convert AuthResponse to HelperResponse
+    // used to pass response methods to helper functions (e.x:  createJWTtoken, removeCookieToken)
+    private toHelperRes(res: AuthResponse): { cookie: (name: string, value: string, options?: Record<string, unknown>) => unknown; clearCookie: (name: string, options?: Record<string, unknown>) => unknown } {
+        return {
+            cookie: res.setCookie as any,
+            clearCookie: res.clearCookie as any,
+        };
+    }
+
     //==========================================================================================================
     //? Get Current User 
     //==========================================================================================================
-    async getCurrentUser(req: Request, res: Response): Promise<AuthServiceResult<{ userID: number; userRole: string; userName: string }>>{
+    async getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{ userID: number; userRole: string; userName: string }>>{
         try {
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
@@ -65,7 +85,7 @@ class AuthService{
                 return { status: 500, messageKey: 'common.errors.internal' };
             }
            
-            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(req, loginToken, jwtLoginKey);
+            const userData = authHelper.extractJWTData<{userID: number, userRole: string, userName: string}>(this.toHelperReq(req), loginToken, jwtLoginKey);
 
             return { status: 200, messageKey: 'auth.currentUser.success', data: userData };
             
@@ -85,7 +105,7 @@ class AuthService{
     //==========================================================================================================
     //? Login 
     //==========================================================================================================
-    async login(req: Request, res: Response): Promise<AuthServiceResult>{
+    async login(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>{
         try {
             // the provided login data
             const body: loginData = req.body;
@@ -133,7 +153,7 @@ class AuthService{
                         return { status: 500, messageKey: 'common.errors.internal' };
                     }
                 
-                    authHelper.createJWTtoken( res, loginToken, jwtLoginKey,
+                    authHelper.createJWTtoken( this.toHelperRes(res), loginToken, jwtLoginKey,
                         {userID: userExists.id, userRole: userExists.role, userName: userExists.name                        
                         }, 3600000, true);// 3,600,000 millisecond = 60 minutes
                     
@@ -154,7 +174,7 @@ class AuthService{
                 status = 401;
             }
 
-            void authHelper.loginAttempt(req, attemptSuccessful, email);
+            void authHelper.loginAttempt(this.toHelperReq(req), attemptSuccessful, email);
 
             return { status, messageKey: attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials' };
             
@@ -169,7 +189,7 @@ class AuthService{
     //? Logout function
     // =================================================================================================================================
 
-    async logout(req: Request, res: Response): Promise<AuthServiceResult>{
+    async logout(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>{
         try {
             //check if JWT exists in .env file
             const jwtLoginKey = process.env.JWT_LOGIN_KEY;
@@ -178,9 +198,9 @@ class AuthService{
                 return { status: 500, messageKey: 'common.errors.internal' };
             }
            
-            authHelper.extractJWTData<JWTdata>(req, loginToken, jwtLoginKey);
+            authHelper.extractJWTData<JWTdata>(this.toHelperReq(req), loginToken, jwtLoginKey);
 
-            authHelper.removeCookieToken(res, loginToken)
+            authHelper.removeCookieToken(this.toHelperRes(res), loginToken)
 
             
 
@@ -202,7 +222,7 @@ class AuthService{
     //? Function that Send emails to Reset password
     // =================================================================================================================================
 
-    async sendEmailToResetPassword(req: Request, res: Response, targetRole: role):Promise<AuthServiceResult>{
+    async sendEmailToResetPassword(req: AuthRequest, res: AuthResponse, targetRole: role):Promise<AuthServiceResult>{
         try{
             const body:emailInterface = req.body;
 
@@ -242,7 +262,7 @@ class AuthService{
                 }
 
 
-                resetPasswordTokenCreation  = authHelper.createJWTtoken( res, 
+                resetPasswordTokenCreation  = authHelper.createJWTtoken( this.toHelperRes(res), 
                 resetPasswordToken, 
                 jwtResetPasswordKey, 
                 {email: email}, 
@@ -290,7 +310,7 @@ class AuthService{
     // =================================================================================================================================
     //? Function to verify token (for frontend HEAD checks)
     // =================================================================================================================================
-    async verifyToken(req: Request, res: Response, secretKey: string): Promise<emailInterface | null>{
+    async verifyToken(req: AuthRequest, res: AuthResponse, secretKey: string): Promise<emailInterface | null>{
         try{
       
             //get token from url 
@@ -317,7 +337,7 @@ class AuthService{
     //? =================================================================================================================================
     //? Function to reset the password
     // =================================================================================================================================
-    async resetPassword(req: Request, res: Response):Promise<AuthServiceResult>{
+    async resetPassword(req: AuthRequest, res: AuthResponse):Promise<AuthServiceResult>{
         try{
 
             // ensure that JWT_RESET_PASSWORD_KEY exists in .env
@@ -425,7 +445,7 @@ class AuthService{
     //===================================================================================================================================
     //? set password 
     //===================================================================================================================================
-    async setPassword(req: Request, res: Response): Promise<AuthServiceResult>{
+    async setPassword(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult>{
         try{
             // ensure that JWT_RESET_PASSWORD_KEY exists in .env
             const jwtSetPasswordKey = process.env.JWT_SET_PASSWORD_KEY;
@@ -480,7 +500,7 @@ class AuthService{
 
     
             // Clear any existing login session on this browser 
-            authHelper.removeCookieToken(res, loginToken);
+            authHelper.removeCookieToken(this.toHelperRes(res), loginToken);
 
             return { status: 200, messageKey: 'auth.setPassword.success.updated' };
 

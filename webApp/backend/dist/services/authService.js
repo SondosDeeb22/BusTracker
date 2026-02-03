@@ -28,6 +28,23 @@ const errors_1 = require("../errors");
 //- set password (for freash user , e.x: drivers created by admin)
 //==========================================================================================================
 class AuthService {
+    // ==========================================================================================================
+    // Convert AuthRequest to HelperRequest
+    // use to pass data to helper functions (e.x: extractJWTdata, loginAttempt )
+    toHelperReq(req) {
+        return {
+            cookies: req.cookies ?? {},
+            ip: req.ip,
+        };
+    }
+    // Convert AuthResponse to HelperResponse
+    // used to pass response methods to helper functions (e.x:  createJWTtoken, removeCookieToken)
+    toHelperRes(res) {
+        return {
+            cookie: res.setCookie,
+            clearCookie: res.clearCookie,
+        };
+    }
     //==========================================================================================================
     //? Get Current User 
     //==========================================================================================================
@@ -39,7 +56,7 @@ class AuthService {
                 console.error('JWT_LOGIN_KEY is not defined');
                 return { status: 500, messageKey: 'common.errors.internal' };
             }
-            const userData = authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
+            const userData = authHelper.extractJWTData(this.toHelperReq(req), tokenNameEnum_1.loginToken, jwtLoginKey);
             return { status: 200, messageKey: 'auth.currentUser.success', data: userData };
             // ----------------------------------------
         }
@@ -90,7 +107,7 @@ class AuthService {
                         console.error('JWT_LOGIN_KEY is not defined');
                         return { status: 500, messageKey: 'common.errors.internal' };
                     }
-                    authHelper.createJWTtoken(res, tokenNameEnum_1.loginToken, jwtLoginKey, { userID: userExists.id, userRole: userExists.role, userName: userExists.name
+                    authHelper.createJWTtoken(this.toHelperRes(res), tokenNameEnum_1.loginToken, jwtLoginKey, { userID: userExists.id, userRole: userExists.role, userName: userExists.name
                     }, 3600000, true); // 3,600,000 millisecond = 60 minutes
                     // ---------------------------------------------------------
                 }
@@ -108,7 +125,7 @@ class AuthService {
                 resultMessage = "password is wrong, please try again";
                 status = 401;
             }
-            void authHelper.loginAttempt(req, attemptSuccessful, email);
+            void authHelper.loginAttempt(this.toHelperReq(req), attemptSuccessful, email);
             return { status, messageKey: attemptSuccessful ? 'auth.login.success' : 'auth.login.invalidCredentials' };
         }
         catch (error) {
@@ -127,8 +144,8 @@ class AuthService {
                 console.error('JWT_LOGIN_KEY is not defined');
                 return { status: 500, messageKey: 'common.errors.internal' };
             }
-            authHelper.extractJWTData(req, tokenNameEnum_1.loginToken, jwtLoginKey);
-            authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
+            authHelper.extractJWTData(this.toHelperReq(req), tokenNameEnum_1.loginToken, jwtLoginKey);
+            authHelper.removeCookieToken(this.toHelperRes(res), tokenNameEnum_1.loginToken);
             return { status: 200, messageKey: 'auth.logout.success' };
             // -----------------------------------------------------------
         }
@@ -173,7 +190,7 @@ class AuthService {
                     console.error('JWT_RESET_PASSWORD_KEY is not defined');
                     return { status: 500, messageKey: 'common.errors.internal' };
                 }
-                resetPasswordTokenCreation = authHelper.createJWTtoken(res, tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey, { email: email }, 1200000, false); // 1,200,000 millisecond = 20 minutes
+                resetPasswordTokenCreation = authHelper.createJWTtoken(this.toHelperRes(res), tokenNameEnum_1.resetPasswordToken, jwtResetPasswordKey, { email: email }, 1200000, false); // 1,200,000 millisecond = 20 minutes
             }
             catch (error) {
                 console.error('Error occured while creating reset password token.', error);
@@ -353,7 +370,7 @@ class AuthService {
                 return { status: 500, messageKey: 'auth.setPassword.errors.notUpdated' };
             }
             // Clear any existing login session on this browser 
-            authHelper.removeCookieToken(res, tokenNameEnum_1.loginToken);
+            authHelper.removeCookieToken(this.toHelperRes(res), tokenNameEnum_1.loginToken);
             return { status: 200, messageKey: 'auth.setPassword.success.updated' };
             //======================================================================================================
         }
