@@ -1,3 +1,4 @@
+import { AddScheduledTripResult } from "./scheduleService/types";
 export declare class ScheduleService {
     getSchedule(params: {
         date?: string;
@@ -12,7 +13,7 @@ export declare class ScheduleService {
         servicePattern: any;
         timeline: {
             time: string;
-            trips: any[];
+            trips: unknown[];
         }[];
     }[]>;
     getUserSchedule(params: {
@@ -46,7 +47,7 @@ export declare class ScheduleService {
         routeId: string;
         driverId: string;
         busId: string;
-    }): Promise<'tripForm.success.saved' | 'tripForm.success.updated'>;
+    }): Promise<AddScheduledTripResult>;
     updateSchedule(updates: {
         scheduleId: string;
         date?: string;

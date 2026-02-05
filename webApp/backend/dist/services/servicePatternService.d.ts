@@ -1,28 +1,13 @@
-type OperatingHourDto = {
-    operatingHourId: string;
-    hour: string;
-};
-type ServicePatternDto = {
-    servicePatternId: string;
-    title: string;
-    operatingHours: OperatingHourDto[];
-};
+import { AddOrUpdateServicePatternPayload, ServicePatternDto, ServicePatternServiceResult } from "./servicePatternService/types";
 export declare class ServicePatternService {
     getServicePatterns(): Promise<{
         messageKey: string;
         data: ServicePatternDto[];
     }>;
-    addServicePattern(payload: Record<string, any>): Promise<{
-        messageKey: string;
-        data: ServicePatternDto;
-    }>;
-    updateServicePattern(payload: Record<string, any>): Promise<{
-        messageKey: string;
-        data: ServicePatternDto;
-    }>;
+    addServicePattern(payload: AddOrUpdateServicePatternPayload): Promise<ServicePatternServiceResult<ServicePatternDto>>;
+    updateServicePattern(payload: AddOrUpdateServicePatternPayload): Promise<ServicePatternServiceResult<ServicePatternDto>>;
     deleteServicePattern(servicePatternIdRaw: unknown): Promise<{
         messageKey: string;
     }>;
 }
-export {};
 //# sourceMappingURL=servicePatternService.d.ts.map

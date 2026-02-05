@@ -2,18 +2,11 @@
 //===========================================================================================================
 //? Import 
 //==========================================================================================================
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-//importing libraries
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-//import Models
-const loginAttempModel_1 = __importDefault(require("../models/loginAttempModel"));
-const busModel_1 = __importDefault(require("../models/busModel"));
-//import Enums ------------------------------------------------------------------------------
 const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const errors_1 = require("../errors");
+const authHelper_1 = require("./authHelper");
+const ipLocation_1 = require("./authHelper/ipLocation");
 // ==================================================================================
 //? AuthHelper class
 // Login/ Logout  ------------------------------------------------------------
@@ -45,7 +38,7 @@ class AuthHelper {
     //? function to create login session
     // ==================================================================================
     createLoginSession(res, payload) {
-        const secretKey = this.getEnvSecretKey('JWT_LOGIN_KEY');
+        const secretKey = this.getEnvSecretKey("JWT_LOGIN_KEY");
         return this.createJWTtoken(res, tokenNameEnum_1.loginToken, secretKey, {
             userID: payload.userID,
             userRole: payload.userRole,
@@ -62,7 +55,7 @@ class AuthHelper {
     //? function to verify login token
     // ====================================================================================
     getUserData(req) {
-        const secretKey = this.getEnvSecretKey('JWT_LOGIN_KEY');
+        const secretKey = this.getEnvSecretKey("JWT_LOGIN_KEY");
         return this.extractJWTData(req, tokenNameEnum_1.loginToken, secretKey);
     }
     // ==================================================================================
@@ -71,7 +64,7 @@ class AuthHelper {
     getCookieSetter(res) {
         const setter = res.cookie ?? res.setCookie;
         if (!setter) {
-            throw new errors_1.InternalError('common.errors.internal');
+            throw new errors_1.InternalError("common.errors.internal");
         }
         return setter;
     }
@@ -79,225 +72,91 @@ class AuthHelper {
     // function to get env secret key
     // ====================================================================================
     getEnvSecretKey(envKeyName) {
-        const value = process.env[envKeyName];
-        const secretKey = typeof value === 'string' ? value.trim() : '';
-        if (!secretKey) {
-            throw new errors_1.InternalError('common.errors.internal');
-        }
-        return secretKey;
+        return (0, authHelper_1.getEnvSecretKey)(envKeyName);
     }
     // ====================================================================================
     // ====================================================================================
     //? function to create token (email url)
     // 
     createEmailUrlToken(email, envKeyName, expiresInMs = 1200000) {
-        const secretKey = this.getEnvSecretKey(envKeyName);
-        return jsonwebtoken_1.default.sign({ email }, secretKey, { expiresIn: expiresInMs / 1000 });
+        return (0, authHelper_1.createEmailUrlToken)(email, envKeyName, expiresInMs);
     }
     // ------------------------------------------------------------------------------------
     // function to create token for  ( RESET password url)
     createResetPasswordUrlToken(email) {
-        return this.createEmailUrlToken(email, 'JWT_RESET_PASSWORD_KEY');
+        return (0, authHelper_1.createResetPasswordUrlToken)(email);
     }
     // ------------------------------------------------------------------------------------
     // function to create token for ( SET password url )  
     createSetPasswordUrlToken(email) {
-        return this.createEmailUrlToken(email, 'JWT_SET_PASSWORD_KEY');
+        return (0, authHelper_1.createSetPasswordUrlToken)(email);
     }
     // ====================================================================================
     // ====================================================================================
     //? function to verify (url token)
     verifyUrlToken(token, secretKey) {
-        try {
-            const data = jsonwebtoken_1.default.verify(token, secretKey);
-            if (!data || typeof data !== 'object') {
-                return null;
-            }
-            return data;
-        }
-        catch (error) {
-            return null;
-        }
+        return (0, authHelper_1.verifyUrlToken)(token, secretKey);
     }
     // ----------------------------------------------------------------------------------
     // function to verify (url token from request)
     verifyUrlTokenFromRequest(req, secretKey) {
-        const token = String(req.params?.token || req.query?.token);
-        if (!token) {
-            return null;
-        }
-        return this.verifyUrlToken(token, secretKey);
+        return (0, authHelper_1.verifyUrlTokenFromRequest)(req, secretKey);
     }
     // ====================================================================================
     // ====================================================================================
     //? function to verify (url token from request )
     // 
     verifyUrlTokenFromRequestWithEnvKey(req, envKeyName) {
-        const secretKey = this.getEnvSecretKey(envKeyName);
-        return this.verifyUrlTokenFromRequest(req, secretKey);
+        return (0, authHelper_1.verifyUrlTokenFromRequestWithEnvKey)(req, envKeyName);
     }
     // ------------------------------------------------------------------------------------
     // function to verify (RESET password url token from request)
     verifyResetPasswordUrlTokenFromRequest(req) {
-        return this.verifyUrlTokenFromRequestWithEnvKey(req, 'JWT_RESET_PASSWORD_KEY');
+        return (0, authHelper_1.verifyResetPasswordUrlTokenFromRequest)(req);
     }
     // -----------------------------------------------------------------------------------
     // function to verify (SET password url token from request)
     verifySetPasswordUrlTokenFromRequest(req) {
-        return this.verifyUrlTokenFromRequestWithEnvKey(req, 'JWT_SET_PASSWORD_KEY');
+        return (0, authHelper_1.verifySetPasswordUrlTokenFromRequest)(req);
     }
-    // ====================================================================================
     //===========================================================================================================================================
     // Function to Create JWT
     //===========================================================================================================================================
     createJWTtoken(res, tokenName, secretKey, components, maximumAge, storeCookie) {
-        //create token ------------------------------------------------------------------------------------
-        const token = jsonwebtoken_1.default.sign(components, secretKey, { expiresIn: maximumAge / 1000 });
-        // Only set cookie if explicitly requested------------------------------------------------------------------------------------
-        if (storeCookie) {
-            const cookieSetter = this.getCookieSetter(res);
-            cookieSetter(tokenName, token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                path: "/"
-            });
-        }
-        return token; // Return the JWT token
+        // keep local validation (ensures ResponseLike is compatible)
+        this.getCookieSetter(res);
+        return (0, authHelper_1.createJWTtoken)(res, tokenName, secretKey, components, maximumAge, storeCookie);
     }
     //===========================================================================================================================================
     // Function to remove a cookie
     //===========================================================================================================================================
     removeCookieToken(res, tokenName) {
-        // remove current cookie variant (matches how we set it)
-        res.clearCookie(tokenName, {
-            httpOnly: true,
-            path: "/api",
-            sameSite: "strict",
-            secure: true
-        });
-        // also remove legacy cookies that may have been set with different attributes
-        res.clearCookie(tokenName, {
-            httpOnly: true,
-            path: "/",
-            sameSite: "lax",
-            secure: false
-        });
-        res.clearCookie(tokenName, {
-            httpOnly: true,
-            path: "/",
-            sameSite: "strict",
-            secure: false
-        });
-        return null;
+        return (0, authHelper_1.removeCookieToken)(res, tokenName);
     }
     //===========================================================================================================================================
     // Function to Extract a token data
     //============================================================================================================================================
     extractJWTData = (req, tokenName, secretKey) => {
-        try {
-            // take the token from the cookie 
-            const token = req.cookies?.[tokenName];
-            if (!token) {
-                throw new errors_1.UnauthorizedError('common.auth.sessionExpired');
-            }
-            const user_data = jsonwebtoken_1.default.verify(token, secretKey);
-            if (!user_data || typeof user_data !== "object") {
-                throw new errors_1.UnauthorizedError('common.auth.invalidToken');
-            }
-            return user_data;
-            //---------------------------------------------------------------------------------------------------------------------    
-        }
-        catch (error) {
-            if (error instanceof errors_1.UnauthorizedError) {
-                throw error;
-            }
-            throw new errors_1.UnauthorizedError('common.errors.unauthorized');
-        }
+        return (0, authHelper_1.extractJWTData)(req, tokenName, secretKey);
     };
     //===========================================================================================================================================
     // Function to get the user IP address and use it to get his location info
     //============================================================================================================================================
     getIPaddressAndUserLocation = async (req) => {
-        const unknownResult = { ip: null, location: null };
-        try {
-            const ip = req.ip;
-            if (!ip) {
-                console.warn('IP address not available, skipping location lookup');
-                return unknownResult;
-            }
-            const response = await fetch(`http://ip-api.com/json/${ip}`);
-            if (!response.ok) {
-                console.warn('Failed to fetch location data, skipping location lookup');
-                return { ip, location: null };
-            }
-            const locationJSONdata = await response.json();
-            if (!locationJSONdata || Object.keys(locationJSONdata).length === 0) {
-                console.warn('No location data found for the given IP address, skipping location lookup');
-                return { ip, location: null };
-            }
-            const city = locationJSONdata.city || 'Unknown City';
-            const country = locationJSONdata.country || 'Unknown Country';
-            const region = locationJSONdata.region || 'Unknown Region';
-            const location = `${city}, ${region}, ${country}`;
-            return { ip, location };
-            // ----------------------------------------------------------------------------
-        }
-        catch (error) {
-            console.warn('Error occured while getting location data from the IP address');
-            return unknownResult;
-        }
+        return (0, ipLocation_1.getIPaddressAndUserLocation)(req);
     };
     // =================================================================================================================================
     // Function that store the login attempts
     // =================================================================================================================================
     async loginAttempt(req, attemptSuccessful, userEmail) {
-        try {
-            const IPaddressAndLocation = await this.getIPaddressAndUserLocation(req);
-            //---------------------------------------------------------------------
-            // store the ip in the database
-            const IPstored = await loginAttempModel_1.default.create({
-                userEmail: userEmail,
-                IPaddress: IPaddressAndLocation.ip,
-                attemptLocation: IPaddressAndLocation.location,
-                attemptSuccessful: attemptSuccessful,
-                // attemptTime:  new Date().toTimeString().split(' ')[0],
-                attemptTime: new Date().toTimeString().slice(0, 8),
-                attemptDate: new Date()
-            });
-            //=================================================================================================================================
-        }
-        catch (error) {
-            console.error('Error occured while storing login attempt.', error);
-            return;
-        }
+        return (0, authHelper_1.loginAttempt)(req, attemptSuccessful, userEmail);
     }
     // =================================================================================================================================
     // Function to validate that user committing operation is authorized to do that (so no driver changes something for another driver)
     // (by operation her i mean changin bus data)
     // =================================================================================================================================
     async validateUserById(driverId, busId) {
-        try {
-            if (!busId) {
-                throw new errors_1.ForbiddenError('common.errors.forbidden');
-            }
-            const userauthorized = await busModel_1.default.findOne({
-                where: {
-                    id: busId,
-                    assignedDriver: driverId
-                },
-                attributes: ['id']
-            });
-            if (!userauthorized) {
-                throw new errors_1.ForbiddenError('common.errors.forbidden');
-            }
-            return true;
-            // -----------------------------------------------------------------
-        }
-        catch (error) {
-            console.error('Error occured while validating user/bus relation', error);
-            throw error;
-        }
+        return (0, authHelper_1.validateUserById)(driverId, busId);
     }
 }
 //=================================================================================================================================

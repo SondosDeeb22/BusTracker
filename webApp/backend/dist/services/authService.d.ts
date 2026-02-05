@@ -1,11 +1,7 @@
 import { AuthRequest, AuthResponse } from "../types/express/auth";
 import { emailInterface } from "../interfaces/authServiceInterface";
-import { role } from '../enums/userEnum';
-type AuthServiceResult<T = undefined> = {
-    status: number;
-    messageKey: string;
-    data?: T;
-};
+import { role } from "../enums/userEnum";
+import { AuthServiceResult } from "./authService/types";
 declare class AuthService {
     getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{
         userID: number;

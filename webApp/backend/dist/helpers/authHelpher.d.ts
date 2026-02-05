@@ -1,10 +1,9 @@
-import { userIPaddressAndLocation } from "../interfaces/helper&middlewareInterface";
-import { JWTdata } from "../interfaces/helper&middlewareInterface";
+import { JWTdata, userIPaddressAndLocation } from "../interfaces/helper&middlewareInterface";
 type RequestLike = {
     cookies?: Record<string, string | undefined>;
     ip?: string | undefined;
-    params?: any;
-    query?: any;
+    params?: Record<string, unknown>;
+    query?: Record<string, unknown>;
 };
 type ResponseLike = {
     cookie?: (name: string, value: string, options?: Record<string, unknown>) => unknown;
