@@ -7,5 +7,6 @@ export declare class ScheduleController {
     removeSchedule(req: Request, res: Response): Promise<void>;
     addScheduledTrip(req: Request, res: Response): Promise<void>;
     removeScheduledTrip(req: Request, res: Response): Promise<void>;
+    updateScheduledTrip(req: Request, res: Response): Promise<void>;
 }
 //# sourceMappingURL=scheduleController.d.ts.map

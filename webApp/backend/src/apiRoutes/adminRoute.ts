@@ -124,6 +124,8 @@ router.post('/schedule/trip/add', accessRequireToken(loginToken), authorizeRole(
 
 router.delete('/schedule/trip/remove', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.removeScheduledTrip);
 
+router.patch('/schedule/trip/update', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.updateScheduledTrip);
+
 // GET: we don't need (GET) becuase the scheduled trips is viewed in the schedule
 // PATCH: we don't need (PATCH) becuase the schedule trips is updated from the schedule using "trips/add" endpoint
 

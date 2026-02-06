@@ -13,6 +13,7 @@ const userModel_1 = __importDefault(require("../../models/userModel"));
 // import helpers --------------------------------------------------------------------
 const authHelpher_1 = __importDefault(require("../../helpers/authHelpher"));
 const authHelper = new authHelpher_1.default();
+const urlTokens_1 = require("../../helpers/authHelper/urlTokens");
 const sendEmail_1 = require("../../helpers/sendEmail");
 //==========================================================================================================
 const sendEmailToResetPassword = async (req, res, targetRole) => {
@@ -27,7 +28,7 @@ const sendEmailToResetPassword = async (req, res, targetRole) => {
             where: {
                 email: email,
             },
-            attributes: ["email", "role"],
+            attributes: ["email", "role", "passwordResetVersion"],
         });
         if (!uesrExists) {
             return { status: 500, messageKey: "auth.passwordReset.errors.emailNotRegistered" };
@@ -40,7 +41,7 @@ const sendEmailToResetPassword = async (req, res, targetRole) => {
         //create token and store it in cookie----------------------------------------------------------------------------------
         let resetPasswordTokenCreation;
         try {
-            resetPasswordTokenCreation = authHelper.createResetPasswordUrlToken(email);
+            resetPasswordTokenCreation = (0, urlTokens_1.createResetPasswordUrlTokenWithVersion)(email, typeof uesrExists.passwordResetVersion === "number" ? uesrExists.passwordResetVersion : 0);
         }
         catch (error) {
             console.error("Error occured while creating reset password token.", error);
@@ -80,6 +81,18 @@ const verifyResetPasswordToken = async (req) => {
     try {
         const userData = authHelper.verifyResetPasswordUrlTokenFromRequest(req);
         if (!userData || typeof userData !== "object" || !userData.email) {
+            return null;
+        }
+        const user = await userModel_1.default.findOne({
+            where: { email: userData.email },
+            attributes: ["email", "passwordResetVersion"],
+        });
+        if (!user) {
+            return null;
+        }
+        const expectedVersion = typeof user.passwordResetVersion === "number" ? user.passwordResetVersion : 0;
+        const tokenVersion = typeof userData.v === "number" ? userData.v : 0;
+        if (tokenVersion !== expectedVersion) {
             return null;
         }
         return userData;
@@ -122,6 +135,7 @@ const resetPassword = async (req, res) => {
         if (updatedPassword === 0) {
             return { status: 500, messageKey: "auth.passwordReset.errors.notUpdated" };
         }
+        await userModel_1.default.increment({ passwordResetVersion: 1 }, { where: { email: userData.email } });
         return { status: 200, messageKey: "auth.passwordReset.success.updated" };
         //=========================================================================
     }

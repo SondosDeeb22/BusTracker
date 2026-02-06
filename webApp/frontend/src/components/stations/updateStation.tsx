@@ -36,6 +36,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
     longitude: null,
     status: ''
   });
+  const [initialData, setInitialData] = useState<StationData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -58,13 +59,16 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
       });
       const currentStation = response.data.data.find((station: any) => station.id === stationId);
       if (currentStation) {
-        setFormData({
+        const nextData: StationData = {
           id: currentStation.id,
           stationName: currentStation.stationName,
           latitude: Number(currentStation.latitude),
           longitude: Number(currentStation.longitude),
           status: currentStation.status
-        });
+        };
+
+        setFormData(nextData);
+        setInitialData(nextData);
       }
     } catch (err) {
       setError(t('updateForm.loadError'));
@@ -116,7 +120,21 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
     }
 
     try {
-      await axios.patch('http://localhost:3001/api/admin/station/update', formData, {
+      const updates: Record<string, any> = { id: formData.id };
+
+      if (initialData) {
+        if (formData.stationName !== initialData.stationName) updates.stationName = formData.stationName;
+        if (formData.status !== initialData.status) updates.status = formData.status;
+
+        const latChanged = formData.latitude !== initialData.latitude;
+        const lngChanged = formData.longitude !== initialData.longitude;
+        if (latChanged) updates.latitude = formData.latitude;
+        if (lngChanged) updates.longitude = formData.longitude;
+      } else {
+        Object.assign(updates, formData);
+      }
+
+      await axios.patch('http://localhost:3001/api/admin/station/update', updates, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -153,7 +171,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.stationName')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <input
               type="text"
@@ -169,7 +187,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.pickLocation')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <div className="h-64 w-full rounded-md overflow-hidden border">
               {/* Map controller: initializes map, view, and context --------------------------------------------------------------------------- */}
@@ -219,7 +237,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.status')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <select
               name="status"

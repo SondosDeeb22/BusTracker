@@ -100,6 +100,16 @@ const BusSchedulePage = () => {
     routeTitle?: string;
   } | null>(null);
 
+  const selectedTrip = useMemo(() => {
+    if (!selectedCell) return null;
+   
+    const schedule = schedules.find((s) => s.scheduleId === selectedCell.scheduleId);
+    const byTime = (schedule?.timeline || []).find((r) => r.time === selectedCell.time);
+    const trip = (byTime?.trips || []).find((t) => t.routeId === selectedCell.routeId);
+    
+    return trip || null;
+  }, [schedules, selectedCell]);
+
   //====================================================================================
   //? Cell selection (visualization)
   // Selected cell drives the row/column highlight in the table
@@ -250,6 +260,9 @@ const BusSchedulePage = () => {
           open={showAddTrip}
           backendBaseUrl={backendBaseUrl}
           selectedCell={selectedCell}
+          detailedScheduleId={selectedTrip?.detailedScheduleId}
+          initialDriverId={selectedTrip?.driverId}
+          initialBusId={selectedTrip?.busId}
           onClose={() => setShowAddTrip(false)}
           onSuccess={(message) => {
             setSuccessMessage(message);

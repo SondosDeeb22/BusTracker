@@ -4,6 +4,8 @@
 
 import bcrypt from "bcrypt";
 
+import { Op } from "sequelize";
+
 import { AuthRequest, AuthResponse } from "../../types/express/auth";
 
 // import interfaces ------------------------------------------------------------------------
@@ -29,6 +31,22 @@ export const verifySetPasswordToken = async (req: AuthRequest): Promise<emailInt
     try {
         const userData = authHelper.verifySetPasswordUrlTokenFromRequest<emailInterface>(req);
         if (!userData || typeof userData !== "object" || !userData.email) {
+            return null;
+        }
+
+        // check if user and hashed password exists 
+        const user = await UserModel.findOne({
+            where: { email: userData.email },
+            attributes: ["email", "hashedPassword"],
+        });
+
+        
+        if (!user) {
+            return null;
+        }
+
+        
+        if (user.hashedPassword != null) {
             return null;
         }
         return userData;
@@ -112,11 +130,12 @@ export const setPassword = async (req: AuthRequest, res: AuthResponse): Promise<
         }, {
             where: {
                 email: userData.email,
-            },
+                hashedPassword: { [Op.is]: null },
+            } as unknown as Record<string, unknown>,
         });
 
         if (updatedPassword === 0) {
-            return { status: 500, messageKey: "auth.setPassword.errors.notUpdated" };
+            return { status: 401, messageKey: "common.auth.invalidToken" };
         }
 
         // Clear any existing login session on this browser

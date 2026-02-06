@@ -88,6 +88,7 @@ export class DriverService{
     async updateDriver(payload: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
  
         const result = await helper.update(UserModel, payload, {
+            nonDuplicateFields: ["email"],
             enumFields: [
                 { field: "status", enumObj: status },
                 { field: "role", enumObj: role },

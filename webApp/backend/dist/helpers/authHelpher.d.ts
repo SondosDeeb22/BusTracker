@@ -18,6 +18,7 @@ declare class AuthHelper {
     private getEnvSecretKey;
     createEmailUrlToken(email: string, envKeyName: string, expiresInMs?: number): string;
     createResetPasswordUrlToken(email: string): string;
+    createResetPasswordUrlTokenWithVersion(email: string, passwordResetVersion: number): string;
     createSetPasswordUrlToken(email: string): string;
     verifyUrlToken<T extends object>(token: string, secretKey: string): T | null;
     verifyUrlTokenFromRequest<T extends object>(req: RequestLike, secretKey: string): T | null;

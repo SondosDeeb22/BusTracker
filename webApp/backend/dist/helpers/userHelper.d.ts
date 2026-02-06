@@ -1,4 +1,4 @@
-import { Model, ModelStatic } from 'sequelize';
+import type { Model, ModelStatic } from "sequelize";
 export declare class UserHelper {
     add(model: ModelStatic<Model<any, any>>, payload: Record<string, any>, options?: {
         nonDuplicateFields?: string[];
@@ -11,6 +11,7 @@ export declare class UserHelper {
     }): Promise<void>;
     remove(model: ModelStatic<Model<any, any>>, uniqueField: string, uniqueValue: string): Promise<number>;
     update(model: ModelStatic<Model<any, any>>, values: Record<string, any>, options?: {
+        nonDuplicateFields?: string[];
         enumFields?: Array<{
             field: string;
             enumObj: object;

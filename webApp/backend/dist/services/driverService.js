@@ -74,6 +74,7 @@ class DriverService {
     //===================================================================================================
     async updateDriver(payload) {
         const result = await helper.update(userModel_1.default, payload, {
+            nonDuplicateFields: ["email"],
             enumFields: [
                 { field: "status", enumObj: userEnum_1.status },
                 { field: "role", enumObj: userEnum_1.role },

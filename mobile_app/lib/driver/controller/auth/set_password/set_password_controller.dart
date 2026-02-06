@@ -68,7 +68,7 @@ class SetPasswordController extends ChangeNotifier {
         final rawMessage = result.message.trim();
         final translated = rawMessage.isEmpty ? '' : rawMessage.translate;
 
-        // the token is invalid, so we redirect user to login page
+        // the token is invalid, so we direct user to invalid set password link page
         if (rawMessage == 'common.auth.invalidToken' ||
             translated == 'common.auth.invalidToken') {
           _shouldRedirectInvalidToken = true;

@@ -32,7 +32,8 @@ class UserModel extends Model< InferAttributes<UserModel>, InferCreationAttribut
   declare licenseExpiryDate: string;
 
   declare status: keyof typeof status;
-  declare hashedPassword: string;
+  declare hashedPassword: string | null;
+  declare passwordResetVersion: number;
 
   declare language: keyof typeof language;
   declare appearance: keyof typeof appearance;
@@ -99,6 +100,11 @@ UserModel.init( {
       allowNull: true,
       defaultValue: null
     }, 
+    passwordResetVersion: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     language: {
       type: DataTypes.ENUM(...Object.values(language) as string[]),
       allowNull: false,

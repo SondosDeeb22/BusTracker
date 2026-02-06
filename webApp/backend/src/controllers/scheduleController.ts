@@ -212,4 +212,32 @@ export class ScheduleController {
             return;
         }
     }
+
+    // Update Scheduled Trip --------------------------------------------------------------------------------------
+    async updateScheduledTrip(req: Request, res: Response) {
+        try {
+            const body = (req.body ?? {}) as {
+                detailedScheduleId?: unknown;
+                driverId?: unknown;
+                busId?: unknown;
+            };
+
+            const detailedScheduleId = typeof body.detailedScheduleId === 'string' ? body.detailedScheduleId.trim() : '';
+            const driverId = typeof body.driverId === 'string' ? body.driverId.trim() : '';
+            const busId = typeof body.busId === 'string' ? body.busId.trim() : '';
+
+            if (!detailedScheduleId || !driverId || !busId) {
+                sendResponse(res, 500, 'common.errors.validation.fillAllFields');
+                return;
+            }
+
+            const messageKey = await scheduleService.updateScheduledTrip({ detailedScheduleId, driverId, busId });
+            sendResponse(res, 200, messageKey);
+            return;
+
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
 }

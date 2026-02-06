@@ -37,6 +37,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
     assignedRoute: '',
     assignedDriver: ''
   });
+  const [initialData, setInitialData] = useState<BusData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [routes, setRoutes] = useState<any[]>([]);
@@ -69,14 +70,17 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       const currentBus = buses.find((bus: any) => bus.id === busId);
       
       if (currentBus) {
-        setFormData({
+        const nextData: BusData = {
           id: currentBus.id,
           plate: currentBus.plate,
           brand: currentBus.brand,
           status: currentBus.status,
           assignedRoute: currentBus.assignedRoute,
           assignedDriver: currentBus.assignedDriver
-        });
+        };
+
+        setFormData(nextData);
+        setInitialData(nextData);
       }
     } catch (err) {
       console.error('Error fetching bus data:', err);
@@ -114,8 +118,21 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
     setError('');
 
     try {
-      console.log('Form data being sent to backend:', JSON.stringify(formData, null, 2));
-      await axios.patch('http://localhost:3001/api/admin/bus/update', formData, {
+      const updates: Record<string, any> = { id: formData.id };
+
+      if (initialData) {
+        (Object.keys(formData) as Array<keyof BusData>).forEach((key) => {
+          if (key === 'id') return;
+          if (formData[key] !== initialData[key]) {
+            updates[key] = formData[key];
+          }
+        });
+      } else {
+        Object.assign(updates, formData);
+      }
+
+      console.log('Form data being sent to backend:', JSON.stringify(updates, null, 2));
+      await axios.patch('http://localhost:3001/api/admin/bus/update', updates, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -162,7 +179,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.plate')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <input
               type="text"
@@ -178,7 +195,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.brand')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <input
               type="text"
@@ -196,7 +213,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.assignedRoute')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
@@ -225,7 +242,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.assignedDriver')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             {loadingDropdowns ? (
               <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
@@ -253,7 +270,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.status')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <select
               name="status"

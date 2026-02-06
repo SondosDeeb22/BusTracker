@@ -24,7 +24,13 @@ export const createEmailUrlToken = (email: string, envKeyName: string, expiresIn
 // function to create a reset password url token
 // ===================================================================================
 export const createResetPasswordUrlToken = (email: string): string => {
-    return createEmailUrlToken(email, "JWT_RESET_PASSWORD_KEY");
+    const secretKey = getEnvSecretKey("JWT_RESET_PASSWORD_KEY");
+    return jwt.sign({ email }, secretKey, { expiresIn: 1200000 / 1000 });
+};
+
+export const createResetPasswordUrlTokenWithVersion = (email: string, passwordResetVersion: number): string => {
+    const secretKey = getEnvSecretKey("JWT_RESET_PASSWORD_KEY");
+    return jwt.sign({ email, v: passwordResetVersion }, secretKey, { expiresIn: 1200000 / 1000 });
 };
 
 //  ==================================================================================

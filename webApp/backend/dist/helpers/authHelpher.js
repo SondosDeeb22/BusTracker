@@ -86,6 +86,9 @@ class AuthHelper {
     createResetPasswordUrlToken(email) {
         return (0, authHelper_1.createResetPasswordUrlToken)(email);
     }
+    createResetPasswordUrlTokenWithVersion(email, passwordResetVersion) {
+        return (0, authHelper_1.createResetPasswordUrlTokenWithVersion)(email, passwordResetVersion);
+    }
     // ------------------------------------------------------------------------------------
     // function to create token for ( SET password url )  
     createSetPasswordUrlToken(email) {

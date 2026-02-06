@@ -6,7 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifySetPasswordUrlTokenFromRequest = exports.verifyResetPasswordUrlTokenFromRequest = exports.verifyUrlTokenFromRequestWithEnvKey = exports.verifyUrlTokenFromRequest = exports.verifyUrlToken = exports.createSetPasswordUrlToken = exports.createResetPasswordUrlToken = exports.createEmailUrlToken = void 0;
+exports.verifySetPasswordUrlTokenFromRequest = exports.verifyResetPasswordUrlTokenFromRequest = exports.verifyUrlTokenFromRequestWithEnvKey = exports.verifyUrlTokenFromRequest = exports.verifyUrlToken = exports.createSetPasswordUrlToken = exports.createResetPasswordUrlTokenWithVersion = exports.createResetPasswordUrlToken = exports.createEmailUrlToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const env_1 = require("./env");
 //==========================================================================================================
@@ -22,9 +22,15 @@ exports.createEmailUrlToken = createEmailUrlToken;
 // function to create a reset password url token
 // ===================================================================================
 const createResetPasswordUrlToken = (email) => {
-    return (0, exports.createEmailUrlToken)(email, "JWT_RESET_PASSWORD_KEY");
+    const secretKey = (0, env_1.getEnvSecretKey)("JWT_RESET_PASSWORD_KEY");
+    return jsonwebtoken_1.default.sign({ email }, secretKey, { expiresIn: 1200000 / 1000 });
 };
 exports.createResetPasswordUrlToken = createResetPasswordUrlToken;
+const createResetPasswordUrlTokenWithVersion = (email, passwordResetVersion) => {
+    const secretKey = (0, env_1.getEnvSecretKey)("JWT_RESET_PASSWORD_KEY");
+    return jsonwebtoken_1.default.sign({ email, v: passwordResetVersion }, secretKey, { expiresIn: 1200000 / 1000 });
+};
+exports.createResetPasswordUrlTokenWithVersion = createResetPasswordUrlTokenWithVersion;
 //  ==================================================================================
 // function to create a set password url token
 //  ==================================================================================

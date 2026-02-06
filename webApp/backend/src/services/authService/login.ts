@@ -33,10 +33,11 @@ export const login = async (req: AuthRequest, res: AuthResponse): Promise<AuthSe
         } = body;
 
         //check if the user provided all the needed data
-        if (!email || !password) {
+        if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
             return { status: 500, messageKey: "common.errors.validation.fillAllFields" };
         }
         const userEmail = email.trim();
+        const userPassword: string = password;
 
         //====================================================================================================================================================
         // check if user registed in the system
@@ -53,7 +54,17 @@ export const login = async (req: AuthRequest, res: AuthResponse): Promise<AuthSe
         //=================================================================================================================================================
         // validate the provided password
 
-        const validPassword: boolean = await bcrypt.compare(password, userExists.hashedPassword);
+        const hashedPassword = userExists.hashedPassword;
+        if (typeof hashedPassword !== "string") {
+            return { status: 500, messageKey: "common.errors.internal" };
+        }
+
+        const validPassword: boolean = await new Promise<boolean>((resolve, reject) => {
+            bcrypt.compare(userPassword, hashedPassword, (error, same) => {
+                if (error) return reject(error);
+                resolve(same);
+            });
+        });
 
         let attemptSuccessful: boolean;
         let resultMessage: string;
@@ -76,7 +87,7 @@ export const login = async (req: AuthRequest, res: AuthResponse): Promise<AuthSe
             status = 401;
         }
 
-        void authHelper.loginAttempt(req, attemptSuccessful, email);
+        void authHelper.loginAttempt(req, attemptSuccessful, userEmail);
 
         return { status, messageKey: attemptSuccessful ? "auth.login.success" : "auth.login.invalidCredentials" };
 

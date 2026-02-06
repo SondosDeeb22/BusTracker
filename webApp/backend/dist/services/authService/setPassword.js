@@ -8,6 +8,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setPassword = exports.sendValidateEmail = exports.verifySetPasswordToken = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const sequelize_1 = require("sequelize");
 // import Models ------------------------------------------------------------------------
 const userModel_1 = __importDefault(require("../../models/userModel"));
 // import helpers --------------------------------------------------------------------
@@ -22,6 +23,17 @@ const verifySetPasswordToken = async (req) => {
     try {
         const userData = authHelper.verifySetPasswordUrlTokenFromRequest(req);
         if (!userData || typeof userData !== "object" || !userData.email) {
+            return null;
+        }
+        // check if user and hashed password exists 
+        const user = await userModel_1.default.findOne({
+            where: { email: userData.email },
+            attributes: ["email", "hashedPassword"],
+        });
+        if (!user) {
+            return null;
+        }
+        if (user.hashedPassword != null) {
             return null;
         }
         return userData;
@@ -91,10 +103,11 @@ const setPassword = async (req, res) => {
         }, {
             where: {
                 email: userData.email,
+                hashedPassword: { [sequelize_1.Op.is]: null },
             },
         });
         if (updatedPassword === 0) {
-            return { status: 500, messageKey: "auth.setPassword.errors.notUpdated" };
+            return { status: 401, messageKey: "common.auth.invalidToken" };
         }
         // Clear any existing login session on this browser
         authHelper.clearLoginSession(res);

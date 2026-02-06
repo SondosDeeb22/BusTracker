@@ -19,6 +19,8 @@ import { role } from "../../enums/userEnum";
 import AuthHelper from "../../helpers/authHelpher";
 const authHelper = new AuthHelper();
 
+import { createResetPasswordUrlTokenWithVersion } from "../../helpers/authHelper/urlTokens";
+
 import { sendEmail } from "../../helpers/sendEmail";
 
 import { AuthServiceResult } from "./types";
@@ -46,7 +48,7 @@ export const sendEmailToResetPassword = async (
             where: {
                 email: email,
             },
-            attributes: ["email", "role"],
+            attributes: ["email", "role", "passwordResetVersion"],
         });
 
         if (!uesrExists) {
@@ -63,7 +65,10 @@ export const sendEmailToResetPassword = async (
         //create token and store it in cookie----------------------------------------------------------------------------------
         let resetPasswordTokenCreation: string;
         try {
-            resetPasswordTokenCreation = authHelper.createResetPasswordUrlToken(email);
+            resetPasswordTokenCreation = createResetPasswordUrlTokenWithVersion(
+                email,
+                typeof uesrExists.passwordResetVersion === "number" ? uesrExists.passwordResetVersion : 0
+            );
 
         } catch (error) {
             console.error("Error occured while creating reset password token.", error);
@@ -105,8 +110,23 @@ export const sendEmailToResetPassword = async (
 // =================================================================================================================================
 export const verifyResetPasswordToken = async (req: AuthRequest): Promise<emailInterface | null> => {
     try {
-        const userData = authHelper.verifyResetPasswordUrlTokenFromRequest<emailInterface>(req);
+        const userData = authHelper.verifyResetPasswordUrlTokenFromRequest<{ email: string; v?: number }>(req);
         if (!userData || typeof userData !== "object" || !userData.email) {
+            return null;
+        }
+
+        const user = await UserModel.findOne({
+            where: { email: userData.email },
+            attributes: ["email", "passwordResetVersion"],
+        });
+
+        if (!user) {
+            return null;
+        }
+
+        const expectedVersion = typeof user.passwordResetVersion === "number" ? user.passwordResetVersion : 0;
+        const tokenVersion = typeof userData.v === "number" ? userData.v : 0;
+        if (tokenVersion !== expectedVersion) {
             return null;
         }
         return userData;
@@ -161,6 +181,11 @@ export const resetPassword = async (req: AuthRequest, res: AuthResponse): Promis
         if (updatedPassword === 0) {
             return { status: 500, messageKey: "auth.passwordReset.errors.notUpdated" };
         }
+
+        await UserModel.increment(
+            { passwordResetVersion: 1 },
+            { where: { email: userData.email } }
+        );
 
         return { status: 200, messageKey: "auth.passwordReset.success.updated" };
 

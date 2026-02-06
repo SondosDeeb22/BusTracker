@@ -184,6 +184,26 @@ class ScheduleController {
             return;
         }
     }
+    // Update Scheduled Trip --------------------------------------------------------------------------------------
+    async updateScheduledTrip(req, res) {
+        try {
+            const body = (req.body ?? {});
+            const detailedScheduleId = typeof body.detailedScheduleId === 'string' ? body.detailedScheduleId.trim() : '';
+            const driverId = typeof body.driverId === 'string' ? body.driverId.trim() : '';
+            const busId = typeof body.busId === 'string' ? body.busId.trim() : '';
+            if (!detailedScheduleId || !driverId || !busId) {
+                (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.validation.fillAllFields');
+                return;
+            }
+            const messageKey = await scheduleService.updateScheduledTrip({ detailedScheduleId, driverId, busId });
+            (0, messageTemplate_1.sendResponse)(res, 200, messageKey);
+            return;
+        }
+        catch (error) {
+            (0, controllerErrorMapper_1.handleControllerError)(res, error);
+            return;
+        }
+    }
 }
 exports.ScheduleController = ScheduleController;
 //# sourceMappingURL=scheduleController.js.map

@@ -47,11 +47,16 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
     //================================================================================
 
     try {
+      const updates: Record<string, any> = { id: driver.id };
+
+      (Object.keys(formData) as Array<keyof typeof formData>).forEach((key) => {
+        if (formData[key] !== driver?.[key]) {
+          updates[key] = formData[key];
+        }
+      });
+
       // use the endpoint to update data given from user
-      await axios.patch(`http://localhost:3001/api/admin/driver/update`, {
-        id: driver.id,
-        ...formData
-      }, {
+      await axios.patch(`http://localhost:3001/api/admin/driver/update`, updates, {
         withCredentials: true
       });
 
@@ -139,6 +144,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('updateForm.email')}
+                
               </label>
               <input
                 type="email"

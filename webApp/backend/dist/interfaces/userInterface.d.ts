@@ -10,7 +10,8 @@ export interface userAttributes {
     licenseNumber: string;
     licenseExpiryDate: string;
     status: keyof typeof status;
-    hashedPassword: string;
+    hashedPassword: string | null;
+    passwordResetVersion: number;
     language: keyof typeof language;
     appearance: keyof typeof appearance;
 }

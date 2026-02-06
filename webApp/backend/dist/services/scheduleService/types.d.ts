@@ -23,4 +23,10 @@ export type AddScheduledTripInput = {
     busId: string;
 };
 export type AddScheduledTripResult = "tripForm.success.saved" | "tripForm.success.updated";
+export type UpdateScheduledTripInput = {
+    detailedScheduleId: string;
+    driverId: string;
+    busId: string;
+};
+export type UpdateScheduledTripResult = "tripForm.success.updated";
 //# sourceMappingURL=types.d.ts.map

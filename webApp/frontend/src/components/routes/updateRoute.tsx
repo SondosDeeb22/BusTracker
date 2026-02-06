@@ -39,6 +39,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
     status: '',
     stations: []
   });
+  const [initialData, setInitialData] = useState<RouteData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [stations, setStations] = useState<Station[]>([]);
@@ -52,7 +53,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
       });
       const currentRoute = response.data.data.find((route: any) => route.id === routeId);
       if (currentRoute) {
-        setFormData({
+        const nextData: RouteData = {
           id: currentRoute.id,
           title: currentRoute.title,
           color: currentRoute.color,
@@ -60,7 +61,10 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           stations: Array.isArray(currentRoute.stations)
             ? currentRoute.stations.map((s: any) => s.id ?? s.stationId ?? s)
             : []
-        });
+        };
+
+        setFormData(nextData);
+        setInitialData(nextData);
       }
     } catch (err) {
       setError(t('updateForm.loadError'));
@@ -121,12 +125,23 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
     setError('');
 
     try {
-      const payload = {
-        ...formData,
-        totalStops: formData.stations.length
-      };
+      const updates: Record<string, any> = { id: formData.id };
 
-      await axios.patch('http://localhost:3001/api/admin/route/update', payload, {
+      if (initialData) {
+        if (formData.title !== initialData.title) updates.title = formData.title;
+        if (formData.color !== initialData.color) updates.color = formData.color;
+        if (formData.status !== initialData.status) updates.status = formData.status;
+
+        const stationsChanged = JSON.stringify(formData.stations) !== JSON.stringify(initialData.stations);
+        if (stationsChanged) {
+          updates.stations = formData.stations;
+          updates.totalStops = formData.stations.length;
+        }
+      } else {
+        Object.assign(updates, formData, { totalStops: formData.stations.length });
+      }
+
+      await axios.patch('http://localhost:3001/api/admin/route/update', updates, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -163,7 +178,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.titleLabel')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <input
               type="text"
@@ -178,7 +193,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.color')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <input
               type="color"
@@ -216,7 +231,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('updateForm.status')}
-              <span className="text-red-600"> *</span>
+               
             </label>
             <select
               name="status"

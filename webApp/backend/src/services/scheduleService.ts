@@ -1,14 +1,14 @@
 //===================================================================================================
 //? Importing
 //===================================================================================================
-import { ScheduleQueryParams, AddScheduleInput, UpdateScheduleInput, AddScheduledTripInput, AddScheduledTripResult } from "./scheduleService/types";
+import { ScheduleQueryParams, AddScheduleInput, UpdateScheduleInput, AddScheduledTripInput, AddScheduledTripResult, UpdateScheduledTripInput, UpdateScheduledTripResult } from "./scheduleService/types";
 
 import { getSchedule } from "./scheduleService/getSchedule";
 import { getUserSchedule } from "./scheduleService/getUserSchedule";
 
 import { addSchedule, updateSchedule, removeSchedule } from "./scheduleService/crud";
 
-import { addScheduledTrip, removeScheduledTrip } from "./scheduleService/scheduledTrips";
+import { addScheduledTrip, removeScheduledTrip, updateScheduledTrip } from "./scheduleService/scheduledTrips";
 
 //===================================================================================================
 //? schedule class
@@ -79,6 +79,16 @@ export class ScheduleService {
     }): Promise<AddScheduledTripResult> {
         const payload: AddScheduledTripInput = input;
         return addScheduledTrip(payload);
+    }
+
+    //===================================================================================================
+    //? update scheduled trip (PATCH)
+    // Update driver/bus for an existing scheduled trip (detailedScheduleId required).
+    //===================================================================================================
+
+    async updateScheduledTrip(input: UpdateScheduledTripInput): Promise<UpdateScheduledTripResult> {
+        const payload: UpdateScheduledTripInput = input;
+        return updateScheduledTrip(payload);
     }
 
     //===================================================================================================

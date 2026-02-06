@@ -165,7 +165,7 @@ const UpdateServicePattern = ({
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 {t('updateForm.patternTitle')}
-                <span className="text-red-600"> *</span>
+                 
               </label>
               <input
                 value={title}
@@ -180,7 +180,7 @@ const UpdateServicePattern = ({
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-bold text-gray-700">
                   {t('updateForm.coveredHours')}
-                  <span className="text-red-600"> *</span>
+                   
                 </div>
                 <div className="text-xs text-gray-500">{t('updateForm.hoursHint')}</div>
               </div>

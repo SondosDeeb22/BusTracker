@@ -90,6 +90,7 @@ export class AuthController{
     verifyResetPasswordToken = async (req: Request, res: Response): Promise<emailInterface | null> => {
         const userData = await authService.verifyResetPasswordToken(this.toAuthReq(req));
         if (!userData) {
+            res.sendStatus(401);
             return null;
         }
 
@@ -122,6 +123,7 @@ export class AuthController{
     verifySetPasswordToken = async (req: Request, res: Response): Promise<emailInterface | null> => {
         const userData = await authService.verifySetPasswordToken(this.toAuthReq(req));
         if (!userData) {
+            res.sendStatus(401);
             return null;
         }
 

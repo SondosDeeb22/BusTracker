@@ -33,6 +33,9 @@ type AddScheduledTripProps = {
   open: boolean;
   backendBaseUrl: string;
   selectedCell: SelectedCell | null;
+  detailedScheduleId?: string;
+  initialDriverId?: string;
+  initialBusId?: string;
   onClose: () => void;
   onSuccess: (message: string) => void;
   onRefresh: () => Promise<void>;
@@ -46,6 +49,9 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
   open,
   backendBaseUrl,
   selectedCell,
+  detailedScheduleId,
+  initialDriverId,
+  initialBusId,
   onClose,
   onSuccess,
   onRefresh,
@@ -84,12 +90,12 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
   useEffect(() => {
     if (!open || !tripInfo) return;
 
-    setDriverId('');
-    setBusId('');
+    setDriverId(initialDriverId || '');
+    setBusId(initialBusId || '');
     setError('');
 
     void fetchLists();
-  }, [open, tripInfo?.scheduleId, tripInfo?.routeId, tripInfo?.time]);
+  }, [open, tripInfo?.scheduleId, tripInfo?.routeId, tripInfo?.time, initialDriverId, initialBusId]);
 
   //====================================================================================
   //? Functions
@@ -127,17 +133,24 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
     setError('');
 
     try {
-      const res = await axios.post(
-        `${backendBaseUrl}/api/admin/schedule/trip/add`,
-        {
-          scheduleId: tripInfo.scheduleId,
-          time: tripInfo.time,
-          routeId: tripInfo.routeId,
-          driverId,
-          busId,
-        },
-        { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-      );
+      // if we have detailedScheduleId, we update the trip, else we add a new trip
+      const res = detailedScheduleId
+        ? await axios.patch(
+            `${backendBaseUrl}/api/admin/schedule/trip/update`,
+            { detailedScheduleId, driverId, busId },
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+          )
+        : await axios.post(
+            `${backendBaseUrl}/api/admin/schedule/trip/add`,
+            {
+              scheduleId: tripInfo.scheduleId,
+              time: tripInfo.time,
+              routeId: tripInfo.routeId,
+              driverId,
+              busId,
+            },
+            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+          );
 
       const serverMessageKey = String(res?.data?.message || '').trim();
       onSuccess(serverMessageKey ? tCommon(serverMessageKey, { defaultValue: serverMessageKey }) : tCommon('tripForm.success.saved'));

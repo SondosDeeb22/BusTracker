@@ -64,6 +64,11 @@ UserModel.init({
         allowNull: true,
         defaultValue: null
     },
+    passwordResetVersion: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    },
     language: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.language)),
         allowNull: false,

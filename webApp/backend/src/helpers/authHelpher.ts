@@ -13,6 +13,7 @@ import {
     createEmailUrlToken,
     createJWTtoken,
     createResetPasswordUrlToken,
+    createResetPasswordUrlTokenWithVersion,
     createSetPasswordUrlToken,
     extractJWTData,
     getEnvSecretKey,
@@ -162,6 +163,10 @@ class AuthHelper{
     
     createResetPasswordUrlToken(email: string): string {
         return createResetPasswordUrlToken(email);
+    }
+
+    createResetPasswordUrlTokenWithVersion(email: string, passwordResetVersion: number): string {
+        return createResetPasswordUrlTokenWithVersion(email, passwordResetVersion);
     }
 
     // ------------------------------------------------------------------------------------

@@ -13,10 +13,14 @@ const userHelper = new UserHelper();
 
 import { ConflictError, NotFoundError } from "../../errors";
 
-import { AddScheduledTripInput, AddScheduledTripResult } from "./types";
+import { AddScheduledTripInput, AddScheduledTripResult, UpdateScheduledTripInput, UpdateScheduledTripResult } from "./types";
 
 //===================================================================================================
 
+
+// ===========================================================================
+//? function to remove data
+// ===========================================================================
 export const removeScheduledTrip = async (detailedScheduleId: string): Promise<void> => {
     const deletedCount = await ScheduledTripsModel.destroy({ where: { detailedScheduleId } });
     if (deletedCount === 0) {
@@ -24,6 +28,10 @@ export const removeScheduledTrip = async (detailedScheduleId: string): Promise<v
     }
 };
 
+
+// ===========================================================================
+//? function to add data
+// ===========================================================================
 export const addScheduledTrip = async (input: AddScheduledTripInput): Promise<AddScheduledTripResult> => {
     const scheduleExists = await ScheduleModel.findOne({
         where: { scheduleId: input.scheduleId },
@@ -83,4 +91,51 @@ export const addScheduledTrip = async (input: AddScheduledTripInput): Promise<Ad
     });
 
     return "tripForm.success.saved";
+};
+
+// ===========================================================================
+//? function to update data
+// ===========================================================================
+export const updateScheduledTrip = async (input: UpdateScheduledTripInput): Promise<UpdateScheduledTripResult> => {
+    const existingTrip = await ScheduledTripsModel.findOne({
+        where: { detailedScheduleId: input.detailedScheduleId },
+        attributes: ["detailedScheduleId", "scheduleId", "time", "routeId", "driverId", "busId"],
+    });
+
+    if (!existingTrip) {
+        throw new NotFoundError("tripForm.errors.notFound");
+    }
+
+    const occupied = await ScheduledTripsModel.findOne({
+        where: {
+            scheduleId: (existingTrip as any).scheduleId,
+            time: (existingTrip as any).time,
+            detailedScheduleId: { [Op.ne]: input.detailedScheduleId },
+            [Op.or]: [{ driverId: input.driverId }, { busId: input.busId }],
+        },
+        attributes: ["detailedScheduleId", "driverId", "busId"],
+    });
+
+    if (occupied) {
+        if ((occupied as any).driverId === input.driverId) {
+            throw new ConflictError("tripForm.errors.driverNotAvailable");
+        }
+
+        if ((occupied as any).busId === input.busId) {
+            throw new ConflictError("tripForm.errors.busNotAvailable");
+        }
+
+        throw new ConflictError("tripForm.errors.driverOrBusNotAvailable");
+    }
+
+    const [updatedCount] = await ScheduledTripsModel.update(
+        { driverId: input.driverId, busId: input.busId },
+        { where: { detailedScheduleId: input.detailedScheduleId } }
+    );
+
+    if (updatedCount === 0) {
+        throw new ConflictError("tripForm.errors.notUpdated");
+    }
+
+    return "tripForm.success.updated";
 };

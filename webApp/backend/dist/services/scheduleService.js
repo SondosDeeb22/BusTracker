@@ -49,6 +49,14 @@ class ScheduleService {
         return (0, scheduledTrips_1.addScheduledTrip)(payload);
     }
     //===================================================================================================
+    //? update scheduled trip (PATCH)
+    // Update driver/bus for an existing scheduled trip (detailedScheduleId required).
+    //===================================================================================================
+    async updateScheduledTrip(input) {
+        const payload = input;
+        return (0, scheduledTrips_1.updateScheduledTrip)(payload);
+    }
+    //===================================================================================================
     //? update schedule (Patch)
     // Update schedule row. (scheduleId required)
     //===================================================================================================

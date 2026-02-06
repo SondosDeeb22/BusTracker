@@ -73,6 +73,7 @@ class AuthController {
     verifyResetPasswordToken = async (req, res) => {
         const userData = await authService.verifyResetPasswordToken(this.toAuthReq(req));
         if (!userData) {
+            res.sendStatus(401);
             return null;
         }
         res.sendStatus(200);
@@ -100,6 +101,7 @@ class AuthController {
     verifySetPasswordToken = async (req, res) => {
         const userData = await authService.verifySetPasswordToken(this.toAuthReq(req));
         if (!userData) {
+            res.sendStatus(401);
             return null;
         }
         res.sendStatus(200);
