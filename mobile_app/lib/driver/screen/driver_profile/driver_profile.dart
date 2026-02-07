@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../homepage_driver/homepage_driver.dart';
-import '../weekly_bus_schedule/weekly_bus_schedule.dart';
+import '../bus_schedule/bus_schedule.dart';
 
 //========================================================
 
@@ -214,7 +214,7 @@ class _DriverProfileState extends State<DriverProfile> {
           if (i == 1) {
             Navigator.of(
               context,
-            ).pushReplacement(_noAnimationRoute(const WeeklyBusSchedule()));
+            ).pushReplacement(_noAnimationRoute(const BusSchedule()));
             return;
           }
 

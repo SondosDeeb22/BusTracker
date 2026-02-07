@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../driver_profile/driver_profile.dart';
-import '../weekly_bus_schedule/weekly_bus_schedule.dart';
+import '../bus_schedule/bus_schedule.dart';
 
 //========================================================
 class HomepageDriver extends StatefulWidget {
@@ -139,7 +139,7 @@ class _HomepageDriverState extends State<HomepageDriver> {
           if (i == 1) {
             Navigator.of(
               context,
-            ).pushReplacement(_noAnimationRoute(const WeeklyBusSchedule()));
+            ).pushReplacement(_noAnimationRoute(const BusSchedule()));
             return;
           }
 
