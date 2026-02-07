@@ -3,7 +3,6 @@
 //========================================================
 import 'package:flutter/material.dart';
 import '../../../controller/auth/reset_password/reset_password_controller.dart';
-import '../../../service/localization/localization_service.dart';
 
 import '../../../service/auth/reset_password/reset_password_service.dart';
 import 'invalid_reset_link_page.dart';

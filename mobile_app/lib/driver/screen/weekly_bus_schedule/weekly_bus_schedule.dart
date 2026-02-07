@@ -2,6 +2,12 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
+
+import '../../controller/schedule/weekly_bus_schedule/weekly_bus_schedule_controller.dart';
+import '../../service/localization/localization_service.dart';
+
+import '../../widget/schedule/weekly_bus_schedule/weekly_schedule_day_header.dart';
+import '../../widget/schedule/weekly_bus_schedule/weekly_schedule_trip_card.dart';
 import '../driver_profile/driver_profile.dart';
 import '../homepage_driver/homepage_driver.dart';
 
@@ -20,50 +26,26 @@ class _WeeklyBusScheduleState extends State<WeeklyBusSchedule> {
 
   int _bottomIndex = 1;
 
-  final List<_DaySchedule> _week = const [
-    _DaySchedule(
-      day: 'Monday',
-      date: '17/03/2026',
-      busName: 'Yenikent - Gonyle Bus',
-      busColor: Color.fromARGB(255, 2, 13, 167),
-    ),
-    _DaySchedule(
-      day: 'Tuesday',
-      date: '18/03/2026',
-      busName: 'Yenikent - Gonyle Bus',
-      busColor: Color.fromARGB(255, 2, 13, 167),
-    ),
-    _DaySchedule(
-      day: 'Wednesday',
-      date: '19/03/2026',
-      busName: 'Kizilbas Bus',
-      busColor: Color.fromARGB(255, 255, 251, 4),
-    ),
-    _DaySchedule(
-      day: 'Thursday',
-      date: '20/03/2026',
-      busName: 'Kizilbas Bus',
-      busColor: Color.fromARGB(255, 255, 251, 4),
-    ),
-    _DaySchedule(
-      day: 'Friday',
-      date: '21/03/2026',
-      busName: 'Lefkosa Bus',
-      busColor: Color.fromARGB(255, 0, 168, 14),
-    ),
-    _DaySchedule(
-      day: 'Saturday',
-      date: '22/03/2026',
-      busName: 'Famagusta Bus',
-      busColor: Color.fromARGB(255, 0, 227, 204),
-    ),
-    _DaySchedule(
-      day: 'Sunday',
-      date: '23/03/2026',
-      busName: 'Gonyle 1 Bus',
-      busColor: Color.fromARGB(255, 110, 0, 170),
-    ),
-  ];
+  final DriverWeeklyBusScheduleController _controller =
+      DriverWeeklyBusScheduleController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onControllerChanged);
+    _controller.fetch();
+  }
+
+  void _onControllerChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onControllerChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,9 +77,9 @@ class _WeeklyBusScheduleState extends State<WeeklyBusSchedule> {
               children: [
                 const SizedBox(height: 6),
 
-                const Text(
-                  'My Weekly Bus Schedule',
-                  style: TextStyle(
+                Text(
+                  'driver_weekly_schedule_title'.translate,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: Colors.black,
@@ -106,11 +88,55 @@ class _WeeklyBusScheduleState extends State<WeeklyBusSchedule> {
 
                 const SizedBox(height: 20),
 
-                // view the routes associated with each day for that driver ---------------------------
-                for (final day in _week) ...[
-                  _DayScheduleCard(borderColor: _border, schedule: day),
+                if (_controller.isLoading) ...[
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 22),
+                      child: CircularProgressIndicator(color: _burgundy),
+                    ),
+                  ),
+                ] else ...[
+                  if (_controller.errorMessage != null &&
+                      _controller.errorMessage!.trim().isNotEmpty) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0x00FFFFFF),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: _border, width: 1),
+                      ),
+                      child: Text(
+                        _controller.errorMessage!,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
 
-                  const SizedBox(height: 18),
+                  for (final day in _controller.days) ...[
+                    WeeklyScheduleDayHeader(day: day.day, date: day.date),
+                    const SizedBox(height: 12),
+
+                    for (final trip in day.scheduleDetails) ...[
+                      WeeklyScheduleTripCard(
+                        borderColor: _border,
+                        time: trip.time,
+                        busText: _busText(trip.busId, trip.busPlate),
+                        routeName: trip.routeName,
+                        routeColor: trip.routeColor,
+                      ),
+                      const SizedBox(height: 18),
+                    ],
+
+                    const SizedBox(height: 6),
+                  ],
                 ],
               ],
             ),
@@ -167,20 +193,20 @@ class _WeeklyBusScheduleState extends State<WeeklyBusSchedule> {
       ),
     );
   }
-}
 
-class _DaySchedule {
-  final String day;
-  final String date;
-  final String busName;
-  final Color busColor;
+  //========================================================
 
-  const _DaySchedule({
-    required this.day,
-    required this.date,
-    required this.busName,
-    required this.busColor,
-  });
+  String _busText(String busId, String busPlate) {
+    final id = busId.trim();
+    final plate = busPlate.trim();
+
+    if (id.isEmpty && plate.isEmpty) return '';
+    if (id.isEmpty) return plate;
+    if (plate.isEmpty) return id;
+    return '$id  $plate';
+  }
+
+  // ----------------------------------------------------------
 }
 
 PageRoute<void> _noAnimationRoute(Widget page) {
@@ -189,88 +215,4 @@ PageRoute<void> _noAnimationRoute(Widget page) {
     transitionDuration: Duration.zero,
     reverseTransitionDuration: Duration.zero,
   );
-}
-
-// render card  that contains (day, date , route)=======================================================================
-
-class _DayScheduleCard extends StatelessWidget {
-  final Color borderColor;
-  final _DaySchedule schedule;
-
-  const _DayScheduleCard({required this.borderColor, required this.schedule});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: const Color(0x00FFFFFF),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: borderColor, width: 1),
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // display day and date ========================================================
-          Row(
-            children: [
-              // DAY -----------------------------
-              Expanded(
-                child: Text(
-                  schedule.day,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-
-              // DATE -----------------------------
-              Text(
-                schedule.date,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-          //================================================================================
-          const SizedBox(height: 12),
-
-          // display route name in container ------------------
-          Container(
-            height: 36,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: schedule.busColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-
-            child: Text(
-              schedule.busName,
-              style: TextStyle(
-                color: _textColorFor(schedule.busColor),
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          // =====================================================================================
-        ],
-      ),
-    );
-  }
-
-  Color _textColorFor(Color bg) {
-    final brightness = ThemeData.estimateBrightnessForColor(bg);
-    return brightness == Brightness.dark ? Colors.white : Colors.black;
-  }
 }
