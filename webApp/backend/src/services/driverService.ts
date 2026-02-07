@@ -159,7 +159,7 @@ export class DriverService{
                     {
                         model: RouteModel,
                         as: "route",
-                        attributes: ["id", "title"],
+                        attributes: ["id", "title", "color"],
                     },
                     {
                         model: BusModel,
@@ -180,7 +180,7 @@ export class DriverService{
                     date: string;
                     day: string;
                     driverId: string;
-                    scheduleDetails: Array<{ time: string; routeName: string; busId: string; busPlate: string }>;
+                    scheduleDetails: Array<{ time: string; routeName: string; routeColor: string; busId: string; busPlate: string }>;
                 }
             >();
 
@@ -206,10 +206,12 @@ export class DriverService{
                 const routeName = typeof row?.route?.title === 'string' ? row.route.title.trim() : '';
                 const busIdStr = typeof row?.bus?.id === 'string' ? row.bus.id.trim() : '';
                 const busPlate = typeof row?.bus?.plate === 'string' ? row.bus.plate.trim() : '';
+                const routeColor = typeof row?.route?.color === 'string' ? row.route.color.trim() : '';
 
                 byDay.get(key)!.scheduleDetails.push({
                     time,
                     routeName,
+                    routeColor,
                     busId: busIdStr,
                     busPlate,
                 });

@@ -17,6 +17,7 @@ const scheduledTrips = [
     { detailedScheduleId: "DT15", scheduleId: "SC01", time: "18:15:00", routeId: "R002", driverId: "U001", busId: "B001" },
     { detailedScheduleId: "DT16", scheduleId: "SC01", time: "20:15:00", routeId: "R003", driverId: "U002", busId: "B002" },
     { detailedScheduleId: "DT17", scheduleId: "SC01", time: "22:15:00", routeId: "R001", driverId: "U003", busId: "B003" },
+    { detailedScheduleId: "DT62", scheduleId: "SC01", time: "12:15:00", routeId: "R002", driverId: "U006", busId: "B001" },
     { detailedScheduleId: "DT61", scheduleId: "SC01", time: "16:15:00", routeId: "R004", driverId: "U006", busId: "B005" },
     // For SC02 (Weekday)
     // { detailedScheduleId: "DT03", scheduleId: "SC02", time: "09:15:00", routeId: "R001", driverId: "U003", busId: "B003" },
@@ -45,6 +46,10 @@ const scheduledTrips = [
     { detailedScheduleId: "DT37", scheduleId: "SC03", time: "16:15:00", routeId: "R003", driverId: "U003", busId: "B003" },
     { detailedScheduleId: "DT38", scheduleId: "SC03", time: "18:15:00", routeId: "R001", driverId: "U002", busId: "B002" },
     { detailedScheduleId: "DT39", scheduleId: "SC03", time: "18:15:00", routeId: "R002", driverId: "U004", busId: "B004" },
+    { detailedScheduleId: "DT72", scheduleId: "SC03", time: "12:15:00", routeId: "R003", driverId: "U006", busId: "B001" },
+    { detailedScheduleId: "DT78", scheduleId: "SC03", time: "14:15:00", routeId: "R001", driverId: "U006", busId: "B004" },
+    { detailedScheduleId: "DT79", scheduleId: "SC03", time: "13:15:00", routeId: "R003", driverId: "U006", busId: "B001" },
+    { detailedScheduleId: "DT63", scheduleId: "SC03", time: "15:15:00", routeId: "R001", driverId: "U006", busId: "B004" },
     // For SC04 (Weekend)
     { detailedScheduleId: "DT07", scheduleId: "SC04", time: "12:15:00", routeId: "R001", driverId: "U002", busId: "B002" },
     { detailedScheduleId: "DT08", scheduleId: "SC04", time: "14:15:00", routeId: "R003", driverId: "U001", busId: "B001" },
