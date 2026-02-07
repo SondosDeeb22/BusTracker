@@ -11,42 +11,34 @@ const router: Router = express.Router();
 
 //import controllers ----------------------------------------------------------
 
-import { RouteController } from "../controllers/routeController";
-const routeController = new RouteController();
+import { DriverController } from "../controllers/driverController";
+const driverController = new DriverController();
 
 import { UserController } from "../controllers/userController";
 const userController = new UserController();
 
-import { ScheduleController } from "../controllers/scheduleController";
-const scheduleController = new ScheduleController();
 
 //import enums ----------------------------------------------------------------
 import { loginToken } from '../enums/tokenNameEnum';
 
+import { role } from '../enums/userEnum';
+
 //import  Middlewares -------------------------------------
 import { accessRequireToken } from '../middlewares/tokenRequired'; // for authentication
 
+import { authorizeRole } from '../middlewares/authorizeRole'; // for authorization
 //===========================================================================================================================
 // Router
 //===========================================================================================================================
 
-// view all routes buses are covering
-router.get('/routes/all' , routeController.viewAllRoutes);
+// change the route (by driver)
+router.patch('/change-route', accessRequireToken(loginToken), authorizeRole(role.driver),  userController.changeRoute);
 
-// view routes of operating buses
-router.get('/routes/operating', routeController.viewOperatingRoutes);
+// Start/Stop real-time tracking 
+router.patch('/tracking', accessRequireToken(loginToken), userController.changeBusStatus);
 
-
-
-// view bus schedule for users (no auth)
-router.get('/schedule/fetch', scheduleController.getUserSchedule);
-
-
-
-//change the language or appeareance
-router.patch('/language', accessRequireToken(loginToken), userController.changeLanguage);
-router.patch('/appearance', accessRequireToken(loginToken), userController.changeAppearance);
-
+// Fetch driver schedule 
+router.get('/schedule/fetch', accessRequireToken(loginToken), driverController.fetchDriverSchedule);
 
 //===========================================================================================================================
 export default router;

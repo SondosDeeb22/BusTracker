@@ -37,7 +37,7 @@ class AuthService{
     //==========================================================================================================
     //? Get Current User 
     //==========================================================================================================
-    async getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{ userID: number; userRole: string; userName: string }>>{
+    async getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{ userID: string; userRole: string; userName: string }>>{
         return getCurrentUser(req, res);
     }
 

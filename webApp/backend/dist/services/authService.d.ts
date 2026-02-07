@@ -4,7 +4,7 @@ import { role } from "../enums/userEnum";
 import { AuthServiceResult } from "./authService/types";
 declare class AuthService {
     getCurrentUser(req: AuthRequest, res: AuthResponse): Promise<AuthServiceResult<{
-        userID: number;
+        userID: string;
         userRole: string;
         userName: string;
     }>>;

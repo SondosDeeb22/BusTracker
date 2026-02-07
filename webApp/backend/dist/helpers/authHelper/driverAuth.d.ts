@@ -1,2 +1,2 @@
-export declare const validateUserById: (driverId: number, busId: string) => Promise<true>;
+export declare const validateUserById: (driverId: string, busId: string) => Promise<true>;
 //# sourceMappingURL=driverAuth.d.ts.map

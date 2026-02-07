@@ -41,7 +41,7 @@ export class UserService{
     //? function to change app language
     //===================================================================================================
 
-    async changeLanguage(userId: number, language: unknown): Promise<{ updated: boolean; messageKey: string }> {
+    async changeLanguage(userId: string, language: unknown): Promise<{ updated: boolean; messageKey: string }> {
         if (typeof language !== 'string' || language.trim() === '') {
             throw new ValidationError('common.errors.validation.invalidField');
         }
@@ -59,7 +59,7 @@ export class UserService{
     //? function to change app apperacne 
     //===================================================================================================
 
-    async changeAppearance(userId: number, appearance: unknown): Promise<{ updated: boolean; messageKey: string }> {
+    async changeAppearance(userId: string, appearance: unknown): Promise<{ updated: boolean; messageKey: string }> {
         if (typeof appearance !== 'string' || appearance.trim() === '') {
             throw new ValidationError('common.errors.validation.invalidField');
         }
@@ -77,7 +77,7 @@ export class UserService{
     //? change route (by driver)
     //===================================================================================================================    
 
-    async changeRoute(userId: number, payload: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
+    async changeRoute(userId: string, payload: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
         const busId = String(payload?.id ?? '');
         
         await authHelper.validateUserById(userId, busId);
@@ -90,7 +90,7 @@ export class UserService{
     //? start/ stop bus (by driver)
     //===================================================================================================================    
 
-    async updateBusStatus(userId: number, payload: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
+    async updateBusStatus(userId: string, payload: Record<string, any>): Promise<{ updated: boolean; messageKey: string }> {
         const busId = String(payload?.id ?? '');
         
         await authHelper.validateUserById(userId, busId);

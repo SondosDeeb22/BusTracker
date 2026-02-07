@@ -146,7 +146,7 @@ const users: Array<userAttributes> = [
     licenseNumber: "LIC3002014",
     licenseExpiryDate: "2028-02-28",
     status: "active",
-    hashedPassword: "$2b$10$examplehash6",
+    hashedPassword: "$2b$08$aOc.CwK/vqj/R/QHoaWxJ.KkIry58pOShrI8T6vaKX0wqhQOG.V/C",
     passwordResetVersion: 0,
     language: "turkish",
     appearance: "dark",

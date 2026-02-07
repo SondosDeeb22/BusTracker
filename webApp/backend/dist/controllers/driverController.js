@@ -65,6 +65,28 @@ class DriverController {
             return;
         }
     }
+    // =================================================================================================================================
+    //? Fetch Driver Schedule
+    // =================================================================================================================================
+    async fetchDriverSchedule(req, res) {
+        try {
+            const user = req?.user;
+            console.log(user);
+            console.log(user.id);
+            console.log(user.role);
+            const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
+            const requesterRole = typeof user?.role === 'string' ? String(user.role).trim() : '';
+            const driverId = requesterRole === 'admin' && driverIdFromQuery ? driverIdFromQuery : user?.id;
+            const result = await driverService.fetchDriverSchedule(driverId);
+            (0, messageTemplate_1.sendResponse)(res, 200, result.messageKey, result.data);
+            return;
+            // -----------------
+        }
+        catch (error) {
+            (0, controllerErrorMapper_1.handleControllerError)(res, error);
+            return;
+        }
+    }
 }
 exports.DriverController = DriverController;
 //# sourceMappingURL=driverController.js.map

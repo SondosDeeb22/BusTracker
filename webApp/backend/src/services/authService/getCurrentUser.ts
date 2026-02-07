@@ -16,7 +16,7 @@ import { AuthServiceResult } from "./types";
 export const getCurrentUser = async (
     req: AuthRequest,
     res: AuthResponse
-): Promise<AuthServiceResult<{ userID: number; userRole: string; userName: string }>> => {
+): Promise<AuthServiceResult<{ userID: string; userRole: string; userName: string }>> => {
     try {
         const userData = authHelper.getUserData(req);
         return { status: 200, messageKey: "auth.currentUser.success", data: userData };

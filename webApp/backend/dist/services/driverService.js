@@ -9,6 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DriverService = void 0;
 //import models
 const userModel_1 = __importDefault(require("../models/userModel"));
+const scheduledTripsModel_1 = __importDefault(require("../models/scheduledTripsModel"));
+const scheduleModel_1 = __importDefault(require("../models/scheduleModel"));
+const routeModel_1 = __importDefault(require("../models/routeModel"));
+const busModel_1 = __importDefault(require("../models/busModel"));
 //import Enums
 const userEnum_1 = require("../enums/userEnum");
 // import exceptions 
@@ -19,6 +23,9 @@ const authService = new authService_1.default();
 // helpers 
 const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
+const scheduleHelper_1 = require("../helpers/scheduleHelper");
+const scheduleHelper = new scheduleHelper_1.ScheduleHelper();
+const sequelize_1 = require("sequelize");
 //===================================================================================================
 class DriverService {
     //===================================================================================================
@@ -98,6 +105,85 @@ class DriverService {
             // --------------------------------------------------------------------------
         }
         catch (error) {
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? function to Fetch Specific Driver Schedule (from today onwards)
+    //===================================================================================================
+    async fetchDriverSchedule(driverId) {
+        try {
+            const id = String(driverId ?? '').trim();
+            if (!id) {
+                throw new errors_1.ValidationError('common.errors.validation.required');
+            }
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0] ?? '';
+            const trips = await scheduledTripsModel_1.default.findAll({
+                where: { driverId: id },
+                attributes: ["detailedScheduleId", "scheduleId", "time", "routeId", "driverId", "busId"],
+                include: [
+                    {
+                        model: scheduleModel_1.default,
+                        as: "schedule",
+                        attributes: ["scheduleId", "date", "day"],
+                        where: {
+                            date: { [sequelize_1.Op.gte]: todayStr },
+                        },
+                        required: true,
+                    },
+                    {
+                        model: routeModel_1.default,
+                        as: "route",
+                        attributes: ["id", "title"],
+                    },
+                    {
+                        model: busModel_1.default,
+                        as: "bus",
+                        attributes: ["id", "plate"],
+                    },
+                ],
+                // 
+                order: [
+                    [{ model: scheduleModel_1.default, as: "schedule" }, "date", "ASC"],
+                    ["time", "ASC"],
+                ],
+            });
+            const byDay = new Map();
+            for (const row of trips) {
+                const scheduleDate = row?.schedule?.date;
+                const dateStr = scheduleHelper.formatDateForMobileUi(scheduleDate);
+                const dayStr = typeof row?.schedule?.day === 'string' ? row.schedule.day.trim() : '';
+                const key = `${dateStr}|${dayStr}`;
+                if (!byDay.has(key)) {
+                    byDay.set(key, {
+                        date: dateStr,
+                        day: dayStr,
+                        driverId: id,
+                        scheduleDetails: [],
+                    });
+                }
+                const time = scheduleHelper.normalizeTimeToHourMinute(row?.time);
+                const routeName = typeof row?.route?.title === 'string' ? row.route.title.trim() : '';
+                const busIdStr = typeof row?.bus?.id === 'string' ? row.bus.id.trim() : '';
+                const busPlate = typeof row?.bus?.plate === 'string' ? row.bus.plate.trim() : '';
+                byDay.get(key).scheduleDetails.push({
+                    time,
+                    routeName,
+                    busId: busIdStr,
+                    busPlate,
+                });
+            }
+            return {
+                messageKey: 'drivers.success.fetched',
+                data: Array.from(byDay.values()),
+            };
+            // ---------------------------------------------------------------------------------
+        }
+        catch (error) {
+            if (error instanceof errors_1.ValidationError) {
+                throw error;
+            }
             throw new errors_1.InternalError('common.errors.internal');
         }
     }

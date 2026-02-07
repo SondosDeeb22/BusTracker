@@ -51,9 +51,12 @@ const login = async (req, res) => {
         let attemptSuccessful;
         let resultMessage;
         let status;
+        console.log(userExists.id);
+        console.log(userExists.role);
+        console.log(userExists.name);
         if (validPassword) {
             authHelper.createLoginSession(res, {
-                userID: Number(userExists.id),
+                userID: userExists.id,
                 userRole: userExists.role,
                 userName: userExists.name,
             });

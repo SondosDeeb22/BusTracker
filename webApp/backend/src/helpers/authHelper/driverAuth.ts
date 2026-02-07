@@ -8,7 +8,7 @@ import { ForbiddenError } from "../../errors";
 
 //==========================================================================================================
 
-export const validateUserById = async (driverId: number, busId: string): Promise<true> => {
+export const validateUserById = async (driverId: string, busId: string): Promise<true> => {
     try {
         if (!busId) {
             throw new ForbiddenError("common.errors.forbidden");

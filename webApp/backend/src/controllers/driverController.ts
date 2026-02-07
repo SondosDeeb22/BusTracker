@@ -74,5 +74,32 @@ export class DriverController{
             return;
         }
     }
+
+    // =================================================================================================================================
+    //? Fetch Driver Schedule
+    // =================================================================================================================================
+    async fetchDriverSchedule(req:Request, res:Response){
+        try {
+            const user = (req as any)?.user;
+            console.log(user);
+            console.log(user.id);
+            console.log(user.role);
+
+            const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
+            const requesterRole = typeof user?.role === 'string' ? String(user.role).trim() : '';
+
+            
+            const driverId = requesterRole === 'admin' && driverIdFromQuery ? driverIdFromQuery : user?.id;
+
+            const result = await driverService.fetchDriverSchedule(driverId);
+            sendResponse(res, 200, result.messageKey, result.data as any);
+            return;
+
+        // -----------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
     
 }

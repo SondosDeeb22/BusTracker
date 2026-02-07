@@ -28,6 +28,7 @@ import {
 } from "./authHelper";
 
 import { getIPaddressAndUserLocation } from "./authHelper/ipLocation";
+import path from "path";
 
 //===========================================================================================================================
 
@@ -101,6 +102,9 @@ class AuthHelper{
     createLoginSession(res: ResponseLike, payload: JWTdata): string {
         const secretKey = this.getEnvSecretKey("JWT_LOGIN_KEY");
 
+        console.log(payload.userID);
+        console.log(payload.userName);
+        console.log(payload.userRole);
         return this.createJWTtoken(res, loginToken, secretKey, {
             userID: payload.userID,
             userRole: payload.userRole,
@@ -270,7 +274,7 @@ class AuthHelper{
     // (by operation her i mean changin bus data)
     // =================================================================================================================================
 
-    async validateUserById(driverId: number, busId: string): Promise<true> {
+    async validateUserById(driverId: string, busId: string): Promise<true> {
         return validateUserById(driverId, busId);
     }
 

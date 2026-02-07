@@ -52,6 +52,8 @@ import adminRoute from './apiRoutes/adminRoute';
 
 import userRoute from './apiRoutes/userRoute';
 
+import driverRoute from './apiRoutes/driverRoute';
+
 // import trackingRoute from './viewRoutes/trackingRoute';
 //===========================================================================================
 //? set up routes handler for the API endpoints
@@ -65,6 +67,8 @@ app.use('/api/admin', adminRoute);
 
 
 app.use('/api/user', userRoute);
+
+app.use('/api/driver', driverRoute);
 
 // app.use('/api/live-location', trackingRoute);
 

@@ -1,17 +1,17 @@
 export declare class UserService {
-    changeLanguage(userId: number, language: unknown): Promise<{
+    changeLanguage(userId: string, language: unknown): Promise<{
         updated: boolean;
         messageKey: string;
     }>;
-    changeAppearance(userId: number, appearance: unknown): Promise<{
+    changeAppearance(userId: string, appearance: unknown): Promise<{
         updated: boolean;
         messageKey: string;
     }>;
-    changeRoute(userId: number, payload: Record<string, any>): Promise<{
+    changeRoute(userId: string, payload: Record<string, any>): Promise<{
         updated: boolean;
         messageKey: string;
     }>;
-    updateBusStatus(userId: number, payload: Record<string, any>): Promise<{
+    updateBusStatus(userId: string, payload: Record<string, any>): Promise<{
         updated: boolean;
         messageKey: string;
     }>;

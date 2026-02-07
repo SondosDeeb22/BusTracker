@@ -12,28 +12,25 @@ const router = express_1.default.Router();
 //importing authentication functions
 //===========================================================================================================================
 //import controllers ----------------------------------------------------------
-const routeController_1 = require("../controllers/routeController");
-const routeController = new routeController_1.RouteController();
+const driverController_1 = require("../controllers/driverController");
+const driverController = new driverController_1.DriverController();
 const userController_1 = require("../controllers/userController");
 const userController = new userController_1.UserController();
-const scheduleController_1 = require("../controllers/scheduleController");
-const scheduleController = new scheduleController_1.ScheduleController();
 //import enums ----------------------------------------------------------------
 const tokenNameEnum_1 = require("../enums/tokenNameEnum");
+const userEnum_1 = require("../enums/userEnum");
 //import  Middlewares -------------------------------------
 const tokenRequired_1 = require("../middlewares/tokenRequired"); // for authentication
+const authorizeRole_1 = require("../middlewares/authorizeRole"); // for authorization
 //===========================================================================================================================
 // Router
 //===========================================================================================================================
-// view all routes buses are covering
-router.get('/routes/all', routeController.viewAllRoutes);
-// view routes of operating buses
-router.get('/routes/operating', routeController.viewOperatingRoutes);
-// view bus schedule for users (no auth)
-router.get('/schedule/fetch', scheduleController.getUserSchedule);
-//change the language or appeareance
-router.patch('/language', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeLanguage);
-router.patch('/appearance', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeAppearance);
+// change the route (by driver)
+router.patch('/change-route', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), userController.changeRoute);
+// Start/Stop real-time tracking 
+router.patch('/tracking', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeBusStatus);
+// Fetch driver schedule 
+router.get('/schedule/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), driverController.fetchDriverSchedule);
 //===========================================================================================================================
 exports.default = router;
-//# sourceMappingURL=userRoute.js.map
+//# sourceMappingURL=driverRoute.js.map

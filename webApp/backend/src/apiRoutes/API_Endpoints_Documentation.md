@@ -11,7 +11,7 @@
 - **HTTP**: `GET`
 - **Usage**: Fetch all buses in the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Query parameters: None
 - **Output**: 
   - Success (200): 
@@ -46,7 +46,7 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new bus to the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -70,7 +70,7 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a bus from the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -92,7 +92,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Update existing bus information
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -123,7 +123,7 @@
 - **HTTP**: `GET`
 - **Usage**: Fetch all drivers in the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Query parameters: None
 - **Output**: 
   - Success (200): 
@@ -153,7 +153,7 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new driver to the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -187,7 +187,7 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a driver from the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -209,7 +209,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Update existing driver information
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -248,7 +248,7 @@
 - **HTTP**: `GET`
 - **Usage**: Fetch all stations in the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Query parameters: None
 - **Output**: 
   - Success (200): 
@@ -276,7 +276,7 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new station to the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -310,7 +310,7 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a station from the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -332,7 +332,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Update existing station information
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -371,7 +371,7 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new route to the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -418,7 +418,7 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a route from the system
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -440,7 +440,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Update existing route information
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -492,7 +492,7 @@
 - **HTTP**: `GET`
 - **Usage**: Fetch all service patterns
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Query parameters: None
 - **Output**: 
   - Success (200): 
@@ -522,7 +522,7 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new service pattern
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -560,7 +560,7 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a service pattern
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -582,7 +582,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Update existing service pattern
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -625,7 +625,7 @@
 - **HTTP**: `GET`
 - **Usage**: Fetch all schedules
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Query parameters (all optional): 
     - `date`: `YYYY-MM-DD`
     - `servicePatternId`: `string`
@@ -694,31 +694,21 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new schedule
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
-      "routeId": "string",
+      "date": "YYYY-MM-DD",
       "servicePatternId": "string",
-      "startDate": "date",
-      "endDate": "date"
+      "day": "string (calculated server-side)"
     }
     ```
 - **Output**: 
-  - Success (201): 
+  - Success (200): 
     ```json
     {
-      "success": true,
-      "data": {
-        "id": "string",
-        "routeId": "string",
-        "servicePatternId": "string",
-        "startDate": "date",
-        "endDate": "date",
-        "isActive": "boolean",
-        "createdAt": "datetime",
-        "updatedAt": "datetime"
-      }
+      "message": "common.crud.added",
+      "data": null
     }
     ```
   - Error: 400 Bad Request, 401 Unauthorized, 403 Forbidden
@@ -728,7 +718,7 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a schedule
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -739,8 +729,8 @@
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Schedule removed successfully"
+      "message": "common.crud.removed",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 401 Unauthorized, 403 Forbidden
@@ -750,32 +740,21 @@
 - **HTTP**: `PATCH`
 - **Usage**: Update existing schedule
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
       "scheduleId": "string",
-      "routeId": "string",
       "servicePatternId": "string",
-      "startDate": "date",
-      "endDate": "date",
-      "isActive": "boolean"
+      "date": "YYYY-MM-DD"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "data": {
-        "id": "string",
-        "routeId": "string",
-        "servicePatternId": "string",
-        "startDate": "date",
-        "endDate": "date",
-        "isActive": "boolean",
-        "updatedAt": "datetime"
-      }
+      "message": "common.crud.updated | common.crud.noChanges",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 401 Unauthorized, 403 Forbidden
@@ -789,33 +768,23 @@
 - **HTTP**: `POST`
 - **Usage**: Add a new scheduled trip
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
       "scheduleId": "string",
-      "departureTime": "string",
-      "arrivalTime": "string",
+      "time": "HH:mm:ss",
+      "routeId": "string",
       "busId": "string",
       "driverId": "string"
     }
     ```
 - **Output**: 
-  - Success (201): 
+  - Success (200): 
     ```json
     {
-      "success": true,
-      "data": {
-        "id": "string",
-        "scheduleId": "string",
-        "departureTime": "string",
-        "arrivalTime": "string",
-        "busId": "string",
-        "driverId": "string",
-        "status": "scheduled",
-        "createdAt": "datetime",
-        "updatedAt": "datetime"
-      }
+      "message": "tripForm.success.added | common.crud.added",
+      "data": null
     }
     ```
   - Error: 400 Bad Request, 401 Unauthorized, 403 Forbidden
@@ -825,26 +794,51 @@
 - **HTTP**: `DELETE`
 - **Usage**: Remove a scheduled trip
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
-      "tripId": "string"
+      "detailedScheduleId": "string"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Scheduled trip removed successfully"
+      "message": "tripForm.success.removed",
+      "data": null
+    }
+    ```
+  - Error: 404 Not Found, 401 Unauthorized, 403 Forbidden
+
+#### Endpoint: `PATCH /api/admin/schedule/trip/update`
+========================================================================================================================
+- **HTTP**: `PATCH`
+- **Usage**: Update an existing scheduled trip (change driver/bus)
+- **Input**: 
+  - Cookies: `loginToken=<jwt>`
+  - Body: 
+    ```json
+    {
+      "detailedScheduleId": "string",
+      "driverId": "string",
+      "busId": "string"
+    }
+    ```
+- **Output**: 
+  - Success (200): 
+    ```json
+    {
+      "message": "tripForm.success.updated | common.crud.updated",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 401 Unauthorized, 403 Forbidden
 
 ---
+========================================================================================================================
 
-## Authentication Routes (`/api/auth`)
+### Authentication Routes (`/api/auth`)
 
 ========================================================================================================================
 
@@ -853,31 +847,21 @@
 #### Endpoint: `POST /api/auth/login`
 ========================================================================================================================
 - **HTTP**: `POST`
-- **Usage**: Authenticate user and return access token
+- **Usage**: Authenticate user and create login session cookie
 - **Input**: 
   - Body: 
     ```json
     {
       "email": "string",
-      "password": "string",
-      "role": "string"
+      "password": "string"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "data": {
-        "user": {
-          "id": "string",
-          "name": "string",
-          "email": "string",
-          "role": "string"
-        },
-        "token": "string",
-        "expiresIn": "number"
-      }
+      "message": "auth.login.success",
+      "data": null
     }
     ```
   - Error: 401 Unauthorized, 400 Bad Request
@@ -885,20 +869,15 @@
 #### Endpoint: `POST /api/auth/logout`
 ========================================================================================================================
 - **HTTP**: `POST`
-- **Usage**: Logout user and invalidate token
+- **Usage**: Logout user and clear login session cookie
 - **Input**: 
-  - Body: 
-    ```json
-    {
-      "token": "string"
-    }
-    ```
+  - Body: None
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Logged out successfully"
+      "message": "auth.logout.success",
+      "data": null
     }
     ```
   - Error: 400 Bad Request
@@ -908,21 +887,15 @@
 - **HTTP**: `GET`
 - **Usage**: Get current user information
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
       "data": {
-        "id": "string",
-        "name": "string",
-        "email": "string",
-        "role": "string",
-        "preferences": {
-          "language": "string",
-          "appearance": "string"
-        }
+        "userID": "string",
+        "userName": "string",
+        "userRole": "string"
       }
     }
     ```
@@ -947,8 +920,8 @@
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Password reset email sent"
+      "message": "auth.passwordReset.success.emailSent",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 400 Bad Request
@@ -968,8 +941,8 @@
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Password reset email sent"
+      "message": "auth.passwordReset.success.emailSent",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 400 Bad Request
@@ -982,7 +955,7 @@
   - Params: `token` (reset password token)
 - **Output**: 
   - Success (200): Token is valid
-  - Error: 404 Not Found (token invalid/expired)
+  - Error: 401 Unauthorized (token invalid/expired)
 
 #### Endpoint: `PATCH /api/auth/reset-password/:token`
 ========================================================================================================================
@@ -993,18 +966,19 @@
   - Body: 
     ```json
     {
-      "newPassword": "string"
+      "newPassword": "string",
+      "confirmPassword": "string"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Password reset successfully"
+      "message": "auth.passwordReset.success.updated",
+      "data": null
     }
     ```
-  - Error: 404 Not Found, 400 Bad Request
+  - Error: 401 Unauthorized, 400 Bad Request
 
 ========================================================================================================================
 
@@ -1018,7 +992,7 @@
   - Params: `token` (set password token)
 - **Output**: 
   - Success (200): Token is valid
-  - Error: 404 Not Found (token invalid/expired)
+  - Error: 401 Unauthorized (token invalid/expired)
 
 #### Endpoint: `PATCH /api/auth/set-password/:token`
 ========================================================================================================================
@@ -1029,15 +1003,16 @@
   - Body: 
     ```json
     {
-      "newPassword": "string"
+      "newPassword": "string",
+      "confirmPassword": "string"
     }
     ```
 - **Output**: 
   - Success (200): 
     ```json
     {
-      "success": true,
-      "message": "Password set successfully"
+      "message": "auth.setPassword.success.updated",
+      "data": null
     }
     ```
   - Error: 404 Not Found, 400 Bad Request
@@ -1139,7 +1114,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Change user language preference
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -1164,7 +1139,7 @@
 - **HTTP**: `PATCH`
 - **Usage**: Change user appearance/theme preference
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -1190,16 +1165,15 @@
 
 ### Driver Operations
 
-#### Endpoint: `PATCH /api/user/change-route`
+#### Endpoint: `PATCH /api/driver/change-route`
 ========================================================================================================================
 - **HTTP**: `PATCH`
-- **Usage**: Change the route assigned to a driver (admin operation)
+- **Usage**: Change the route assigned to a driver (driver operation)
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
-      "driverId": "string",
       "routeId": "string"
     }
     ```
@@ -1217,12 +1191,12 @@
     ```
   - Error: 401 Unauthorized, 403 Forbidden, 400 Bad Request
 
-#### Endpoint: `PATCH /api/user/tracking`
+#### Endpoint: `PATCH /api/driver/tracking`
 ========================================================================================================================
 - **HTTP**: `PATCH`
 - **Usage**: Start or stop real-time tracking for a bus
 - **Input**: 
-  - Headers: `Authorization: Bearer <loginToken>`
+  - Cookies: `loginToken=<jwt>`
   - Body: 
     ```json
     {
@@ -1253,14 +1227,14 @@
 
 ---
 
-## GET /api/user/schedule/fetch
+## GET /api/driver/schedule/fetch
 
 - Description: Retrieve user bus schedules. Supports optional date or date-range filters and servicePatternId for filtering specific services. The endpoint returns an array of "day" objects containing a timeline of trip slots; each trip contains a time and route info.
 
 - Method: GET
-- URL: `/api/user/schedule/fetch`
+- URL: `/api/driver/schedule/fetch`
 - Headers:
-  - `Authorization: Bearer <loginToken>` (optional; include to access user-specific schedules)
+  - auhtnticaiton required (drivers can get data directly, admins can use this endpoint but they have to provide the chosen driverId )
   - `Accept: application/json`
 
 - Query Parameters:
@@ -1273,7 +1247,6 @@
 
 ```
 GET /api/user/schedule/fetch?date=2026-01-27&servicePatternId=SP123
-Authorization: Bearer <token>
 Accept: application/json
 ```
 
@@ -1317,7 +1290,6 @@ Accept: application/json
 
 - Error responses:
   - `400 Bad Request` — invalid query parameter values (e.g., malformed date)
-  - `401 Unauthorized` — missing or invalid Authorization token (when required)
   - `500 Internal Server Error` — server failure
 
 ---
@@ -1343,4 +1315,4 @@ Accept: application/json
 - **500**: Internal Server Error
 
 ### Security Headers:
-Most endpoints require `Authorization: Bearer <token>` header for authentication.
+Most authenticated endpoints require a `loginToken` cookie (JWT) for authentication.

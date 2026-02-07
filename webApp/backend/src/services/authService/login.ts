@@ -69,9 +69,14 @@ export const login = async (req: AuthRequest, res: AuthResponse): Promise<AuthSe
         let attemptSuccessful: boolean;
         let resultMessage: string;
         let status: number;
+
+        console.log(userExists.id);
+        console.log(userExists.role);
+        console.log(userExists.name);
+
         if (validPassword) {
             authHelper.createLoginSession(res, {
-                userID: Number(userExists.id),
+                userID: userExists.id,
                 userRole: userExists.role,
                 userName: userExists.name,
             } as JWTdata);

@@ -1,5 +1,5 @@
 export interface JWTdata {
-    userID: number;
+    userID: string;
     userName: string;
     userRole: string;
 }

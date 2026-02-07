@@ -25,20 +25,20 @@ const schedules = [
     },
     {
         scheduleId: "SC04",
-        date: new Date("2026-07-16T00:00:00Z"),
-        day: "Thursday",
+        date: new Date("2026-07-17T00:00:00Z"),
+        day: "Friday",
         servicePatternId: "SP02",
     },
     {
         scheduleId: "SC05",
-        date: new Date("2026-07-15T00:00:00Z"),
-        day: "Wedensday",
+        date: new Date("2026-07-18T00:00:00Z"),
+        day: "Saturday",
         servicePatternId: "SP02",
     },
     {
         scheduleId: "SC06",
-        date: new Date("2026-07-15T00:00:00Z"),
-        day: "Wedensday",
+        date: new Date("2026-07-19T00:00:00Z"),
+        day: "Sunday",
         servicePatternId: "SP04",
     },
 ];

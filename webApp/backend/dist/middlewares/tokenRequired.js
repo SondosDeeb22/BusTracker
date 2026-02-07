@@ -46,6 +46,15 @@ const accessRequireToken = (tokenName) => {
             //-------------------------------------------------------------------------------------
         }
         catch (error) {
+            const errorName = error?.name;
+            if (errorName === 'TokenExpiredError') {
+                (0, messageTemplate_1.sendResponse)(res, 401, 'common.auth.sessionExpired');
+                return;
+            }
+            if (errorName === 'JsonWebTokenError' || errorName === 'NotBeforeError') {
+                (0, messageTemplate_1.sendResponse)(res, 401, 'common.auth.invalidToken');
+                return;
+            }
             console.error('Middleware error:', error);
             (0, messageTemplate_1.sendResponse)(res, 500, 'common.errors.internal');
         }

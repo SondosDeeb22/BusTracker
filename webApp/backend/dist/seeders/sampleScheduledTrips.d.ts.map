@@ -1,1 +1,1 @@
-{"version":3,"file":"sampleScheduledTrips.d.ts","sourceRoot":"","sources":["../../src/seeders/sampleScheduledTrips.ts"],"names":[],"mappings":"AAMA,QAAA,MAAM,cAAc;;;;;;;GAiEnB,CAAC;AAGF,eAAe,cAAc,CAAC"}
+{"version":3,"file":"sampleScheduledTrips.d.ts","sourceRoot":"","sources":["../../src/seeders/sampleScheduledTrips.ts"],"names":[],"mappings":"AAMA,QAAA,MAAM,cAAc;;;;;;;GAuEnB,CAAC;AAEF,eAAe,cAAc,CAAC"}

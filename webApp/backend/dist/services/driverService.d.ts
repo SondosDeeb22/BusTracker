@@ -13,5 +13,9 @@ export declare class DriverService {
         messageKey: string;
         data: unknown;
     }>;
+    fetchDriverSchedule(driverId: unknown): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
 }
 //# sourceMappingURL=driverService.d.ts.map

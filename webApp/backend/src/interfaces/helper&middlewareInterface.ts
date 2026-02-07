@@ -3,7 +3,7 @@
 
 //interface for data stored in JWT
 export interface JWTdata{
-    userID: number;
+    userID: string;
     userName: string;
     userRole: string;
 }

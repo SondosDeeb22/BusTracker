@@ -39,6 +39,9 @@ class AuthHelper {
     // ==================================================================================
     createLoginSession(res, payload) {
         const secretKey = this.getEnvSecretKey("JWT_LOGIN_KEY");
+        console.log(payload.userID);
+        console.log(payload.userName);
+        console.log(payload.userRole);
         return this.createJWTtoken(res, tokenNameEnum_1.loginToken, secretKey, {
             userID: payload.userID,
             userRole: payload.userRole,

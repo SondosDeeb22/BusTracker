@@ -34,8 +34,7 @@ export const accessRequireToken = ( tokenName: string) => {
           return;
       }
 
-
-      // verifty the correctenss of the token
+     // verifty the correctenss of the token
       const userData = jwt.verify(token, jwtLoginKey) as JWTdata;
       if(!userData || typeof userData !== "object"){
         sendResponse(res, 401, 'common.auth.invalidToken');
@@ -54,6 +53,18 @@ export const accessRequireToken = ( tokenName: string) => {
 
       //-------------------------------------------------------------------------------------
     } catch (error) {
+      const errorName = (error as any)?.name;
+
+      if (errorName === 'TokenExpiredError') {
+        sendResponse(res, 401, 'common.auth.sessionExpired');
+        return;
+      }
+
+      if (errorName === 'JsonWebTokenError' || errorName === 'NotBeforeError') {
+        sendResponse(res, 401, 'common.auth.invalidToken');
+        return;
+      }
+
       console.error('Middleware error:', error);
       sendResponse(res, 500, 'common.errors.internal');
     }

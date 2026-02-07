@@ -40,6 +40,7 @@ app.set("view engine", "ejs"); // set the view engine to ejs
 const authRoute_1 = __importDefault(require("./apiRoutes/authRoute"));
 const adminRoute_1 = __importDefault(require("./apiRoutes/adminRoute"));
 const userRoute_1 = __importDefault(require("./apiRoutes/userRoute"));
+const driverRoute_1 = __importDefault(require("./apiRoutes/driverRoute"));
 // import trackingRoute from './viewRoutes/trackingRoute';
 //===========================================================================================
 //? set up routes handler for the API endpoints
@@ -47,6 +48,7 @@ const userRoute_1 = __importDefault(require("./apiRoutes/userRoute"));
 app.use('/api/auth', authRoute_1.default);
 app.use('/api/admin', adminRoute_1.default);
 app.use('/api/user', userRoute_1.default);
+app.use('/api/driver', driverRoute_1.default);
 // app.use('/api/live-location', trackingRoute);
 exports.default = app;
 //# sourceMappingURL=app.js.map
