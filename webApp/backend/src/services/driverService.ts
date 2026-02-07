@@ -26,6 +26,8 @@ const helper = new UserHelper();
 import { ScheduleHelper } from "../helpers/scheduleHelper";
 const scheduleHelper = new ScheduleHelper();
 
+import { normalizeColorToArgbInt } from "../helpers/colorHelper";
+
 import { Op } from "sequelize";
 
 //===================================================================================================
@@ -180,7 +182,7 @@ export class DriverService{
                     date: string;
                     day: string;
                     driverId: string;
-                    scheduleDetails: Array<{ time: string; routeName: string; routeColor: string; busId: string; busPlate: string }>;
+                    scheduleDetails: Array<{ time: string; routeName: string; routeColor: string; routeColorInt: number; busId: string; busPlate: string }>;
                 }
             >();
 
@@ -207,11 +209,13 @@ export class DriverService{
                 const busIdStr = typeof row?.bus?.id === 'string' ? row.bus.id.trim() : '';
                 const busPlate = typeof row?.bus?.plate === 'string' ? row.bus.plate.trim() : '';
                 const routeColor = typeof row?.route?.color === 'string' ? row.route.color.trim() : '';
+                const routeColorInt = normalizeColorToArgbInt(row?.route?.color);
 
                 byDay.get(key)!.scheduleDetails.push({
                     time,
                     routeName,
                     routeColor,
+                    routeColorInt,
                     busId: busIdStr,
                     busPlate,
                 });

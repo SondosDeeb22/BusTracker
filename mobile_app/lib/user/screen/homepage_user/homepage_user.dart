@@ -6,11 +6,11 @@ import '../account_settings_user/account_settings_user.dart';
 import '../bus_schedule_user/bus_schedule_user.dart';
 import 'package:mobile_app/user/service/route_api_service.dart';
 import 'package:mobile_app/user/model/bus_route_card_model.dart';
-import 'package:mobile_app/user/controller/route_color_parser.dart';
 import 'package:mobile_app/user/widget/route_card.dart';
 import 'package:mobile_app/user/widget/segmented_toggle.dart';
 import 'package:mobile_app/user/widget/stat_card.dart';
 import '../../../services/localization_service.dart';
+import '../../../services/app_constants.dart';
 //========================================================
 
 // rendering user homepage screen, that contains :
@@ -89,7 +89,7 @@ class _HomepageUserState extends State<HomepageUser> {
             .map(
               (r) => BusRouteCardModel(
                 name: r.title,
-                color: parseRouteColor(r.color),
+                color: Color(r.colorInt ?? kDefaultRouteColorInt),
                 hasLocation: false,
               ),
             )
@@ -99,7 +99,7 @@ class _HomepageUserState extends State<HomepageUser> {
             .map(
               (r) => BusRouteCardModel(
                 name: r.title,
-                color: parseRouteColor(r.color),
+                color: Color(r.colorInt ?? kDefaultRouteColorInt),
                 hasLocation: true,
               ),
             )

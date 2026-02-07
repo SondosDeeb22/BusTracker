@@ -17,6 +17,7 @@ const scheduleHelper_1 = require("../../helpers/scheduleHelper");
 const schedulehelper = new scheduleHelper_1.ScheduleHelper();
 const scheduleHelper_2 = require("../../helpers/scheduleHelper");
 const schedulehelper2 = new scheduleHelper_2.ScheduleHelper();
+const colorHelper_1 = require("../../helpers/colorHelper");
 //===================================================================================================
 const getUserSchedule = async (params) => {
     const where = {};
@@ -149,7 +150,7 @@ const getUserSchedule = async (params) => {
             if (!sp.routesAcc.has(routeName)) {
                 sp.routesAcc.set(routeName, {
                     routeName,
-                    tabColorValue: route?.color,
+                    tabColorValue: (0, colorHelper_1.normalizeColorToArgbInt)(route?.color),
                     times: new Set(),
                 });
             }

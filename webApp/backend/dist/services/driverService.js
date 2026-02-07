@@ -25,6 +25,7 @@ const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
 const scheduleHelper_1 = require("../helpers/scheduleHelper");
 const scheduleHelper = new scheduleHelper_1.ScheduleHelper();
+const colorHelper_1 = require("../helpers/colorHelper");
 const sequelize_1 = require("sequelize");
 //===================================================================================================
 class DriverService {
@@ -168,10 +169,12 @@ class DriverService {
                 const busIdStr = typeof row?.bus?.id === 'string' ? row.bus.id.trim() : '';
                 const busPlate = typeof row?.bus?.plate === 'string' ? row.bus.plate.trim() : '';
                 const routeColor = typeof row?.route?.color === 'string' ? row.route.color.trim() : '';
+                const routeColorInt = (0, colorHelper_1.normalizeColorToArgbInt)(row?.route?.color);
                 byDay.get(key).scheduleDetails.push({
                     time,
                     routeName,
                     routeColor,
+                    routeColorInt,
                     busId: busIdStr,
                     busPlate,
                 });

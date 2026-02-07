@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../../../controller/route_color_parser.dart';
+import '../../../../services/app_constants.dart';
 
 // Driver weekly scheduel TRIP ----------------------------------------
 class DriverWeeklyScheduleTrip {
@@ -23,10 +23,15 @@ class DriverWeeklyScheduleTrip {
   });
 
   factory DriverWeeklyScheduleTrip.fromJson(Map<String, dynamic> json) {
+    final routeColorInt = json['routeColorInt'];
+    final int parsedRouteColorInt = routeColorInt is int
+        ? routeColorInt
+        : int.tryParse(routeColorInt?.toString() ?? '') ?? kDefaultRouteColorInt;
+
     return DriverWeeklyScheduleTrip(
       time: (json['time'] ?? '').toString(),
       routeName: (json['routeName'] ?? '').toString(),
-      routeColor: parseRouteColor((json['routeColor'] ?? '').toString()),
+      routeColor: Color(parsedRouteColorInt),
       busId: (json['busId'] ?? '').toString(),
       busPlate: (json['busPlate'] ?? '').toString(),
     );

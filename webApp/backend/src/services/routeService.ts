@@ -17,6 +17,8 @@ import { ConflictError, NotFoundError, ValidationError, InternalError  } from '.
 import { UserHelper } from "../helpers/userHelper";
 const helper = new UserHelper();
 
+import { normalizeColorToArgbInt } from '../helpers/colorHelper';
+
 
 
 //===================================================================================================
@@ -191,6 +193,10 @@ export class RouteService{
                 routes = await RouteModel.findAll({
                     attributes: ['id', 'title', 'color', 'totalStops', 'status']
                 });
+
+                for (const route of routes) {
+                    (route as any).dataValues.colorInt = normalizeColorToArgbInt((route as any)?.color);
+                }
                 // attach stations per route
                 for (const route of routes) {
                     const routeStations = await RouteStationModel.findAll({
@@ -236,6 +242,7 @@ export class RouteService{
                         attributes: ['id', 'title', 'color', 'totalStops', 'status']
                     });
                     if(route) {
+                        (route as any).dataValues.colorInt = normalizeColorToArgbInt((route as any)?.color);
                         routes.push(route);
                     }
                 }

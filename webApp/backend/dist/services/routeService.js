@@ -18,6 +18,7 @@ const stationModel_1 = __importDefault(require("../models/stationModel"));
 const errors_1 = require("../errors");
 const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
+const colorHelper_1 = require("../helpers/colorHelper");
 //===================================================================================================
 class RouteService {
     //===================================================================================================
@@ -160,6 +161,9 @@ class RouteService {
                 routes = await routeModel_1.default.findAll({
                     attributes: ['id', 'title', 'color', 'totalStops', 'status']
                 });
+                for (const route of routes) {
+                    route.dataValues.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(route?.color);
+                }
                 // attach stations per route
                 for (const route of routes) {
                     const routeStations = await routeStationModel_1.default.findAll({
@@ -202,6 +206,7 @@ class RouteService {
                         attributes: ['id', 'title', 'color', 'totalStops', 'status']
                     });
                     if (route) {
+                        route.dataValues.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(route?.color);
                         routes.push(route);
                     }
                 }

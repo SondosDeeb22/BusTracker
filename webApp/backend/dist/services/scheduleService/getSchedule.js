@@ -17,6 +17,7 @@ const userModel_1 = __importDefault(require("../../models/userModel"));
 const busModel_1 = __importDefault(require("../../models/busModel"));
 const scheduleHelper_1 = require("../../helpers/scheduleHelper");
 const schedulehelper = new scheduleHelper_1.ScheduleHelper();
+const colorHelper_1 = require("../../helpers/colorHelper");
 //===================================================================================================
 const getSchedule = async (params) => {
     const where = {};
@@ -93,6 +94,9 @@ const getSchedule = async (params) => {
         for (const trip of trips) {
             const tripTime = schedulehelper.normalizeTime(trip?.time);
             const bucket = buckets.get(tripTime);
+            if (trip?.route) {
+                trip.route.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(trip.route.color);
+            }
             if (bucket) {
                 bucket.trips.push(trip);
             }

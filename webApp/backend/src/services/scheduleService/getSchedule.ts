@@ -15,6 +15,8 @@ import BusModel from "../../models/busModel";
 import { ScheduleHelper } from "../../helpers/scheduleHelper";
 const schedulehelper = new ScheduleHelper();
 
+import { normalizeColorToArgbInt } from "../../helpers/colorHelper";
+
 import { ScheduleQueryParams } from "./types";
 
 //===================================================================================================
@@ -99,6 +101,9 @@ export const getSchedule = async (params: ScheduleQueryParams) => {
         for (const trip of trips as any[]) {
             const tripTime = schedulehelper.normalizeTime(trip?.time);
             const bucket = buckets.get(tripTime);
+            if (trip?.route) {
+                trip.route.colorInt = normalizeColorToArgbInt(trip.route.color);
+            }
             if (bucket) {
                 bucket.trips.push(trip);
             }

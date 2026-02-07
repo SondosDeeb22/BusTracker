@@ -16,6 +16,8 @@ const schedulehelper = new ScheduleHelper();
 import { ScheduleHelper as TimelineHelper } from "../../helpers/scheduleHelper";
 const schedulehelper2 = new TimelineHelper();
 
+import { normalizeColorToArgbInt } from "../../helpers/colorHelper";
+
 import { ScheduleQueryParams } from "./types";
 
 //===================================================================================================
@@ -202,7 +204,7 @@ export const getUserSchedule = async (params: ScheduleQueryParams) => {
             if (!sp.routesAcc.has(routeName)) {
                 sp.routesAcc.set(routeName, {
                     routeName,
-                    tabColorValue: route?.color,
+                    tabColorValue: normalizeColorToArgbInt(route?.color),
                     times: new Set<string>(),
                 });
             }

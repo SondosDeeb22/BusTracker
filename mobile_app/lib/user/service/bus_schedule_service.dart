@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../model/bus_schedule_model.dart';
-import '../controller/route_color_parser.dart';
+import '../../services/app_constants.dart';
 
 //========================================================
 //? service for getting user bus schedules
@@ -187,8 +187,11 @@ class BusScheduleService {
       return Color(value);
     }
 
-    final s = (value ?? '').toString();
-    return parseRouteColor(s);
+    final parsed = int.tryParse((value ?? '').toString());
+    if (parsed != null) {
+      return Color(parsed);
+    }
+    return kDefaultRouteColor;
   }
 
   // -------------------------------------

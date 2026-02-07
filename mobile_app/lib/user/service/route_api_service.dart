@@ -10,13 +10,24 @@ import 'dart:io';
 class RouteApiRoute {
   final String title;
   final String color;
+  final int? colorInt;
 
-  const RouteApiRoute({required this.title, required this.color});
+  const RouteApiRoute({
+    required this.title,
+    required this.color,
+    required this.colorInt,
+  });
 
   factory RouteApiRoute.fromJson(Map<String, dynamic> json) {
+    final rawColorInt = json['colorInt'];
+    final parsedColorInt = rawColorInt is int
+        ? rawColorInt
+        : int.tryParse(rawColorInt?.toString() ?? '');
+
     return RouteApiRoute(
       title: (json['title'] ?? '').toString(),
       color: (json['color'] ?? '').toString(),
+      colorInt: parsedColorInt,
     );
   }
 }
