@@ -31,6 +31,12 @@ import { authorizeRole } from '../middlewares/authorizeRole'; // for authorizati
 // Router
 //===========================================================================================================================
 
+
+
+router.get('/profile', accessRequireToken(loginToken), authorizeRole(role.driver), driverController.fetchDriverProfile);
+
+router.patch('/update',  accessRequireToken(loginToken), authorizeRole(role.driver), driverController.updateDriverData);
+
 // change the route (by driver)
 router.patch('/change-route', accessRequireToken(loginToken), authorizeRole(role.driver),  userController.changeRoute);
 

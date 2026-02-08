@@ -96,10 +96,13 @@ class DriverService {
     //===================================================================================================
     //? function to Fetch All Drivers
     //===================================================================================================
-    async fetchAllDrivers() {
+    async fetchAllDrivers(driverId) {
         try {
+            const id = typeof driverId === 'string' ? driverId.trim() : '';
             const drivers = await userModel_1.default.findAll({
-                where: { role: userEnum_1.role.driver },
+                where: id
+                    ? { role: userEnum_1.role.driver, id }
+                    : { role: userEnum_1.role.driver },
                 attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
             });
             return { messageKey: 'drivers.success.fetched', data: drivers };
@@ -110,7 +113,36 @@ class DriverService {
         }
     }
     //===================================================================================================
-    //? function to Fetch Specific Driver Schedule (from today onwards)
+    //? function to Fetch Driver Profile
+    //===================================================================================================
+    async fetchDriverProfile(driverId) {
+        try {
+            const id = String(driverId ?? '').trim();
+            if (!id) {
+                throw new errors_1.ValidationError('common.errors.validation.required');
+            }
+            const driver = await userModel_1.default.findOne({
+                where: { id, role: userEnum_1.role.driver },
+                attributes: ['id', 'name', 'phone', 'language', 'appearance'],
+            });
+            if (!driver) {
+                throw new errors_1.NotFoundError('common.errors.notFound');
+            }
+            return { messageKey: 'drivers.success.fetched', data: driver };
+            // ----------------------------------------------------------------------------
+        }
+        catch (error) {
+            if (error instanceof errors_1.ValidationError) {
+                throw error;
+            }
+            if (error instanceof errors_1.NotFoundError) {
+                throw error;
+            }
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? function to Fetch Specific Driver's Schedule (from today onwards)
     //===================================================================================================
     async fetchDriverSchedule(driverId) {
         try {

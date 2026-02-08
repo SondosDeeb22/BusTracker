@@ -60,12 +60,58 @@ export class DriverController{
         }
     }
 
+
     // =================================================================================================================================
-    //? Fetch All Drivers
+    //? function to allow driver to updates his profile data (currently only phone number  is changeable)
+    // =================================================================================================================================
+    async updateDriverData(req:Request, res:Response){
+        try {
+            const user = (req as any)?.user;
+            const userId = typeof user?.id === 'string' ? user.id.trim() : '';
+            const phone = typeof req.body?.phone === 'string' ? req.body.phone.trim() : '';
+
+            const result = await driverService.updateDriver({
+                id: userId,
+                phone,
+            });
+            sendResponse(res, 200, result.messageKey);
+            return;
+
+        // -----------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
+
+
+    // =================================================================================================================================
+    //? Fetch Driver Profile
+    // =================================================================================================================================
+    async fetchDriverProfile(req:Request, res:Response){
+        try {
+            const user = (req as any)?.user;
+            const userId = typeof user?.id === 'string' ? user.id.trim() : '';
+
+            const result = await driverService.fetchDriverProfile(userId);
+            sendResponse(res, 200, result.messageKey, result.data as any);
+            return;
+
+        // -----------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
+
+
+    // =================================================================================================================================
+    //? Fetch All Drivers or specific driver
     // =================================================================================================================================
     async fetchAllDrivers(req:Request, res:Response){
         try {
-            const result = await driverService.fetchAllDrivers();
+            const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
+            const result = await driverService.fetchAllDrivers(driverIdFromQuery);
             sendResponse(res, 200, result.messageKey, result.data as any);
             return;
         // -----------------
@@ -76,7 +122,7 @@ export class DriverController{
     }
 
     // =================================================================================================================================
-    //? Fetch Driver Schedule
+    //? Fetch Driver's Schedule
     // =================================================================================================================================
     async fetchDriverSchedule(req:Request, res:Response){
         try {

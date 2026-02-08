@@ -116,14 +116,18 @@ export class DriverService{
     //? function to Fetch All Drivers
     //===================================================================================================
 
-    async fetchAllDrivers(): Promise<{ messageKey: string; data: unknown }> {
+    async fetchAllDrivers(driverId?: unknown): Promise<{ messageKey: string; data: unknown}> {
         try {
-        const drivers = await UserModel.findAll({
-            where: { role: role.driver },
-            attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
-        });
+            const id = typeof driverId === 'string' ? driverId.trim() : '';
 
-        return { messageKey: 'drivers.success.fetched', data: drivers };
+            const drivers = await UserModel.findAll({
+                where: id
+                    ? { role: role.driver, id }
+                    : { role: role.driver },
+                attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
+            });
+
+            return { messageKey: 'drivers.success.fetched', data: drivers };
         
         // --------------------------------------------------------------------------
         } catch (error) {
@@ -132,7 +136,40 @@ export class DriverService{
     }
 
     //===================================================================================================
-    //? function to Fetch Specific Driver Schedule (from today onwards)
+    //? function to Fetch Driver Profile
+    //===================================================================================================
+
+    async fetchDriverProfile(driverId: unknown): Promise<{ messageKey: string; data: unknown }> {
+        try {
+            const id = String(driverId ?? '').trim();
+            if (!id) {
+                throw new ValidationError('common.errors.validation.required');
+            }
+
+            const driver = await UserModel.findOne({
+                where: { id, role: role.driver },
+                attributes: ['id', 'name', 'phone', 'language', 'appearance'],
+            });
+
+            if (!driver) {
+                throw new NotFoundError('common.errors.notFound');
+            }
+
+            return { messageKey: 'drivers.success.fetched', data: driver };
+        // ----------------------------------------------------------------------------
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                throw error;
+            }
+            if (error instanceof NotFoundError) {
+                throw error;
+            }
+            throw new InternalError('common.errors.internal');
+        }
+    }
+
+    //===================================================================================================
+    //? function to Fetch Specific Driver's Schedule (from today onwards)
     //===================================================================================================
 
     async fetchDriverSchedule(driverId: unknown): Promise<{ messageKey: string; data: unknown }> {

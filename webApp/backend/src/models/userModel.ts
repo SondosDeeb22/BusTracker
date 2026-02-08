@@ -37,7 +37,6 @@ class UserModel extends Model< InferAttributes<UserModel>, InferCreationAttribut
 
   declare language: keyof typeof language;
   declare appearance: keyof typeof appearance;
-
 }
 
 //======================================================================================================================
