@@ -21,10 +21,11 @@ class BusSchedule extends StatefulWidget {
 
 class _BusScheduleState extends State<BusSchedule> {
   static const _burgundy = Color(0xFF59011A);
-  static const _bg = Color(0xFFF2F1ED);
   static const _border = Color(0xFFC9A47A);
 
   int _bottomIndex = 1;
+
+  final Set<String> _expandedDays = <String>{};
 
   final DriverBusScheduleController _controller = DriverBusScheduleController();
 
@@ -48,16 +49,19 @@ class _BusScheduleState extends State<BusSchedule> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
 
       // app bar to view logo ---------------------------------------------------
       appBar: AppBar(
-        backgroundColor: _burgundy,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         toolbarHeight: 100,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: _bg),
+        iconTheme: theme.appBarTheme.iconTheme,
         title: Image.asset(
           'assets/BusLogoWhite.png',
           width: 70,
@@ -76,17 +80,18 @@ class _BusScheduleState extends State<BusSchedule> {
               children: [
                 const SizedBox(height: 6),
 
+                // My Bus Schedule (screen t) ----------------
                 Text(
                   'driver_schedule_title'.translate,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: Colors.black,
+                    color: cs.onBackground,
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
+                // view the schedule ----------------------------------------------
                 if (_controller.isLoading) ...[
                   const Center(
                     child: Padding(
@@ -94,7 +99,9 @@ class _BusScheduleState extends State<BusSchedule> {
                       child: CircularProgressIndicator(color: _burgundy),
                     ),
                   ),
+                  
                 ] else ...[
+                  // view error message if error occured or no schedule found ----------------------------------------------
                   if (_controller.errorMessage != null &&
                       _controller.errorMessage!.trim().isNotEmpty) ...[
                     Container(
@@ -103,39 +110,27 @@ class _BusScheduleState extends State<BusSchedule> {
                         horizontal: 16,
                         vertical: 14,
                       ),
+                      
                       decoration: BoxDecoration(
                         color: const Color(0x00FFFFFF),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: _border, width: 1),
                       ),
+                      
                       child: Text(
                         _controller.errorMessage!,
-                        style: const TextStyle(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: cs.onBackground,
                         ),
                       ),
                     ),
                   ],
 
-                  for (final day in _controller.days) ...[
-                    ScheduleDayHeader(day: day.day, date: day.date),
-                    const SizedBox(height: 12),
-
-                    for (final trip in day.scheduleDetails) ...[
-                      ScheduleTripCard(
-                        borderColor: _border,
-                        time: trip.time,
-                        busText: _busText(trip.busId, trip.busPlate),
-                        routeName: trip.routeName,
-                        routeColor: trip.routeColor,
-                      ),
-                      const SizedBox(height: 18),
-                    ],
-
-                    const SizedBox(height: 6),
-                  ],
+                  // view schedule ---------------------------------------------------
+                  // (if we had empty array , no error will be raised, and no widgets'll be redered)
+                  ..._controller.days.expand(_buildDaySectionWidgets),
                 ],
               ],
             ),
@@ -195,6 +190,57 @@ class _BusScheduleState extends State<BusSchedule> {
 
   //========================================================
 
+  Iterable<Widget> _buildDaySectionWidgets(dynamic day) {
+    final dayKey = '${day.day}|${day.date}';
+    final isExpanded = _expandedDays.contains(dayKey);
+    final details = day.scheduleDetails;
+
+    return <Widget>[
+      ScheduleDayHeader(
+        day: day.day,
+        date: day.date,
+        isExpanded: isExpanded,
+        onToggle: () {
+          setState(() {
+            if (isExpanded) {
+              _expandedDays.remove(dayKey);
+            } else {
+              _expandedDays.add(dayKey);
+            }
+          });
+        },
+      ),
+      const SizedBox(height: 12),
+      
+      AnimatedSize(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOut,
+        alignment: Alignment.topCenter,
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          children: [
+            if (isExpanded && details.isNotEmpty) ...[
+              for (final trip in details) ...[
+                ScheduleTripCard(
+                  borderColor: _border,
+                  time: trip.time,
+                  busText: _busText(trip.busId, trip.busPlate),
+                  routeName: trip.routeName,
+                  routeColor: trip.routeColor,
+                ),
+                const SizedBox(height: 18),
+              ],
+            ]
+          ],
+        ),
+      ),
+      const SizedBox(height: 6),
+    ];
+  }
+
+  // ========================================================================
+  
+  // function to get bus text 
   String _busText(String busId, String busPlate) {
     final id = busId.trim();
     final plate = busPlate.trim();

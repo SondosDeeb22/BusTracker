@@ -1,0 +1,28 @@
+{
+  "driver_profile_title": "Profil",
+
+  "driver_profile_contact_info": "İletişim bilgileri",
+  "driver_profile_account_settings": "Hesap Ayarları",
+
+  "driver_profile_phone_number": "Telefon numarası",
+
+  "driver_profile_language_preferences": "Dil Tercihleri",
+  "driver_profile_appearance": "Görünüm",
+
+  "driver_profile_language_turkish": "Türkçe",
+  "driver_profile_language_english": "İngilizce",
+
+  "driver_profile_appearance_dark": "Koyu",
+  "driver_profile_appearance_light": "Açık",
+
+  "driver_profile_edit_phone_title": "Telefon numarasını düzenle",
+  "driver_profile_action_cancel": "İptal",
+  "driver_profile_action_save": "Kaydet",
+
+  "driver_profile_snackbar_phone_updated": "Telefon numarası güncellendi",
+  "driver_profile_snackbar_update_failed": "Güncelleme başarısız",
+
+  "driver_profile_nav_home": "Ana Sayfa",
+  "driver_profile_nav_calendar": "Takvim",
+  "driver_profile_nav_profile": "Profil"
+}

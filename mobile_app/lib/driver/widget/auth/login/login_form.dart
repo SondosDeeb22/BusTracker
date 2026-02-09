@@ -32,6 +32,8 @@ class LoginForm extends StatelessWidget {
   // ====================================================================
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 22),
@@ -72,8 +74,8 @@ class LoginForm extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 4),
                 child: Text(
                   loginErrorMessage!,
-                  style: const TextStyle(
-                    color: Color(0xFF59011A),
+                  style: TextStyle(
+                    color: cs.error,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

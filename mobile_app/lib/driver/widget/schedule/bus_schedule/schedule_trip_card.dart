@@ -24,6 +24,9 @@ class ScheduleTripCard extends StatelessWidget {
   // ===========================================================
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -42,10 +45,10 @@ class ScheduleTripCard extends StatelessWidget {
                 // time -------------------------------------------------------------
                 child: Text(
                   time,
-                  style: const TextStyle(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: Colors.black,
+                    color: cs.onSurface,
                   ),
                 ),
               ),
@@ -53,10 +56,10 @@ class ScheduleTripCard extends StatelessWidget {
               // Bus data---------------------------------------------------
               Text(
                 busText,
-                style: const TextStyle(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: Colors.black,
+                  color: cs.onSurface,
                 ),
               ),
             ],

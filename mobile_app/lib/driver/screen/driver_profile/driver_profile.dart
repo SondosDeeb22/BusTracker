@@ -6,6 +6,17 @@ import 'package:flutter/material.dart';
 import '../homepage_driver/homepage_driver.dart';
 import '../bus_schedule/bus_schedule.dart';
 
+import '../../controller/profile/driver_profile_controller.dart';
+
+import '../../service/localization/localization_service.dart';
+import '../../service/user_preferences_service.dart';
+import '../../../services/theme_service.dart';
+
+import '../../widget/profile/section_card.dart';
+import '../../widget/profile/settings_toggle.dart';
+import '../../widget/profile/info_row.dart';
+import '../../widget/profile/edit_phone_dialog.dart';
+
 //========================================================
 
 class DriverProfile extends StatefulWidget {
@@ -17,7 +28,6 @@ class DriverProfile extends StatefulWidget {
 
 class _DriverProfileState extends State<DriverProfile> {
   static const _burgundy = Color(0xFF59011A);
-  static const _bg = Color(0xFFF2F1ED);
   static const _border = Color(0xFFC9A47A);
 
   int _bottomIndex = 2;
@@ -25,18 +35,121 @@ class _DriverProfileState extends State<DriverProfile> {
   bool _englishSelected = true;
   bool _lightSelected = true;
 
+  // =========================================================================
+  // controller
+  final DriverProfileController _controller = DriverProfileController();
+  final UserPreferencesService _prefs = UserPreferencesService();
+  final ThemeService _themeService = ThemeService();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onControllerChanged);
+    _controller.fetch();
+    _loadPreferences();
+
+    DriverLocalizationService().addListener(_onLanguageChanged);
+    _themeService.addListener(_onThemeChanged);
+  }
+
+  // Load saved preferences
+  Future<void> _loadPreferences() async {
+    final englishSelected = DriverLocalizationService().currentLanguage == 'en';
+    final lightSelected = _themeService.isLight;
+    
+    if (mounted) {
+      setState(() {
+        _englishSelected = englishSelected;
+        _lightSelected = lightSelected;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onControllerChanged);
+    DriverLocalizationService().removeListener(_onLanguageChanged);
+    _themeService.removeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onControllerChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  void _onLanguageChanged() {
+    if (!mounted) return;
+    final isEnglish = DriverLocalizationService().currentLanguage == 'en';
+    if (_englishSelected != isEnglish) {
+      setState(() {
+        _englishSelected = isEnglish;
+      });
+    } else {
+      setState(() {});
+    }
+  }
+
+  void _onThemeChanged() {
+    if (!mounted) return;
+    final isLight = _themeService.isLight;
+    if (_lightSelected != isLight) {
+      setState(() {
+        _lightSelected = isLight;
+      });
+    } else {
+      setState(() {});
+    }
+  }
+
+  // =========================================================================
+  // function to show the edit phone dialog
+  Future<void> _showEditPhoneDialog({required String currentPhone}) async {
+    final newPhone = await showEditPhoneDialog(
+      context: context,
+      currentPhone: currentPhone,
+    );
+
+    if (newPhone == null) return;
+
+    final ok = await _controller.updatePhone(newPhone);
+
+    if (!mounted) return;
+
+    final message = ok
+        ? 'driver_profile_snackbar_phone_updated'.translate
+        : (_controller.errorMessage ?? 'driver_profile_snackbar_update_failed'.translate);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: ok ? Colors.green : _burgundy,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final profile = _controller.profile;
+    final name = profile?.name ?? '';
+    final phone = profile?.phone ?? '';
+
+    final theme = Theme.of(context);
+
+    final cs = theme.colorScheme;
+
+    
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
 
       // app bar ================================================================================
       appBar: AppBar(
-        backgroundColor: _burgundy,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         toolbarHeight: 100,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: _bg),
+        iconTheme: theme.appBarTheme.iconTheme,
         title: Image.asset(
           'assets/BusLogoWhite.png',
           width: 70,
@@ -54,19 +167,20 @@ class _DriverProfileState extends State<DriverProfile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Profile',
+                Text(
+                  'driver_profile_title'.translate,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: Colors.black,
+                    color: cs.onSurface,
                   ),
                 ),
 
                 //----------------------------------------------
                 const SizedBox(height: 14),
 
-                _SectionCard(
+                
+                SectionCard(
                   borderColor: _border,
                   title: null,
                   child: Row(
@@ -74,34 +188,33 @@ class _DriverProfileState extends State<DriverProfile> {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
+
+                            // driver name ----------------
                             Text(
-                              'Adam Jolian',
-                              style: TextStyle(
+                              name.isEmpty ? ' ' : name,
+                              style:  TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.black,
+                                color: cs.onSurface,
                               ),
                             ),
 
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
 
+                            // driver phone ----------------
                             Text(
-                              '145287958',
+                              phone.isEmpty ? ' ' : phone,
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black54,
+                                color: cs.onSurface,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Color(0xFFE6E6E6),
-                        child: Icon(Icons.person, color: Colors.white),
-                      ),
+               
                     ],
                   ),
                 ),
@@ -110,25 +223,36 @@ class _DriverProfileState extends State<DriverProfile> {
                 const SizedBox(height: 14),
 
                 //----------------------------------------------
-                _SectionCard(
+                SectionCard(
                   borderColor: _border,
-                  title: 'Contact info',
+                  title: 'driver_profile_contact_info'.translate,
                   child: Column(
-                    children: const [
-                      _InfoRow(
-                        label: 'Phone number',
-                        value: '+90 544 616 8122',
+                    children: [
+                      // phone number ----------------
+                      InfoRow(
+                        label: 'driver_profile_phone_number'.translate,
+                        value: phone.isEmpty ? ' ' : phone,
+                        onEdit: profile == null
+                            ? null
+                            : () => _showEditPhoneDialog(currentPhone: phone),
                       ),
-                      SizedBox(height: 10),
-                      _InfoRow(
-                        label: 'Address',
-                        value: 'Atalar Mahallesi, Kurtan Sokak, No: 75',
-                      ),
-                      SizedBox(height: 10),
-                      _InfoRow(
-                        label: 'Emergency Contact',
-                        value: '+90 521 669 6253 (brother)',
-                      ),
+                      const SizedBox(height: 10),
+                   
+                      if (_controller.isLoading) ...[
+                        const SizedBox(height: 10),
+                        const LinearProgressIndicator(minHeight: 2),
+                      ],
+                      if (!_controller.isLoading && _controller.errorMessage != null) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          _controller.errorMessage!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: _burgundy,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -137,54 +261,68 @@ class _DriverProfileState extends State<DriverProfile> {
                 const SizedBox(height: 14),
 
                 //----------------------------------------------
-                _SectionCard(
+                SectionCard(
                   borderColor: _border,
-                  title: 'Account Settings',
+                  title: 'driver_profile_account_settings'.translate,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Language Preferences',
-                        style: TextStyle(
+                      Text(
+                        'driver_profile_language_preferences'.translate,
+                        style:  TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: cs.onSurface ,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Center(
-                        child: _SettingsToggle(
+                        child: SettingsToggle(
                           selectedItemColor: _burgundy,
-                          leftText: 'Turkish',
-                          rightText: 'English',
+                          leftText: 'driver_profile_language_turkish'.translate,
+                          rightText: 'driver_profile_language_english'.translate,
                           selectedRight: _englishSelected,
-                          onChanged: (selectedRight) {
+                          onChanged: (selectedRight) async {
                             setState(() {
                               _englishSelected = selectedRight;
                             });
+                            
+                            // Save language preference
+                            final languageCode = selectedRight ? 'en' : 'tr';
+                            await _prefs.saveLanguage(languageCode);
+                            
+                            // Update localization service
+                            await DriverLocalizationService().changeLanguage(languageCode);
                           },
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Appearance',
+                      Text(
+                        'driver_profile_appearance'.translate,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: cs.onSurface,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Center(
-                        child: _SettingsToggle(
+                        child: SettingsToggle(
                           selectedItemColor: _burgundy,
-                          leftText: 'Dark',
-                          rightText: 'Light',
+                          leftText: 'driver_profile_appearance_dark'.translate,
+                          rightText: 'driver_profile_appearance_light'.translate,
                           selectedRight: _lightSelected,
-                          onChanged: (selectedRight) {
+                          onChanged: (selectedRight) async {
                             setState(() {
                               _lightSelected = selectedRight;
                             });
+                            
+                            // Save appearance preference
+                            final appearance = selectedRight ? 'light' : 'dark';
+                            await _prefs.saveAppearance(appearance);
+
+                            // Apply theme
+                            await _themeService.changeTheme(appearance);
                           },
                         ),
                       ),
@@ -228,18 +366,18 @@ class _DriverProfileState extends State<DriverProfile> {
         unselectedItemColor: Colors.white,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            label: 'Home',
+            label: 'driver_profile_nav_home'.translate,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month_outlined),
-            label: 'Calendar',
+            label: 'driver_profile_nav_calendar'.translate,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
-            label: 'Profile',
+            label: 'driver_profile_nav_profile'.translate,
           ),
         ],
       ),
@@ -249,187 +387,11 @@ class _DriverProfileState extends State<DriverProfile> {
   }
 }
 //==============================================================================
-
-class _SettingsToggle extends StatelessWidget {
-  final Color selectedItemColor;
-  final String leftText;
-  final String rightText;
-  final bool selectedRight;
-  final ValueChanged<bool> onChanged;
-
-  const _SettingsToggle({
-    required this.selectedItemColor,
-    required this.leftText,
-    required this.rightText,
-    required this.selectedRight,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 260,
-      height: 44,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE7D7C2)),
-      ),
-
-      child: Row(
-        children: [
-          // control the left-side of the toggle (Operating) ---------------------------------------------------------------
-          Expanded(
-            child: InkWell(
-              onTap: () => onChanged(false),
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selectedRight ? Colors.transparent : selectedItemColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-
-                child: Text(
-                  leftText,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: selectedRight ? Colors.black : Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // control the right-side of the toggle ---------------------------------------------------------------
-          Expanded(
-            child: InkWell(
-              onTap: () => onChanged(true),
-              child: Container(
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selectedRight ? selectedItemColor : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-
-                child: Text(
-                  rightText,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: selectedRight ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// so we don't have meaningless animation bewteen surfing screens
+// so we don't have animation bewteen surfing screens
 PageRoute<void> _noAnimationRoute(Widget page) {
   return PageRouteBuilder<void>(
     pageBuilder: (context, animation, secondaryAnimation) => page,
     transitionDuration: Duration.zero,
     reverseTransitionDuration: Duration.zero,
   );
-}
-
-// build card as template ========================================================
-
-class _SectionCard extends StatelessWidget {
-  final Color borderColor;
-  final String? title;
-  final Widget child;
-
-  const _SectionCard({
-    required this.borderColor,
-    required this.title,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: const Color(0x00FFFFFF),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: borderColor, width: 1),
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != null) ...[
-            Text(
-              title!,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: Colors.black,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-          ],
-
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-// build row for informaion ========================================================
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _InfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-              ),
-
-              //-----------------------------
-              const SizedBox(height: 4),
-
-              //-----------------------------
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(width: 10),
-
-        //add the "edit" icon
-        const Icon(Icons.edit, size: 18, color: Color(0xFF59011A)),
-      ],
-    );
-  }
 }

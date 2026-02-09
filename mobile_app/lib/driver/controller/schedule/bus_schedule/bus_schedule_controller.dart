@@ -1,9 +1,11 @@
 //========================================================
 //? importing
 //========================================================
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
-import '../../../model/schedule/bus_schedule/driver_schedule_models.dart';
+import '../../../model/schedule/driver_schedule_models.dart';
 import '../../../service/schedule/bus_schedule/bus_schedule_service.dart';
 
 import '../../../service/localization/localization_service.dart';
@@ -27,6 +29,9 @@ class DriverBusScheduleController extends ChangeNotifier {
 
     _isLoading = true;
     _errorMessage = null;
+    if (kDebugMode) {
+      print('DriverBusScheduleController: fetch() start driverId=$driverId');
+    }
     notifyListeners();
 
     try {
@@ -38,14 +43,18 @@ class DriverBusScheduleController extends ChangeNotifier {
       if (_days.isEmpty) {
         _errorMessage = 'driver_schedule_error_no_data'.translate;
       }
-
-      notifyListeners();
     // --------------------------------------------------------
+    } on TimeoutException {
+      _errorMessage = 'driver_schedule_error_try_later'.translate;
     } catch (_) {
       _errorMessage = 'driver_schedule_error_try_later'.translate;
-      notifyListeners();
     } finally {
       _isLoading = false;
+      if (kDebugMode) {
+        print(
+          'DriverBusScheduleController: fetch() done days=${_days.length} error=${_errorMessage ?? ''}',
+        );
+      }
       notifyListeners();
     }
   }

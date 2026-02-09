@@ -34,6 +34,8 @@ class SetPasswordForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
@@ -49,10 +51,10 @@ class SetPasswordForm extends StatelessWidget {
                 // title -----------------------------------------------------------
                 Text(
                   'driver_set_password_title'.translate,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: Colors.black,
+                    color: cs.onBackground,
                   ),
                 ),
 
@@ -90,8 +92,8 @@ class SetPasswordForm extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 4),
                     child: Text(
                       errorMessage!,
-                      style: const TextStyle(
-                        color: Color(0xFF59011A),
+                      style: TextStyle(
+                        color: cs.error,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

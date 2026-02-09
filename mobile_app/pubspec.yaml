@@ -82,9 +82,11 @@ flutter:
     - lib/driver/languages/en/
     - lib/driver/languages/en/auth/
     - lib/driver/languages/en/schedule/
+    - lib/driver/languages/en/profile/
     - lib/driver/languages/tr/
     - lib/driver/languages/tr/auth/
     - lib/driver/languages/tr/schedule/
+    - lib/driver/languages/tr/profile/
   # --------------------------------------------------------------------
 
   # An image asset can refer to one or more resolution-specific "variants", see

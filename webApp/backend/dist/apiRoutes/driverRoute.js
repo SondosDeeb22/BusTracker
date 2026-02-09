@@ -25,7 +25,6 @@ const authorizeRole_1 = require("../middlewares/authorizeRole"); // for authoriz
 //===========================================================================================================================
 // Router
 //===========================================================================================================================
-router.get('/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), driverController.fetchAllDrivers);
 router.get('/profile', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), driverController.fetchDriverProfile);
 router.patch('/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), driverController.updateDriverData);
 // change the route (by driver)

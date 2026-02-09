@@ -5,15 +5,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'driver/service/localization/localization_service.dart';
+import 'services/theme_service.dart';
 import 'package:app_links/app_links.dart';
+
 import 'driver/screen/auth/login/login_page.dart';
+
 import 'driver/screen/auth/reset_password/reset_password.dart';
 import 'driver/screen/auth/reset_password/invalid_reset_link_page.dart';
+
 import 'driver/screen/auth/set_password/set_password.dart';
 import 'driver/screen/auth/set_password/invalid_set_password_link_page.dart';
-import 'driver/service/auth/reset_password/reset_password_service.dart';
 import 'driver/service/auth/set_password/set_password_service.dart';
-import 'driver/service/localization/localization_service.dart';
+
+import 'driver/service/auth/reset_password/reset_password_service.dart';
+
+
+
 
 //========================================================
 
@@ -21,6 +29,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await DriverLocalizationService().init();
+  await ThemeService().init();
 
   runApp(const DriverApp());
 }
@@ -38,6 +47,8 @@ class _DriverAppState extends State<DriverApp> {
   final DriverLocalizationService _localizationService =
       DriverLocalizationService();
 
+  final ThemeService _themeService = ThemeService();
+
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? _linkSub;
   late final AppLinks _appLinks;
@@ -46,6 +57,7 @@ class _DriverAppState extends State<DriverApp> {
   void initState() {
     super.initState();
     _localizationService.addListener(_onLanguageChanged);
+    _themeService.addListener(_onThemeChanged);
 
     _appLinks = AppLinks();
     _initDeepLinks();
@@ -54,6 +66,7 @@ class _DriverAppState extends State<DriverApp> {
   @override
   void dispose() {
     _localizationService.removeListener(_onLanguageChanged);
+    _themeService.removeListener(_onThemeChanged);
 
     _linkSub?.cancel();
     super.dispose();
@@ -168,6 +181,12 @@ class _DriverAppState extends State<DriverApp> {
     }
   }
 
+  void _onThemeChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -185,9 +204,9 @@ class _DriverAppState extends State<DriverApp> {
       supportedLocales: const [Locale('en', 'US'), Locale('tr', 'TR')],
       locale: Locale(_localizationService.currentLanguage),
 
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF59011A)),
-      ),
+      theme: _themeService.lightTheme,
+      darkTheme: _themeService.darkTheme,
+      themeMode: _themeService.themeMode,
     );
   }
 }

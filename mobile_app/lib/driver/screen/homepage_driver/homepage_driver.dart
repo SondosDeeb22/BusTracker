@@ -15,8 +15,6 @@ class HomepageDriver extends StatefulWidget {
 }
 
 class _HomepageDriverState extends State<HomepageDriver> {
-  static const _burgundy = Color(0xFF59011A);
-  static const _bg = Color(0xFFF2F1ED);
   static const _border = Color(0xFFC9A47A);
 
   bool _expanded = false;
@@ -46,6 +44,9 @@ class _HomepageDriverState extends State<HomepageDriver> {
   // ============================================================================================================
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     final availableBuses = _buses
         .where((b) => b.name != _currentBus.name)
         .toList();
@@ -57,15 +58,15 @@ class _HomepageDriverState extends State<HomepageDriver> {
     final weekday = _weekdayLabel(now.weekday);
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
 
       // app bar to view logo ---------------------------------------------------
       appBar: AppBar(
-        backgroundColor: _burgundy,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         toolbarHeight: 100,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: _bg),
+        iconTheme: theme.appBarTheme.iconTheme,
         title: Image.asset(
           'assets/BusLogoWhite.png',
           width: 70,
@@ -155,9 +156,12 @@ class _HomepageDriverState extends State<HomepageDriver> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: _burgundy,
-        selectedItemColor: _border,
-        unselectedItemColor: Colors.white,
+        backgroundColor: theme.bottomNavigationBarTheme.backgroundColor ??
+            theme.appBarTheme.backgroundColor,
+        selectedItemColor:
+            theme.bottomNavigationBarTheme.selectedItemColor ?? cs.secondary,
+        unselectedItemColor:
+            theme.bottomNavigationBarTheme.unselectedItemColor ?? cs.onPrimary,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const [
@@ -238,6 +242,9 @@ class _WelcomeCard extends StatelessWidget {
   //----------------------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -253,13 +260,13 @@ class _WelcomeCard extends StatelessWidget {
           // welcome driver and photo  ----------------------------------------------------------------
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Welcome , Adam',
-                  style: TextStyle(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: cs.onBackground,
                   ),
                 ),
               ),
@@ -296,30 +303,30 @@ class _WelcomeCard extends StatelessWidget {
               // TIME -------------------
               Text(
                 time,
-                style: const TextStyle(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: cs.onBackground,
                 ),
               ),
 
               // DATE -------------------
               Text(
                 date,
-                style: const TextStyle(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: cs.onBackground,
                 ),
               ),
 
               // DAY -------------------
               Text(
                 weekday,
-                style: const TextStyle(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black,
+                  color: cs.onBackground,
                 ),
               ),
             ],
@@ -356,6 +363,9 @@ class _TrackingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -371,13 +381,13 @@ class _TrackingCard extends StatelessWidget {
           // -----------------------------------------------------------------------------------------
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Tracking Status',
-                  style: TextStyle(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: Colors.black,
+                    color: cs.onBackground,
                   ),
                 ),
               ),
@@ -389,9 +399,9 @@ class _TrackingCard extends StatelessWidget {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF5EFE6),
+                    color: cs.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFE4D4BF)),
+                    border: Border.all(color: cs.outlineVariant),
                   ),
 
                   // display arrow icon in the tracking box (according to expanded status) -------------------------------
@@ -399,7 +409,7 @@ class _TrackingCard extends StatelessWidget {
                     expanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: Colors.black,
+                    color: cs.onSurface,
                   ),
                 ),
               ),
@@ -485,6 +495,8 @@ class _StatusToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Container(
       height: 70,
       padding: const EdgeInsets.all(6),
@@ -512,7 +524,7 @@ class _StatusToggle extends StatelessWidget {
                   'Operating',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: leftSelected ? Colors.white : Colors.black,
+                    color: leftSelected ? cs.onPrimary : cs.onSurface,
                   ),
                 ),
               ),
@@ -537,7 +549,7 @@ class _StatusToggle extends StatelessWidget {
                   'Paused',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    color: leftSelected ? Colors.black : Colors.black,
+                    color: cs.onSurface,
                   ),
                 ),
               ),

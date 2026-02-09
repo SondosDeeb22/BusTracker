@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../auth/login/login_service.dart';
-import '../../../model/schedule/bus_schedule/driver_schedule_models.dart';
+import '../../../model/schedule/driver_schedule_models.dart';
 
 //========================================================
 //? service
@@ -31,7 +31,7 @@ class DriverBusScheduleService {
   Future<List<DriverScheduleDay>> fetchSchedule({
     String? driverId,
   }) async {
-    final client = HttpClient();
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
 
     try {
       final uri = Uri.parse('$_baseUrl/api/driver/schedule/fetch')
@@ -40,7 +40,9 @@ class DriverBusScheduleService {
           'driverId': driverId.trim(),
       });
 
-      final request = await client.getUrl(uri);
+      final request = await client
+          .getUrl(uri)
+          .timeout(const Duration(seconds: 15));
       request.headers.set(HttpHeaders.acceptHeader, 'application/json');
 
       final cookie = await LoginService.getStoredAuthCookie();
@@ -48,8 +50,13 @@ class DriverBusScheduleService {
         request.headers.set(HttpHeaders.cookieHeader, cookie);
       }
 
-      final response = await request.close();
-      final body = await response.transform(utf8.decoder).join();
+      final response = await request
+          .close()
+          .timeout(const Duration(seconds: 20));
+      final body = await response
+          .transform(utf8.decoder)
+          .join()
+          .timeout(const Duration(seconds: 20));
 
       final decoded = _tryDecodeJson(body);
 

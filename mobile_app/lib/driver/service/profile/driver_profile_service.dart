@@ -4,18 +4,17 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../../auth/login/login_service.dart';
-import '../../../model/schedule/weekly_bus_schedule/driver_weekly_schedule_models.dart';
+import '../auth/login/login_service.dart';
+import '../../model/profile/driver_profile_models.dart';
 
 //========================================================
 //? service
 //========================================================
 
-class DriverWeeklyBusScheduleService {
+class DriverProfileService {
   final String _baseUrl;
 
-  DriverWeeklyBusScheduleService({String? baseUrl})
-      : _baseUrl = baseUrl ?? _defaultBaseUrl();
+  DriverProfileService({String? baseUrl}) : _baseUrl = baseUrl ?? _defaultBaseUrl();
 
   //========================================================
 
@@ -27,18 +26,12 @@ class DriverWeeklyBusScheduleService {
   }
 
   //========================================================
-
-  Future<List<DriverWeeklyScheduleDay>> fetchWeeklySchedule({
-    String? driverId,
-  }) async {
+  // get the profile data 
+  Future<DriverProfileModel?> fetchProfile() async {
     final client = HttpClient();
 
     try {
-      final uri = Uri.parse('$_baseUrl/api/driver/schedule/fetch')
-          .replace(queryParameters: {
-        if (driverId != null && driverId.trim().isNotEmpty)
-          'driverId': driverId.trim(),
-      });
+      final uri = Uri.parse('$_baseUrl/api/driver/profile');
 
       final request = await client.getUrl(uri);
       request.headers.set(HttpHeaders.acceptHeader, 'application/json');
@@ -54,18 +47,50 @@ class DriverWeeklyBusScheduleService {
       final decoded = _tryDecodeJson(body);
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        return <DriverWeeklyScheduleDay>[];
+        return null;
       }
 
       final data = (decoded is Map<String, dynamic>) ? decoded['data'] : null;
-      if (data is! List<dynamic>) {
-        return <DriverWeeklyScheduleDay>[];
+      if (data is! Map<String, dynamic>) {
+        return null;
       }
 
-      return data
-          .whereType<Map<String, dynamic>>()
-          .map(DriverWeeklyScheduleDay.fromJson)
-          .toList();
+      return DriverProfileModel.fromJson(data);
+    } finally {
+      client.close(force: true);
+    }
+  }
+
+  //========================================================
+  // update the driver phone number 
+  Future<bool> updatePhone({required String phone}) async {
+    final client = HttpClient();
+
+    try {
+      final uri = Uri.parse('$_baseUrl/api/driver/update');
+
+      final request = await client.patchUrl(uri);
+      request.headers.set(HttpHeaders.acceptHeader, 'application/json');
+      request.headers.set(HttpHeaders.contentTypeHeader, 'application/json');
+
+      final cookie = await LoginService.getStoredAuthCookie();
+      if (cookie != null && cookie.trim().isNotEmpty) {
+        request.headers.set(HttpHeaders.cookieHeader, cookie);
+      }
+
+      final payload = <String, String>{
+        'phone': phone.trim(),
+      };
+
+      request.add(utf8.encode(jsonEncode(payload)));
+
+      final response = await request.close();
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return false;
+      }
+
+      return true;
     } finally {
       client.close(force: true);
     }

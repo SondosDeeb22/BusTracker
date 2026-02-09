@@ -16,9 +16,6 @@ class ForgotPasswordPage extends StatefulWidget {
 //========================================================
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  static const _burgundy = Color(0xFF59011A);
-  static const _bg = Color(0xFFF2F1ED);
-
   final ForgotPasswordController _controller = ForgotPasswordController();
 
   @override
@@ -51,17 +48,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
 
       // Upper part (Logo) -------------------------------------
       appBar: AppBar(
-        backgroundColor: _burgundy,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0, // no shadow
         toolbarHeight: 100,
         centerTitle: true,
 
-        iconTheme: const IconThemeData(color: _bg),
+        iconTheme: theme.appBarTheme.iconTheme,
         title: Image.asset(
           'assets/BusLogoWhite.png',
           width: 70,
@@ -80,8 +80,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               onSendResetLink: _sendResetLink,
               errorMessage: _controller.inlineErrorMessage,
               successMessage: _controller.inlineSuccessMessage,
-              primaryColor: _burgundy,
-              backgroundColor: _bg,
+              primaryColor: cs.primary,
+              backgroundColor: cs.onPrimary,
             ),
           ],
         ),

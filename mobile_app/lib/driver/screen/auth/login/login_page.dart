@@ -26,9 +26,6 @@ class LoginPage extends StatefulWidget {
 //========================================================
 
 class _LoginPageState extends State<LoginPage> {
-  static const _burgundy = Color(0xFF59011A);
-  static const _bg = Color(0xFFF2F1ED);
-
   final LoginController _controller = LoginController();
 
   @override
@@ -52,15 +49,18 @@ class _LoginPageState extends State<LoginPage> {
   // =======================================================================
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
 
       //------------------------------------------------------------------
       body: SafeArea(
         child: Column(
           children: [
             // Upper part (Logo) -------------------------------------
-            const LoginHeader(background: _burgundy, textColor: _bg),
+            LoginHeader(background: cs.primary, textColor: cs.onPrimary),
             
             // login data form ===================================================================================
             LoginForm(
@@ -68,8 +68,8 @@ class _LoginPageState extends State<LoginPage> {
               passwordController: _controller.passwordController,
               loginErrorMessage: _controller.loginErrorMessage,
               isLoading: _controller.isLoading,
-              primaryColor: _burgundy,
-              backgroundColor: _bg,
+              primaryColor: cs.primary,
+              backgroundColor: cs.onPrimary,
 
               onLogin: () async {
                 final loginSucceeded = await _controller.login();

@@ -1,0 +1,29 @@
+{
+  "driver_profile_title": "Profile",
+
+  "driver_profile_contact_info": "Contact info",
+  "driver_profile_account_settings": "Account Settings",
+
+  "driver_profile_phone_number": "Phone number",
+
+  "driver_profile_language_preferences": "Language Preferences",
+  "driver_profile_appearance": "Appearance",
+
+  "driver_profile_language_turkish": "Turkish",
+  "driver_profile_language_english": "English",
+
+  "driver_profile_appearance_dark": "Dark",
+  "driver_profile_appearance_light": "Light",
+
+  "driver_profile_edit_phone_title": "Edit phone number",
+  
+  "driver_profile_action_cancel": "Cancel",
+  "driver_profile_action_save": "Save",
+
+  "driver_profile_snackbar_phone_updated": "Phone Number updated",
+  "driver_profile_snackbar_update_failed": "Edit failed",
+
+  "driver_profile_nav_home": "Home",
+  "driver_profile_nav_calendar": "Calendar",
+  "driver_profile_nav_profile": "Profile"
+}

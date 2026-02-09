@@ -24,9 +24,6 @@ class ResetPasswrodPage extends StatefulWidget {
 //========================================================
 
 class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
-  static const _burgundy = Color(0xFF59011A);
-  static const _bg = Color(0xFFF2F1ED);
-
   late final ResetPasswordController _controller;
 
   @override
@@ -93,16 +90,19 @@ class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: theme.scaffoldBackgroundColor,
 
       // Upper part (Logo) -------------------------------------
       appBar: AppBar(
-        backgroundColor: _burgundy,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         toolbarHeight: 100,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: _bg),
+        iconTheme: theme.appBarTheme.iconTheme,
 
         title: Image.asset(
           'assets/BusLogoWhite.png',
@@ -122,8 +122,8 @@ class _ResetPasswrodPageState extends State<ResetPasswrodPage> {
               isLoading: _controller.isLoading,
               errorMessage: _controller.errorMessage,
               onSubmit: _submit,
-              primaryColor: _burgundy,
-              backgroundColor: _bg,
+              primaryColor: cs.primary,
+              backgroundColor: cs.onPrimary,
             ),
           ],
         ),

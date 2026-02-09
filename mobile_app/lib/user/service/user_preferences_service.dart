@@ -1,7 +1,7 @@
 //========================================================
 //? importing
 //========================================================
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/app_preferences_service.dart';
 
 //========================================================
 
@@ -10,8 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //========================================================
 
 class UserPreferencesService {
-  static const String _languageKey = 'user_language';
-  static const String _appearanceKey = 'user_appearance';
+  final AppPreferencesService _prefs = AppPreferencesService(scope: 'user');
 
   // Singleton instance
   static final UserPreferencesService _instance =
@@ -22,24 +21,13 @@ class UserPreferencesService {
   // Save language preference -----------------------------------------------------
   // 'en' for English, 'tr' for Turkish
   Future<void> saveLanguage(String languageCode) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_languageKey, languageCode);
-    } catch (e) {
-      //? Handle storage errors gracefully
-      throw Exception('Failed to save language preference: $e');
-    }
+    await _prefs.saveLanguage(languageCode);
   }
 
   // Get saved language preference -----------------------------------------------------
   // Returns 'en' as default if no preference is saved
   Future<String> getLanguage() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_languageKey) ?? 'en';
-    } catch (e) {
-      return 'en';
-    }
+    return _prefs.getLanguage();
   }
 
   //========================================================================================
@@ -47,53 +35,34 @@ class UserPreferencesService {
   // Save appearance preference
   // 'light' or 'dark'
   Future<void> saveAppearance(String appearance) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_appearanceKey, appearance);
-    } catch (e) {
-      throw Exception('Failed to save appearance preference: $e');
-    }
+    await _prefs.saveAppearance(appearance);
   }
 
   // -----------------------------------------------------
   // Get saved appearance preference
   //? Returns 'light' as default if no preference is saved
   Future<String> getAppearance() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_appearanceKey) ?? 'light';
-    } catch (e) {
-      //? Return default appearance on error
-      return 'light';
-    }
+    return _prefs.getAppearance();
   }
 
   // ===========================================================================
 
   // Check if English is selected
   Future<bool> isEnglishSelected() async {
-    final language = await getLanguage();
-    return language == 'en';
+    return _prefs.isEnglishSelected();
   }
 
   // -----------------------------------------------------
 
   // Check if light theme is selected
   Future<bool> isLightSelected() async {
-    final appearance = await getAppearance();
-    return appearance == 'light';
+    return _prefs.isLightSelected();
   }
 
   // ===========================================================================
 
   // Clear all user preferences (useful for testing or reset)
   Future<void> clearAllPreferences() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_languageKey);
-      await prefs.remove(_appearanceKey);
-    } catch (e) {
-      throw Exception('Failed to clear preferences: $e');
-    }
+    await _prefs.clearAllPreferences();
   }
 }

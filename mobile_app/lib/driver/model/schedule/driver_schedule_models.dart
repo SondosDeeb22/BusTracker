@@ -4,17 +4,16 @@
 
 import 'package:flutter/material.dart';
 
-import '../../../../services/app_constants.dart';
+import '../../../services/app_constants.dart';
 
-// Driver weekly scheduel TRIP ----------------------------------------
-class DriverWeeklyScheduleTrip {
+class DriverScheduleTrip {
   final String time;
   final String routeName;
   final Color routeColor;
   final String busId;
   final String busPlate;
 
-  const DriverWeeklyScheduleTrip({
+  const DriverScheduleTrip({
     required this.time,
     required this.routeName,
     required this.routeColor,
@@ -22,13 +21,13 @@ class DriverWeeklyScheduleTrip {
     required this.busPlate,
   });
 
-  factory DriverWeeklyScheduleTrip.fromJson(Map<String, dynamic> json) {
+  factory DriverScheduleTrip.fromJson(Map<String, dynamic> json) {
     final routeColorInt = json['routeColorInt'];
     final int parsedRouteColorInt = routeColorInt is int
         ? routeColorInt
         : int.tryParse(routeColorInt?.toString() ?? '') ?? kDefaultRouteColorInt;
 
-    return DriverWeeklyScheduleTrip(
+    return DriverScheduleTrip(
       time: (json['time'] ?? '').toString(),
       routeName: (json['routeName'] ?? '').toString(),
       routeColor: Color(parsedRouteColorInt),
@@ -38,31 +37,31 @@ class DriverWeeklyScheduleTrip {
   }
 }
 
-// Driver weekly scheduel DAY ----------------------------------------
+// ----------------------------------------------------------
 
-class DriverWeeklyScheduleDay {
+class DriverScheduleDay {
   final String date;
   final String day;
   final String driverId;
-  final List<DriverWeeklyScheduleTrip> scheduleDetails;
+  final List<DriverScheduleTrip> scheduleDetails;
 
-  const DriverWeeklyScheduleDay({
+  const DriverScheduleDay({
     required this.date,
     required this.day,
     required this.driverId,
     required this.scheduleDetails,
   });
 
-  factory DriverWeeklyScheduleDay.fromJson(Map<String, dynamic> json) {
+  factory DriverScheduleDay.fromJson(Map<String, dynamic> json) {
     final detailsRaw = json['scheduleDetails'];
-    final List<DriverWeeklyScheduleTrip> details = detailsRaw is List<dynamic>
+    final List<DriverScheduleTrip> details = detailsRaw is List<dynamic>
         ? detailsRaw
               .whereType<Map<String, dynamic>>()
-              .map(DriverWeeklyScheduleTrip.fromJson)
+              .map(DriverScheduleTrip.fromJson)
               .toList()
-        : <DriverWeeklyScheduleTrip>[];
+        : <DriverScheduleTrip>[];
 
-    return DriverWeeklyScheduleDay(
+    return DriverScheduleDay(
       date: (json['date'] ?? '').toString(),
       day: (json['day'] ?? '').toString(),
       driverId: (json['driverId'] ?? '').toString(),

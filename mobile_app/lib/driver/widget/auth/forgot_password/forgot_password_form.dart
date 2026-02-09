@@ -32,6 +32,8 @@ class ForgotPasswordForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
@@ -51,7 +53,7 @@ class ForgotPasswordForm extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: Colors.black,
+                    color: cs.onBackground,
                   ),
                 ),
 
@@ -64,7 +66,7 @@ class ForgotPasswordForm extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: cs.onBackground,
                   ),
                 ),
 
@@ -87,8 +89,8 @@ class ForgotPasswordForm extends StatelessWidget {
                 if (errorMessage != null && errorMessage!.trim().isNotEmpty)
                   Text(
                     errorMessage!,
-                    style: const TextStyle(
-                      color: Color(0xFF59011A),
+                    style: TextStyle(
+                      color: cs.error,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -99,8 +101,8 @@ class ForgotPasswordForm extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(
                       successMessage!,
-                      style: const TextStyle(
-                        color: Color(0xFF59011A),
+                      style: TextStyle(
+                        color: cs.primary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),

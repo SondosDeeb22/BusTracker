@@ -104,6 +104,8 @@ class ThemeService extends ChangeNotifier {
         onSurface: Colors.black,
         onBackground: Colors.black,
         onError: Colors.white,
+        surfaceTint:Color(0xFFE4DDD4)
+
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: burgundy,
@@ -150,6 +152,8 @@ class ThemeService extends ChangeNotifier {
         onSurface: Colors.white,
         onBackground: Colors.white,
         onError: Colors.white,
+      
+        
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: burgundy,
