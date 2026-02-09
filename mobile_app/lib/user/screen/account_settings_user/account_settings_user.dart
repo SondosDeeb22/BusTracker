@@ -222,12 +222,14 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
           elevation: 0,
           centerTitle: true,
           iconTheme: IconThemeData(color: colorScheme.onPrimary),
+
           title: Image.asset(
             'assets/BusLogoWhite.png',
             width: 40,
             height: 40,
             fit: BoxFit.contain,
           ),
+
         ),
         body: const Center(
           child: CircularProgressIndicator(
@@ -246,14 +248,18 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
       appBar: AppBar(
         backgroundColor: colorScheme.primary,
         elevation: 0,
+        toolbarHeight: 100,
         centerTitle: true,
         iconTheme: IconThemeData(color: colorScheme.onPrimary),
+
+
         title: Image.asset(
           'assets/BusLogoWhite.png',
-          width: 40,
-          height: 40,
+          width: 70,
+          height: 70,
           fit: BoxFit.contain,
         ),
+        
         actions: [
           IconButton(
             onPressed: () {}, // no action becuase we're already in it

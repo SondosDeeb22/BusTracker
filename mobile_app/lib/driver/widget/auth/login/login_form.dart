@@ -37,10 +37,11 @@ class LoginForm extends StatelessWidget {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 22),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-          children: [
+            children: [
             const SizedBox(height: 26),
 
             // Email Slot ============================================
@@ -49,7 +50,18 @@ class LoginForm extends StatelessWidget {
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: 'driver_login_email_label'.translate,
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: cs.secondary),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: cs.secondary),
+                  borderRadius: BorderRadius.circular(10),
+
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: cs.primary, width: 2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
 
@@ -61,7 +73,17 @@ class LoginForm extends StatelessWidget {
               obscureText: true,
               decoration: InputDecoration(
                 labelText: 'driver_login_password_label'.translate,
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: cs.secondary),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: cs.secondary),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: cs.primary, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
 
@@ -131,7 +153,7 @@ class LoginForm extends StatelessWidget {
                 child: Text(
                   'driver_login_forgot_password'.translate,
                   style: TextStyle(
-                    color: primaryColor,
+                    color: cs.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -139,6 +161,7 @@ class LoginForm extends StatelessWidget {
             ),
             // =====================================================
           ],
+        ),
         ),
       ),
     );

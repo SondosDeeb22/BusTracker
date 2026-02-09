@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 
 import '../homepage_driver/homepage_driver.dart';
 import '../bus_schedule/bus_schedule.dart';
+import '../auth/login/login_page.dart';
 
 import '../../controller/profile/driver_profile_controller.dart';
+import '../../controller/auth/logout/logout_controller.dart';
 
 import '../../service/localization/localization_service.dart';
 import '../../service/user_preferences_service.dart';
@@ -16,6 +18,8 @@ import '../../widget/profile/section_card.dart';
 import '../../widget/profile/settings_toggle.dart';
 import '../../widget/profile/info_row.dart';
 import '../../widget/profile/edit_phone_dialog.dart';
+import '../../widget/auth/logout/logout_card.dart';
+import '../../widget/auth/logout/confirm_logout_dialog.dart';
 
 //========================================================
 
@@ -38,6 +42,7 @@ class _DriverProfileState extends State<DriverProfile> {
   // =========================================================================
   // controller
   final DriverProfileController _controller = DriverProfileController();
+  final LogoutController _logoutController = LogoutController();
   final UserPreferencesService _prefs = UserPreferencesService();
   final ThemeService _themeService = ThemeService();
 
@@ -45,6 +50,7 @@ class _DriverProfileState extends State<DriverProfile> {
   void initState() {
     super.initState();
     _controller.addListener(_onControllerChanged);
+    _logoutController.addListener(_onLogoutControllerChanged);
     _controller.fetch();
     _loadPreferences();
 
@@ -68,6 +74,7 @@ class _DriverProfileState extends State<DriverProfile> {
   @override
   void dispose() {
     _controller.removeListener(_onControllerChanged);
+    _logoutController.removeListener(_onLogoutControllerChanged);
     DriverLocalizationService().removeListener(_onLanguageChanged);
     _themeService.removeListener(_onThemeChanged);
     super.dispose();
@@ -90,6 +97,11 @@ class _DriverProfileState extends State<DriverProfile> {
     }
   }
 
+  void _onLogoutControllerChanged() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
   void _onThemeChanged() {
     if (!mounted) return;
     final isLight = _themeService.isLight;
@@ -100,6 +112,34 @@ class _DriverProfileState extends State<DriverProfile> {
       });
     } else {
       setState(() {});
+    }
+  }
+
+  // =========================================================================
+  // logout handler
+
+  Future<void> _handleLogout() async {
+    final confirmed = await showConfirmLogoutDialog(context: context);
+    if (!confirmed) return;
+
+    final success = await _logoutController.logout();
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
+    } else {
+      final message = _logoutController.errorMessage ??
+          'driver_profile_snackbar_logout_failed'.translate;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: _burgundy,
+        ),
+      );
     }
   }
 
@@ -330,6 +370,16 @@ class _DriverProfileState extends State<DriverProfile> {
                       ),
                     ],
                   ),
+                ),
+
+                //----------------------------------------------
+                const SizedBox(height: 14),
+
+                //----------------------------------------------
+                // Logout card
+                LogoutCard(
+                  borderColor: _border,
+                  onTap: _handleLogout,
                 ),
               ],
             ),

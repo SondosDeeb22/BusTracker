@@ -19,9 +19,15 @@
   
   "driver_profile_action_cancel": "Cancel",
   "driver_profile_action_save": "Save",
+  "driver_profile_action_logout": "Logout",
+
+  "driver_profile_logout": "Logout",
+  "driver_profile_logout_confirm_title": "Confirm Logout",
+  "driver_profile_logout_confirm_message": "Are you sure you want to logout?",
 
   "driver_profile_snackbar_phone_updated": "Phone Number updated",
   "driver_profile_snackbar_update_failed": "Edit failed",
+  "driver_profile_snackbar_logout_failed": "Logout failed",
 
   "driver_profile_nav_home": "Home",
   "driver_profile_nav_calendar": "Calendar",

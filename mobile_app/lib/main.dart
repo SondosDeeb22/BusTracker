@@ -2,10 +2,15 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'user/screen/cover_page_user/cover_page_user.dart';
 import 'services/localization_service.dart';
+
 import 'services/theme_service.dart';
+
+// we will view the homepage direclty, no need for the coverPage
+import 'user/screen/cover_page_user/cover_page_user.dart';
+import 'user/screen/homepage_user/homepage_user.dart';
 
 //========================================================
 
@@ -101,7 +106,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: _themeService.darkTheme,
       themeMode: _themeService.themeMode, // the theme who gets applied 
 
-      home: const CoverPage(),
+      home: const HomepageUser(),
     );
   }
 }

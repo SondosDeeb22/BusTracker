@@ -55,6 +55,18 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/appIcon.png"
+  adaptive_icon_background: "#59011A"  
+  adaptive_icon_foreground: "assets/appIcon.png"
+  android_min_sdk: 21
+  # Add padding to prevent cropping
+  adaptive_icon_padding: true
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

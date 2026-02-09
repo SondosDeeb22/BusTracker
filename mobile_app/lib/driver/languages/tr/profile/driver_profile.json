@@ -18,9 +18,15 @@
   "driver_profile_edit_phone_title": "Telefon numarasını düzenle",
   "driver_profile_action_cancel": "İptal",
   "driver_profile_action_save": "Kaydet",
+  "driver_profile_action_logout": "Çıkış",
+
+  "driver_profile_logout": "Çıkış Yap",
+  "driver_profile_logout_confirm_title": "Çıkış Onayı",
+  "driver_profile_logout_confirm_message": "Çıkış yapmak istediğinizden emin misiniz?",
 
   "driver_profile_snackbar_phone_updated": "Telefon numarası güncellendi",
   "driver_profile_snackbar_update_failed": "Güncelleme başarısız",
+  "driver_profile_snackbar_logout_failed": "Çıkış başarısız",
 
   "driver_profile_nav_home": "Ana Sayfa",
   "driver_profile_nav_calendar": "Takvim",
