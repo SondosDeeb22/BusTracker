@@ -20,8 +20,8 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
   static const _burgundy = Color(0xFF59011A);
 
   //? State variables for settings
-  bool _englishSelected = true;
-  bool _lightSelected = true;
+  bool _turkishSelected = false;
+  bool _darkSelected = false;
   bool _isLoading = true;
 
   //? Services
@@ -52,13 +52,13 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
   // Load saved preferences from local storage ------------------------------------------------------
   Future<void> _loadPreferences() async {
     try {
-      final englishSelected = _localizationService.isEnglish;
-      final lightSelected = _themeService.isLight;
+      final turkishSelected = !_localizationService.isEnglish;
+      final darkSelected = !_themeService.isLight;
 
       if (mounted) {
         setState(() {
-          _englishSelected = englishSelected;
-          _lightSelected = lightSelected;
+          _turkishSelected = turkishSelected;
+          _darkSelected = darkSelected;
           _isLoading = false;
         });
       }
@@ -96,9 +96,9 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
   // -----------------------------------------------------
   // Save language preference to local storage
 
-  Future<void> _saveLanguagePreference(bool isEnglish) async {
+  Future<void> _saveLanguagePreference(bool isTurkish) async {
     try {
-      final languageCode = isEnglish ? 'en' : 'tr';
+      final languageCode = isTurkish ? 'tr' : 'en';
       await _localizationService.changeLanguage(languageCode);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -153,9 +153,9 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
 
   //========================================================================================
   // Save appearance preference to local storage
-  Future<void> _saveAppearancePreference(bool isLight) async {
+  Future<void> _saveAppearancePreference(bool isDark) async {
     try {
-      final theme = isLight ? 'light' : 'dark';
+      final theme = isDark ? 'dark' : 'light';
       await _themeService.changeTheme(theme);
       //? Show success message
       if (mounted) {
@@ -314,12 +314,12 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
               Center(
                 child: _SettingsToggle(
                   selectedItemColor: _burgundy,
-                  leftText: 'turkish'.tr,
-                  rightText: 'english'.tr,
-                  selectedRight: _englishSelected,
+                  leftText: 'english'.tr,
+                  rightText: 'turkish'.tr,
+                  selectedRight: _turkishSelected,
                   onChanged: (selectedRight) {
                     setState(() {
-                      _englishSelected = selectedRight;
+                      _turkishSelected = selectedRight;
                     });
                     // Save language preference to local storage
                     _saveLanguagePreference(selectedRight);
@@ -348,12 +348,12 @@ class _AccountSettingsUserState extends State<AccountSettingsUser> {
               Center(
                 child: _SettingsToggle(
                   selectedItemColor: _burgundy,
-                  leftText: 'dark'.tr,
-                  rightText: 'light'.tr,
-                  selectedRight: _lightSelected,
+                  leftText: 'light'.tr,
+                  rightText: 'dark'.tr,
+                  selectedRight: _darkSelected,
                   onChanged: (selectedRight) {
                     setState(() {
-                      _lightSelected = selectedRight;
+                      _darkSelected = selectedRight;
                     });
                     // Save appearance preference to local storage
                     _saveAppearancePreference(selectedRight);

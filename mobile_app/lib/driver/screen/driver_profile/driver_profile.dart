@@ -32,8 +32,8 @@ class _DriverProfileState extends State<DriverProfile> {
 
   int _bottomIndex = 2;
 
-  bool _englishSelected = true;
-  bool _lightSelected = true;
+  bool _turkishSelected = true;
+  bool _darkSelected = false;
 
   // =========================================================================
   // controller
@@ -54,13 +54,13 @@ class _DriverProfileState extends State<DriverProfile> {
 
   // Load saved preferences
   Future<void> _loadPreferences() async {
-    final englishSelected = DriverLocalizationService().currentLanguage == 'en';
-    final lightSelected = _themeService.isLight;
+    final turkishSelected = DriverLocalizationService().currentLanguage == 'tr';
+    final darkSelected = !_themeService.isLight;
     
     if (mounted) {
       setState(() {
-        _englishSelected = englishSelected;
-        _lightSelected = lightSelected;
+        _turkishSelected = turkishSelected;
+        _darkSelected = darkSelected;
       });
     }
   }
@@ -80,10 +80,10 @@ class _DriverProfileState extends State<DriverProfile> {
 
   void _onLanguageChanged() {
     if (!mounted) return;
-    final isEnglish = DriverLocalizationService().currentLanguage == 'en';
-    if (_englishSelected != isEnglish) {
+    final isTurkish = DriverLocalizationService().currentLanguage == 'tr';
+    if (_turkishSelected != isTurkish) {
       setState(() {
-        _englishSelected = isEnglish;
+        _turkishSelected = isTurkish;
       });
     } else {
       setState(() {});
@@ -93,9 +93,10 @@ class _DriverProfileState extends State<DriverProfile> {
   void _onThemeChanged() {
     if (!mounted) return;
     final isLight = _themeService.isLight;
-    if (_lightSelected != isLight) {
+    final isDarkSelected = !isLight;
+    if (_darkSelected != isDarkSelected) {
       setState(() {
-        _lightSelected = isLight;
+        _darkSelected = isDarkSelected;
       });
     } else {
       setState(() {});
@@ -279,16 +280,17 @@ class _DriverProfileState extends State<DriverProfile> {
                       Center(
                         child: SettingsToggle(
                           selectedItemColor: _burgundy,
-                          leftText: 'driver_profile_language_turkish'.translate,
-                          rightText: 'driver_profile_language_english'.translate,
-                          selectedRight: _englishSelected,
+                          
+                          leftText: 'driver_profile_language_english'.translate,
+                          rightText: 'driver_profile_language_turkish'.translate,
+                          selectedRight: _turkishSelected,
                           onChanged: (selectedRight) async {
                             setState(() {
-                              _englishSelected = selectedRight;
+                              _turkishSelected = selectedRight;
                             });
                             
                             // Save language preference
-                            final languageCode = selectedRight ? 'en' : 'tr';
+                            final languageCode = selectedRight ? 'tr' : 'en';
                             await _prefs.saveLanguage(languageCode);
                             
                             // Update localization service
@@ -309,16 +311,16 @@ class _DriverProfileState extends State<DriverProfile> {
                       Center(
                         child: SettingsToggle(
                           selectedItemColor: _burgundy,
-                          leftText: 'driver_profile_appearance_dark'.translate,
-                          rightText: 'driver_profile_appearance_light'.translate,
-                          selectedRight: _lightSelected,
+                          leftText: 'driver_profile_appearance_light'.translate,
+                          rightText: 'driver_profile_appearance_dark'.translate,
+                          selectedRight: _darkSelected,
                           onChanged: (selectedRight) async {
                             setState(() {
-                              _lightSelected = selectedRight;
+                              _darkSelected = selectedRight;
                             });
                             
                             // Save appearance preference
-                            final appearance = selectedRight ? 'light' : 'dark';
+                            final appearance = selectedRight ? 'dark' : 'light';
                             await _prefs.saveAppearance(appearance);
 
                             // Apply theme
