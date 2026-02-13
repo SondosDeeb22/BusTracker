@@ -8,8 +8,7 @@ import 'services/localization_service.dart';
 
 import 'services/theme_service.dart';
 
-// we will view the homepage direclty, no need for the coverPage
-import 'user/screen/cover_page_user/cover_page_user.dart';
+
 import 'user/screen/homepage_user/homepage_user.dart';
 
 //========================================================

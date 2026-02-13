@@ -1,0 +1,10 @@
+{
+  "map": {
+    "locationServicesDisabled": "Konum servisleri kapalı.",
+    "locationPermissionDenied": "Konum izni reddedildi.",
+    "locationPermissionDeniedForever": "Konum izni kalıcı olarak reddedildi. Lütfen ayarlardan etkinleştirin.",
+    "mockLocationDetected": "Sahte konum tespit edildi. Emülatör kullanıyorsanız GPS konumunu ayarlayın (Extended controls -> Location) veya gerçek bir cihazda test edin.",
+    "failedToGetLocation": "Mevcut konum alınamadı",
+    "noLocationAvailable": "Konum bilgisi mevcut değil."
+  }
+}

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../account_settings_user/account_settings_user.dart';
 import '../bus_schedule_user/bus_schedule_user.dart';
+import '../map/map.dart';
 import 'package:mobile_app/user/service/route_api_service.dart';
 import 'package:mobile_app/user/model/bus_route_card_model.dart';
 import 'package:mobile_app/user/widget/route_card.dart';
@@ -162,7 +163,6 @@ class _HomepageUserState extends State<HomepageUser> {
         // Right-side icons in AppBar (setting icon)
         actions: [
           IconButton(
-            // TODO: open settings screen.
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const AccountSettingsUser()),
@@ -322,8 +322,14 @@ class _HomepageUserState extends State<HomepageUser> {
                             showViewLocationButton:
                                 !_showAll && route.hasLocation,
 
-                            // TODO: navigate to map screen for this route
-                            onViewLocation: () {},
+                           // view map button action -------------------------------------------------------------------------
+                            onViewLocation: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const DriverMapScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ),
                     ],

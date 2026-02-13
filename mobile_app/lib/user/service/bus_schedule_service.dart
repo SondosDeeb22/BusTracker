@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import '../model/bus_schedule_model.dart';
 import '../../services/app_constants.dart';
+import '../../services/api_config.dart';
 
 //========================================================
 //? service for getting user bus schedules
@@ -24,10 +25,7 @@ class BusScheduleService {
 
   // Default base URL for the API
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.baseUrl;
   }
 
   //===================================================================

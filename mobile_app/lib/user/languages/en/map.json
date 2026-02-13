@@ -1,0 +1,10 @@
+{
+  "map": {
+    "locationServicesDisabled": "Location services are disabled.",
+    "locationPermissionDenied": "Location permission was denied.",
+    "locationPermissionDeniedForever": "Location permission is permanently denied. Please enable it from settings.",
+    "mockLocationDetected": "Mock location detected. If you are using an emulator, set its GPS location (Extended controls -> Location) or test on a real device.",
+    "failedToGetLocation": "Failed to get current location",
+    "noLocationAvailable": "No location available."
+  }
+}
