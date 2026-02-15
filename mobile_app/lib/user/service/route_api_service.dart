@@ -4,6 +4,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import '../model/homepage/user_route_model.dart';
+
 //========================================================
 //? Data model representing a bus route from the API
 //========================================================
@@ -59,6 +61,11 @@ class RouteApiService {
     return _fetchRoutes('$baseUrl/api/user/routes/all');
   }
 
+  // return list of user routes including stations
+  Future<List<UserRouteModel>> fetchAllUserRoutes() {
+    return _fetchUserRoutes('$baseUrl/api/user/routes/all');
+  }
+
   // return a filtered list of active routes
   Future<List<RouteApiRoute>> fetchOperatingRoutes() {
     return _fetchRoutes('$baseUrl/api/user/routes/operating');
@@ -112,6 +119,40 @@ class RouteApiService {
           .toList();
     } finally {
       // ensure the HTTP client is always closed, even if an exception occurs
+      client.close(force: true);
+    }
+  }
+
+  //----------------------------------------------------------------------------------------
+  //? User routes endpoint that returns stations under each route
+  //----------------------------------------------------------------------------------------
+  Future<List<UserRouteModel>> _fetchUserRoutes(String url) async {
+    final client = HttpClient();
+
+    try {
+      final request = await client.getUrl(Uri.parse(url));
+      request.headers.set(HttpHeaders.acceptHeader, 'application/json');
+
+      final response = await request.close();
+      final body = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('Request failed (${response.statusCode}): $body');
+      }
+
+      final decoded = jsonDecode(body);
+      final data = (decoded is Map<String, dynamic>) ? decoded['data'] : null;
+
+      if (data is! List) {
+        return const [];
+      }
+
+      return data
+          .whereType<Map>()
+          .map((raw) => UserRouteModel.fromJson(raw.cast<String, dynamic>()))
+          .where((r) => r.title.isNotEmpty)
+          .toList();
+    } finally {
       client.close(force: true);
     }
   }
