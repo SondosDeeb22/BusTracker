@@ -91,7 +91,6 @@ class _HomepageUserState extends State<HomepageUser> {
         // Right-side icons in AppBar (setting icon)
         actions: [
           IconButton(
-            // TODO: open settings screen.
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const AccountSettingsUser()),
@@ -136,7 +135,7 @@ class _HomepageUserState extends State<HomepageUser> {
                 const SizedBox(height: 26),
 
                 //-----------------------------
-                // The list of routes cards.
+                // The list of routes cards
                 if (_homepageRoutesController.loading)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),

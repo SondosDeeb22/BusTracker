@@ -3,7 +3,10 @@
 //========================================================
 import 'package:flutter/foundation.dart';
 
+// service
 import '../../service/route_api_service.dart';
+
+// model
 import '../../model/homepage/user_route_model.dart';
 
 //========================================================
@@ -52,18 +55,21 @@ class HomepageRoutesController {
 
   //==================================================================================
 
+  // load routes from API 
   Future<void> loadRoutes() async {
     _loading = true;
     _error = null;
     _notify();
 
     try {
-      final result = await _routeApiService.fetchAllUserRoutes();
+      final result = await _routeApiService.fetchAllUserRoutes(); 
       _routes = result;
       _loading = false;
       _notify();
-    } catch (e) {
-      _error = e.toString();
+
+    // ---------------------------------------------
+    } catch (error) {
+      _error = error.toString();
       _loading = false;
       _notify();
     }

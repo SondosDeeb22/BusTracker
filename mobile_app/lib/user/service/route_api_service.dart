@@ -152,6 +152,8 @@ class RouteApiService {
           .map((raw) => UserRouteModel.fromJson(raw.cast<String, dynamic>()))
           .where((r) => r.title.isNotEmpty)
           .toList();
+
+          
     } finally {
       client.close(force: true);
     }
