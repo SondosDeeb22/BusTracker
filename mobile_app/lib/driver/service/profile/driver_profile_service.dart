@@ -6,6 +6,7 @@ import 'dart:io';
 
 import '../auth/login/login_service.dart';
 import '../../model/profile/driver_profile_models.dart';
+import '../../../services/api_config.dart';
 
 //========================================================
 //? service
@@ -19,10 +20,7 @@ class DriverProfileService {
   //========================================================
 
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.baseUrl;
   }
 
   //========================================================

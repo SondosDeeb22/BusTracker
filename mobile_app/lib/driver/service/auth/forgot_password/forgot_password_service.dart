@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../../model/auth/forgot_password/forgot_password_result.dart';
+import '../../../../services/api_config.dart';
 
 //========================================================
 //? forgot password service
@@ -19,10 +20,7 @@ class ForgotPasswordService {
   //========================================================
 
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.baseUrl;
   }
 
   //========================================================

@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../model/homepage/user_route_model.dart';
-
+import '../../services/api_config.dart';
 //========================================================
 //? Data model representing a bus route from the API
 //========================================================
@@ -46,10 +46,7 @@ class RouteApiService {
 
   // Returns the default base URL based on the current platform:
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';// Android emulator uses 10.0.2.2 to reach host machine's localhost
-    }
-    return 'http://localhost:3001'; // Other platforms (iOS, web) use standard localhost
+    return ApiConfig.baseUrl;
   }
 
   //----------------------------------------------------------------------------------------

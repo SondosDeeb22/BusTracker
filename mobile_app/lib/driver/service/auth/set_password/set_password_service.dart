@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../../model/auth/set_password/set_password_result.dart';
+import '../../../../services/api_config.dart';
 
 //========================================================
 //? set password service
@@ -18,10 +19,7 @@ class SetPasswordService {
   //========================================================
 
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.baseUrl;
   }
 
   //========================================================

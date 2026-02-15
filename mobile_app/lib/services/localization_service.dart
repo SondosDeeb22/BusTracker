@@ -22,6 +22,7 @@ class LocalizationService extends ChangeNotifier {
     'homepage.json',
     'account_settings.json',
     'bus_schedule.json',
+    'map.json',
     'messages.json',
   ];
   static Map<String, dynamic>? _translations;

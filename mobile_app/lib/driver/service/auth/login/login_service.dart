@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../model/auth/login/login_result.dart';
+import '../../../../services/api_config.dart';
 
 //========================================================
 //? login service
@@ -22,10 +23,7 @@ class LoginService {
   //========================================================
 
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.baseUrl;
   }
 
   // ----------------------------------------------------------

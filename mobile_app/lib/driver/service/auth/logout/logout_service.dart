@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../service/auth/login/login_service.dart';
 import 'package:flutter/foundation.dart';
+import '../../../../services/api_config.dart';
 
 //========================================================
 //? logout service
@@ -20,10 +21,7 @@ class LogoutService {
   //========================================================
 
   static String _defaultBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3001';
-    }
-    return 'http://localhost:3001';
+    return ApiConfig.baseUrl;
   }
 
   // ----------------------------------------------------------
@@ -44,7 +42,7 @@ class LogoutService {
       request.headers.set(HttpHeaders.acceptHeader, 'application/json');
       request.headers.set(HttpHeaders.cookieHeader, authCookie ?? '');
 
-      final response = await request.close();
+      await request.close();
 
       // clear stored auth cookie regardless of response
       await _clearAuthCookie();
