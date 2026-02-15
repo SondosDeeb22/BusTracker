@@ -148,4 +148,29 @@ export class DriverController{
         }
     }
     
+
+    // =================================================================================================================================
+    //? Buttons Control unit (controls when buttons must be viewd on driver application homepage)
+    // =================================================================================================================================
+
+    async buttonsControlUnit(req:Request, res:Response){
+        try {
+            const user = (req as any)?.user;
+            
+            const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
+            const requesterRole = typeof user?.role === 'string' ? String(user.role).trim() : '';
+
+            
+            const driverId = requesterRole === 'driver' && driverIdFromQuery ? driverIdFromQuery : user?.id;
+
+            const result = await driverService.buttonsControlUnit(driverId);
+            sendResponse(res, 200, result.messageKey, result.data as any);
+            return;
+
+        // -----------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
 }

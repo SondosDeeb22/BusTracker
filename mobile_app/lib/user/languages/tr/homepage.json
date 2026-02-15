@@ -15,5 +15,8 @@
   "total_buses": "Toplam Otobüs",
   "buses": "Otobüs",
   "operating": "Çalışan",
-  "all": "Tümü"
+  "all": "Tümü",
+  "homepage": {
+    "view_location": "Konumu Gör"
+  }
 }

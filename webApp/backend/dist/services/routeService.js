@@ -152,7 +152,7 @@ class RouteService {
         }
     }
     //===================================================================================================
-    //? function to view All routes for operating buses or only Operating(working) routes 
+    //? function to view All routes for operating buses    or     only Operating(working) routes 
     //===================================================================================================
     async viewRoutes(displayAll) {
         try {
@@ -192,7 +192,7 @@ class RouteService {
                     where: {
                         status: busEnum_1.status.operating
                     },
-                    attributes: ['assignedRoute']
+                    attributes: ['id', 'assignedRoute']
                 });
                 for (let i = 0; i < routeId.length; i++) {
                     const assignedRouteId = routeId[i]?.assignedRoute;
@@ -207,6 +207,8 @@ class RouteService {
                     });
                     if (route) {
                         route.dataValues.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(route?.color);
+                        // add the busId to the route
+                        route.dataValues.busId = routeId[i]?.id;
                         routes.push(route);
                     }
                 }

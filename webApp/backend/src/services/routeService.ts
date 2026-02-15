@@ -182,7 +182,7 @@ export class RouteService{
 
     
     //===================================================================================================
-    //? function to view All routes for operating buses or only Operating(working) routes 
+    //? function to view All routes for operating buses    or     only Operating(working) routes 
     //===================================================================================================
     async viewRoutes(displayAll: boolean): Promise<{ messageKey: string; data: unknown }> {
         try{
@@ -227,7 +227,7 @@ export class RouteService{
                     where: {
                         status: busStatus.operating
                     },
-                    attributes: ['assignedRoute']
+                    attributes: ['id', 'assignedRoute']
                 })
 
                 for(let i = 0; i< routeId.length; i++){
@@ -243,6 +243,9 @@ export class RouteService{
                     });
                     if(route) {
                         (route as any).dataValues.colorInt = normalizeColorToArgbInt((route as any)?.color);
+                        
+                        // add the busId to the route
+                        (route as any).dataValues.busId = routeId[i]?.id;
                         routes.push(route);
                     }
                 }

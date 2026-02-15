@@ -1,0 +1,1 @@
+{"version":3,"file":"liveLocationService.d.ts","sourceRoot":"","sources":["../../src/services/liveLocationService.ts"],"names":[],"mappings":"AAWA,qBAAa,mBAAmB;IAMtB,kBAAkB,CAAC,OAAO,EAAE,OAAO,GAAG,OAAO,CAAC;QAAE,UAAU,EAAE,MAAM,CAAC;QAAC,IAAI,EAAE,OAAO,CAAA;KAAE,CAAC;CA4E7F"}

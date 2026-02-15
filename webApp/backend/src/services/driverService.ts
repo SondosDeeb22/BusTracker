@@ -172,7 +172,7 @@ export class DriverService{
     //? function to Fetch Specific Driver's Schedule (from today onwards)
     //===================================================================================================
 
-    async fetchDriverSchedule(driverId: unknown): Promise<{ messageKey: string; data: unknown }> {
+    async fetchDriverSchedule(driverId: string): Promise<{ messageKey: string; data: unknown }> {
         try {
             const id = String(driverId ?? '').trim();
             if (!id) {
@@ -271,4 +271,38 @@ export class DriverService{
             throw new InternalError('common.errors.internal');
         }
     }
+
+
+    //===================================================================================================
+    //? buttons control unit
+    //===================================================================================================
+    async buttonsControlUnit(driverId: string): Promise<{ messageKey: string; data: unknown }> {
+        try{
+            const id = String(driverId ?? '').trim();
+            
+            if (!id) {
+                throw new ValidationError('common.errors.validation.required');
+            }
+
+            const schedule = await this.fetchDriverSchedule(driverId);
+
+            const primaryTrip = Array.isArray(schedule.data) && schedule.data.length > 0 ? schedule.data[0] : null; 
+            
+            return {
+                messageKey: 'drivers.success.fetched',
+                data: primaryTrip,
+            };
+
+            
+
+
+        // ---------------------------------------------------------------------------------
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                throw error;
+            }
+            throw new InternalError('common.errors.internal');
+        }
+    }
+
 }

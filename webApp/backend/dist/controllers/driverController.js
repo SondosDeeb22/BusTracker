@@ -126,6 +126,25 @@ class DriverController {
             return;
         }
     }
+    // =================================================================================================================================
+    //? Buttons Control unit (controls when buttons must be viewd on driver application homepage)
+    // =================================================================================================================================
+    async buttonsControlUnit(req, res) {
+        try {
+            const user = req?.user;
+            const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
+            const requesterRole = typeof user?.role === 'string' ? String(user.role).trim() : '';
+            const driverId = requesterRole === 'driver' && driverIdFromQuery ? driverIdFromQuery : user?.id;
+            const result = await driverService.buttonsControlUnit(driverId);
+            (0, messageTemplate_1.sendResponse)(res, 200, result.messageKey, result.data);
+            return;
+            // -----------------
+        }
+        catch (error) {
+            (0, controllerErrorMapper_1.handleControllerError)(res, error);
+            return;
+        }
+    }
 }
 exports.DriverController = DriverController;
 //# sourceMappingURL=driverController.js.map

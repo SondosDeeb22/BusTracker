@@ -7,5 +7,6 @@ export declare class DriverController {
     fetchDriverProfile(req: Request, res: Response): Promise<void>;
     fetchAllDrivers(req: Request, res: Response): Promise<void>;
     fetchDriverSchedule(req: Request, res: Response): Promise<void>;
+    buttonsControlUnit(req: Request, res: Response): Promise<void>;
 }
 //# sourceMappingURL=driverController.d.ts.map

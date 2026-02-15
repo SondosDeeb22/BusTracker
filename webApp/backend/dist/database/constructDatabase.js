@@ -41,11 +41,19 @@ const scheduleModel_1 = __importDefault(require("../models/scheduleModel"));
 const buildModel = async () => {
     try {
         //build all the tables
+        await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
         await database_1.sequelize.sync({ force: true }); //this line looks at all the models I imported (e.x:  import './models/usersModel' etc) then it creates or alters the tables based on my model's definitions
+        await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
         console.log('Models constructured successfully');
     }
     catch (error) {
         console.log('Error occured: ', error);
+        try {
+            await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        }
+        catch {
+            // ignore
+        }
     }
 };
 //==============================================================================================
@@ -54,7 +62,8 @@ const buildModel = async () => {
 const seedData = async () => {
     try {
         // 1- Delete all data (if we had data before, so we have no conflicts)
-        await userModel_1.default.destroy({ where: {} });
+        await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 0'); // disabling "FOREIGN_KEY_CHECKS" around delete all data action
+        await loginAttempModel_1.default.destroy({ where: {} });
         await busScheduleModel_1.default.destroy({ where: {} });
         await routeStationModel_1.default.destroy({ where: {} });
         await busModel_1.default.destroy({ where: {} });
@@ -65,6 +74,11 @@ const seedData = async () => {
         await scheduleModel_1.default.destroy({ where: {} });
         await operatingHoursModel_1.default.destroy({ where: {} });
         await servicePatternModel_1.default.destroy({ where: {} });
+        await busModel_1.default.destroy({ where: {} });
+        await stationModel_1.default.destroy({ where: {} });
+        await routeModel_1.default.destroy({ where: {} });
+        await userModel_1.default.destroy({ where: {} });
+        await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1'); // Enable it after it
         // 2- Insert sample data
         await userModel_1.default.bulkCreate(sampleUser_1.default, {
             returning: true
@@ -104,6 +118,12 @@ const seedData = async () => {
     }
     catch (error) {
         console.log("error occured ", error);
+        try {
+            await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        }
+        catch {
+            // ignore
+        }
         return;
     }
 };

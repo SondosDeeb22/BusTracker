@@ -15,6 +15,7 @@ const servicePatternModel_1 = __importDefault(require("./servicePatternModel"));
 const operatingHoursModel_1 = __importDefault(require("./operatingHoursModel"));
 const scheduleModel_1 = __importDefault(require("./scheduleModel"));
 const scheduledTripsModel_1 = __importDefault(require("./scheduledTripsModel"));
+const liveLocationModel_1 = __importDefault(require("./liveLocationModel"));
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? Buses Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
@@ -48,56 +49,6 @@ stationModel_1.default.belongsToMany(routeModel_1.default, {
     foreignKey: 'stationId',
     otherKey: 'routeId',
 });
-//-------------------------------------------------------------------------------------------------------------------------------------
-//? BusSchedule Tables associatoin: define the foreign keys relation
-//-------------------------------------------------------------------------------------------------------------------------------------
-// // Route Model ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(RouteModel,{
-//     foreignKey: 'routeId',
-//     as: 'route',
-//     onDelete: 'CASCADE',
-// });
-// RouteModel.hasMany(BusScheduleModel,{
-//     foreignKey: 'routeId',
-// });
-// // User Model (creator) ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(UserModel, {
-//     foreignKey: 'createdBy',
-//     as: 'creator',
-//     onDelete: 'CASCADE',
-// });
-// UserModel.hasOne(BusScheduleModel,{
-//     foreignKey: 'createdBy',
-// });
-// // User Model (updater) ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(UserModel,{
-//     foreignKey: 'updatedBy',
-//     as: 'updater',
-//     onDelete: 'CASCADE',
-// });
-// UserModel.hasMany(BusScheduleModel,{
-//     foreignKey: 'updatedBy',
-// });
-// // User Model (driver) ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(UserModel, {
-//   foreignKey: 'driverId',
-//   as: 'driver',
-//   onDelete: 'RESTRICT',
-// });
-// UserModel.hasMany(BusScheduleModel, {
-//   foreignKey: 'driverId',
-// });
-// // Bus Model ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(BusModel, {
-//     foreignKey: 'busId',
-//     onDelete: 'RESTRICT',
-// });
-// BusModel.hasMany(BusScheduleModel, {
-//     foreignKey: 'busId',
-// });
-//-------------------------------------------------------------------------------------------------------------------------------------
-//?? Service Pattern Model 
-//-------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------
 //?? Operating Hours Model 
 //-------------------------------------------------------------------------------------------------------------------------------------
@@ -159,5 +110,18 @@ scheduledTripsModel_1.default.belongsTo(busModel_1.default, {
 });
 busModel_1.default.hasMany(scheduledTripsModel_1.default, {
     foreignKey: 'busId',
+});
+//-------------------------------------------------------------------------------------------------------------------------------------
+//?? Live location Model 
+//-------------------------------------------------------------------------------------------------------------------------------------
+liveLocationModel_1.default.belongsTo(busModel_1.default, {
+    foreignKey: 'busId',
+    as: 'bus',
+    onDelete: 'CASCADE',
+});
+busModel_1.default.hasOne(liveLocationModel_1.default, {
+    foreignKey: 'busId',
+    as: 'liveLocation',
+    onDelete: 'CASCADE',
 });
 //# sourceMappingURL=association.js.map

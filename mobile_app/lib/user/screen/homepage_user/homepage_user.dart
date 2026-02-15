@@ -265,6 +265,26 @@ class _HomepageUserState extends State<HomepageUser> {
 
                 //-----------------------------
                 const SizedBox(height: 18),
+                //TODO: this is for teseting reasons, must be deltedd latere 
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const DriverMapScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.my_location),
+                    label: Text('homepage.view_location'.tr),
+                  ),
+                ),
+                // todod ------------------------------------------------------------------
+
+
+                const SizedBox(height: 18),
 
                 //-----------------------------
                 // The list of route cards.

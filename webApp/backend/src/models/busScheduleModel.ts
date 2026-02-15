@@ -121,7 +121,7 @@ BusScheduleModel.init( {
   },
   {
     sequelize,// to attach the User model to the database connection i've defined in databaseConnection.ts
-    tableName: 'bus_Schedule',
+    tableName: 'bus_schedule',
     timestamps: false, // it creates  createdAt / updatedAt columns
     indexes: [ // defining the uniquness for the bus schedule keys
       {

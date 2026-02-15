@@ -17,7 +17,11 @@ export declare class DriverService {
         messageKey: string;
         data: unknown;
     }>;
-    fetchDriverSchedule(driverId: unknown): Promise<{
+    fetchDriverSchedule(driverId: string): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
+    buttonsControlUnit(driverId: string): Promise<{
         messageKey: string;
         data: unknown;
     }>;

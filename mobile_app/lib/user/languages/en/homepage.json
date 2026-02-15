@@ -15,5 +15,8 @@
   "total_buses": "Total Buses",
   "buses": "Buses",
   "operating": "Operating",
-  "all": "All"
+  "all": "All",
+  "homepage": {
+    "view_location": "View Location"
+  }
 }

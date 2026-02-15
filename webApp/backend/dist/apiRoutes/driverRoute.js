@@ -16,6 +16,8 @@ const driverController_1 = require("../controllers/driverController");
 const driverController = new driverController_1.DriverController();
 const userController_1 = require("../controllers/userController");
 const userController = new userController_1.UserController();
+const liveLocationController_1 = require("../controllers/liveLocationController");
+const liveLocationController = new liveLocationController_1.LiveLocationController();
 //import enums ----------------------------------------------------------------
 const tokenNameEnum_1 = require("../enums/tokenNameEnum");
 const userEnum_1 = require("../enums/userEnum");
@@ -31,8 +33,12 @@ router.patch('/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.
 router.patch('/change-route', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), userController.changeRoute);
 // Start/Stop real-time tracking 
 router.patch('/tracking', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), userController.changeBusStatus);
+// Update live location
+router.post('/live-location/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), liveLocationController.updateLiveLocation);
 // Fetch driver schedule 
 router.get('/schedule/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), driverController.fetchDriverSchedule);
+// Buttons Control Unit (Determine when buttons should be visible in driver homepage)
+router.get('/buttons-control', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.driver), driverController.buttonsControlUnit);
 //===========================================================================================================================
 exports.default = router;
 //# sourceMappingURL=driverRoute.js.map

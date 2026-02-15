@@ -17,6 +17,8 @@ const driverController = new DriverController();
 import { UserController } from "../controllers/userController";
 const userController = new UserController();
 
+import { LiveLocationController } from "../controllers/liveLocationController";
+const liveLocationController = new LiveLocationController();
 
 //import enums ----------------------------------------------------------------
 import { loginToken } from '../enums/tokenNameEnum';
@@ -43,8 +45,15 @@ router.patch('/change-route', accessRequireToken(loginToken), authorizeRole(role
 // Start/Stop real-time tracking 
 router.patch('/tracking', accessRequireToken(loginToken), userController.changeBusStatus);
 
+// Update live location
+router.post('/live-location/update', accessRequireToken(loginToken), authorizeRole(role.driver), liveLocationController.updateLiveLocation);
+
 // Fetch driver schedule 
 router.get('/schedule/fetch', accessRequireToken(loginToken), driverController.fetchDriverSchedule);
+
+
+// Buttons Control Unit (Determine when buttons should be visible in driver homepage)
+router.get('/buttons-control', accessRequireToken(loginToken), authorizeRole(role.driver), driverController.buttonsControlUnit);
 
 //===========================================================================================================================
 export default router;

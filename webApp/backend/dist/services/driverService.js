@@ -224,6 +224,30 @@ class DriverService {
             throw new errors_1.InternalError('common.errors.internal');
         }
     }
+    //===================================================================================================
+    //? buttons control unit
+    //===================================================================================================
+    async buttonsControlUnit(driverId) {
+        try {
+            const id = String(driverId ?? '').trim();
+            if (!id) {
+                throw new errors_1.ValidationError('common.errors.validation.required');
+            }
+            const schedule = await this.fetchDriverSchedule(driverId);
+            const primaryTrip = Array.isArray(schedule.data) && schedule.data.length > 0 ? schedule.data[0] : null;
+            return {
+                messageKey: 'drivers.success.fetched',
+                data: primaryTrip,
+            };
+            // ---------------------------------------------------------------------------------
+        }
+        catch (error) {
+            if (error instanceof errors_1.ValidationError) {
+                throw error;
+            }
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
 }
 exports.DriverService = DriverService;
 //# sourceMappingURL=driverService.js.map
