@@ -4,6 +4,9 @@
 
 //import models
 import stationModel from "../models/stationModel";
+import RouteStationModel from "../models/routeStationModel";
+
+import { Op } from 'sequelize';
 
 //import Enums
 import {status } from '../enums/stationEnum';
@@ -39,13 +42,11 @@ export class StationService{
                         out.stationName = String(data.stationName).toLowerCase().trim();
                     }
 
+                    out.status = status.notCovered;
+
                     return out;
                     
-                },
-                //----------------------------------------------------------------
-                enumFields: [
-                    { field: "status", enumObj: status },
-                ],            
+                },    
               }
             );
 
@@ -95,6 +96,36 @@ export class StationService{
 
     async fetchAllStations(): Promise<{ messageKey: string; data: unknown }> {
         try {
+            // get all covered stations
+            const coveredStationRows = await RouteStationModel.findAll({
+                attributes: ['stationId'],
+                group: ['stationId']
+            });
+
+            const coveredStationIds = coveredStationRows
+                .map((row: any) => String(row.stationId))
+                .filter((id) => id.trim().length > 0);
+
+            if (coveredStationIds.length > 0) {
+            
+                // update covered stations' status to "covered"
+                await stationModel.update(
+                    { status: status.covered },
+                    { where: { id: { [Op.in]: coveredStationIds } } }
+                );
+
+                // update stations' status to "notCovered"
+                await stationModel.update(
+                    { status: status.notCovered },
+                    { where: { id: { [Op.notIn]: coveredStationIds } } }
+                );
+            } else {
+                await stationModel.update(
+                    { status: status.notCovered },
+                    { where: {} }
+                );
+            }
+
             const stations = await stationModel.findAll({
                 attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
             });

@@ -6,14 +6,12 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
-import { stationStatus } from '../../enums/statusEnums';
 import { useTranslation } from 'react-i18next';
 
 interface StationData {
   stationName: string;
   latitude: number | null;
   longitude: number | null;
-  status: string;
 }
 
 interface AddStationProps {
@@ -31,7 +29,6 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
     stationName: '',
     latitude: null,
     longitude: null,
-    status: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -194,27 +191,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
             </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('addForm.status')}
-              <span className="text-red-600"> *</span>
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            >
-              <option value="">{t('addForm.selectStatus')}</option>
-              {(Object.values(stationStatus) as string[]).map((status) => (
-                <option key={status} value={status}>
-                  {status === 'covered' ? t('addForm.statusCovered') : t('addForm.statusNotCovered')}
-                </option>
-              ))}
-            </select>
-          </div>
-
+       
           <div className="flex justify-end space-x-3">
             <button
               type="button"

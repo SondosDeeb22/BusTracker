@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StationService = void 0;
 //import models
 const stationModel_1 = __importDefault(require("../models/stationModel"));
+const routeStationModel_1 = __importDefault(require("../models/routeStationModel"));
+const sequelize_1 = require("sequelize");
 //import Enums
 const stationEnum_1 = require("../enums/stationEnum");
 const errors_1 = require("../errors");
@@ -30,12 +32,9 @@ class StationService {
                     if (out.stationName) {
                         out.stationName = String(data.stationName).toLowerCase().trim();
                     }
+                    out.status = stationEnum_1.status.notCovered;
                     return out;
                 },
-                //----------------------------------------------------------------
-                enumFields: [
-                    { field: "status", enumObj: stationEnum_1.status },
-                ],
             });
             return { messageKey: "stations.success.added" };
         }
@@ -73,6 +72,23 @@ class StationService {
     //===================================================================================================
     async fetchAllStations() {
         try {
+            // get all covered stations
+            const coveredStationRows = await routeStationModel_1.default.findAll({
+                attributes: ['stationId'],
+                group: ['stationId']
+            });
+            const coveredStationIds = coveredStationRows
+                .map((row) => String(row.stationId))
+                .filter((id) => id.trim().length > 0);
+            if (coveredStationIds.length > 0) {
+                // update covered stations' status to "covered"
+                await stationModel_1.default.update({ status: stationEnum_1.status.covered }, { where: { id: { [sequelize_1.Op.in]: coveredStationIds } } });
+                // update stations' status to "notCovered"
+                await stationModel_1.default.update({ status: stationEnum_1.status.notCovered }, { where: { id: { [sequelize_1.Op.notIn]: coveredStationIds } } });
+            }
+            else {
+                await stationModel_1.default.update({ status: stationEnum_1.status.notCovered }, { where: {} });
+            }
             const stations = await stationModel_1.default.findAll({
                 attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
             });

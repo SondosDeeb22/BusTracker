@@ -176,12 +176,18 @@ class RouteService {
                     if (stationIds.length > 0) {
                         const stationRows = await stationModel_1.default.findAll({
                             where: { id: stationIds },
-                            attributes: ['id', 'stationName']
+                            attributes: ['id', 'stationName', 'latitude', 'longitude']
                         });
-                        const stationMap = new Map(stationRows.map((st) => [st.id, st.stationName]));
+                        const stationMap = new Map(stationRows.map((st) => [st.id, {
+                                stationName: st.stationName,
+                                latitude: st.latitude,
+                                longitude: st.longitude
+                            }]));
                         stations = routeStations.map((rs) => ({
                             id: rs.stationId,
-                            stationName: stationMap.get(rs.stationId) || ''
+                            stationName: stationMap.get(rs.stationId)?.stationName || '',
+                            latitude: Number(stationMap.get(rs.stationId)?.latitude ?? 0),
+                            longitude: Number(stationMap.get(rs.stationId)?.longitude ?? 0)
                         }));
                     }
                     route.dataValues.stations = stations;

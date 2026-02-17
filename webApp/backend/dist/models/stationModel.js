@@ -35,7 +35,8 @@ stationModel.init({
     },
     status: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(stationEnum_1.status)),
-        allowNull: false
+        allowNull: false,
+        defaultValue: stationEnum_1.status.notCovered
     },
     // assignedRoute: {
     //   type: DataTypes.JSON,

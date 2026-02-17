@@ -1,7 +1,7 @@
 //======================================================================================================================
 //?  Imports
 //======================================================================================================================
-import {Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize';
+import {Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional} from 'sequelize';
 import {sequelize} from '../config/database';
 
 
@@ -24,7 +24,7 @@ class stationModel extends Model< InferAttributes<stationModel>, InferCreationAt
     declare stationName: string;
     declare latitude: number;
     declare longitude: number;
-    declare status: keyof typeof status;
+    declare status: CreationOptional<keyof typeof status>;
     // declare assignedRoute: string[];
 }
 
@@ -51,7 +51,8 @@ stationModel.init( {
     },
     status: { 
       type: DataTypes.ENUM(...Object.values(status) as string[]),
-      allowNull: false
+      allowNull: false,
+      defaultValue: status.notCovered
     },
     // assignedRoute: {
     //   type: DataTypes.JSON,
