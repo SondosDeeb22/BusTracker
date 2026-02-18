@@ -2,12 +2,22 @@
 //? importing
 //========================================================
 import 'package:flutter/material.dart';
-import '../../screen/account_settings_user/account_settings_user.dart';
 import '../homepage_user/homepage_user.dart';
+
 import '../../controller/bus_schedule_controller.dart';
 import '../../../services/localization_service.dart';
+
 import '../../widget/schedule/day_selector_card.dart';
 import '../../widget/schedule/service_pattern_section.dart';
+
+import '../../widget/common/state_widgets.dart';
+import '../../widget/common/user_bottom_navigation.dart';
+import '../../widget/common/user_app_bar.dart';
+
+import '../../widget/schedule/day_picker_bottom_sheet.dart';
+
+import '../../../common/pull_to_refresh.dart';
+import '../../../common/utils/navigation_utils.dart';
 
 //========================================================
 
@@ -70,38 +80,15 @@ class _BusScheduleUserState extends State<BusScheduleUser> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // Building Top Bar =======================================================================================
-      appBar: AppBar(
-        backgroundColor: colorScheme.primary,
-        elevation: 0,
-        toolbarHeight: 100,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-
-        // Logo in the center of AppBar.
-        title: Image.asset(
-          'assets/BusLogoWhite.png',
-          width: 70,
-          height: 70,
-          fit: BoxFit.contain,
-        ),
-
-        // Right-side icons in AppBar (setting icon)
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const AccountSettingsUser()),
-              );
-            },
-            icon: Icon(Icons.settings, color: colorScheme.onPrimary),
-          ),
-        ],
-      ),
+      appBar: const UserAppBar(),
 
       //=======================================================================================
       // View schedule
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: PullToRefresh(
+          onRefresh: () async {
+            await _controller.loadSchedule();
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
             child: Column(
@@ -125,50 +112,16 @@ class _BusScheduleUserState extends State<BusScheduleUser> {
 
                 //-----------------------------
                 if (_controller.loading)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: 12),
-                          Text('loading'.tr),
-                        ],
-                      ),
-                    ),
-                  )
+                  const LoadingStateWidget()
                 //_____________________
                 else if (_controller.error != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            _controller.error!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: colorScheme.onSurface),
-                          ),
-                          const SizedBox(height: 12),
-                          OutlinedButton(
-                            onPressed: _controller.loadSchedule,
-                            child: Text('retry'.tr),
-                          ),
-                        ],
-                      ),
-                    ),
+                  ErrorStateWidget(
+                    error: _controller.error!,
+                    onRetry: _controller.loadSchedule,
                   )
                 //_____________________
                 else if (_controller.days.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Center(
-                      child: Text(
-                        'bus_schedule_no_data'.tr,
-                        style: TextStyle(color: colorScheme.onSurface),
-                      ),
-                    ),
-                  )
+                  EmptyStateWidget(message: 'bus_schedule_no_data'.tr)
                 //_____________________
                 // display schedule data
                 else ...[
@@ -211,22 +164,18 @@ class _BusScheduleUserState extends State<BusScheduleUser> {
       ),
 
       // bottom navigation bar ---------------------------------------------------
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: UserBottomNavigationBar(
         currentIndex: _bottomIndex,
         onTap: (i) {
           if (i == _bottomIndex) return;
 
           if (i == 0) {
-            Navigator.of(
-              context,
-            ).pushReplacement(_noAnimationRoute(const HomepageUser()));
+            Navigator.of(context).pushReplacement(noAnimationRoute(const HomepageUser()));
             return;
           }
 
           if (i == 1) {
-            Navigator.of(
-              context,
-            ).pushReplacement(_noAnimationRoute(const BusScheduleUser()));
+            Navigator.of(context).pushReplacement(noAnimationRoute(const BusScheduleUser()));
             return;
           }
 
@@ -234,26 +183,6 @@ class _BusScheduleUserState extends State<BusScheduleUser> {
             _bottomIndex = i;
           });
         },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: colorScheme.primary,
-        selectedItemColor: colorScheme.secondary,
-        unselectedItemColor: Colors.white,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-
-        items: const [
-          // icon for Live Buses Status -------------------------------------------
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_bus_outlined),
-            label: 'Live',
-          ),
-
-          // icon for Bus Schedule -------------------------------------------------
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_outlined),
-            label: 'Schedule',
-          ),
-        ],
       ),
     );
   }
@@ -266,83 +195,14 @@ class _BusScheduleUserState extends State<BusScheduleUser> {
     showModalBottomSheet<void>(
       context: context,
       builder: (ctx) {
-        final colorScheme = Theme.of(ctx).colorScheme;
-
-        return SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              // Limit the bottom sheet height so it can scroll when content is long
-              maxHeight: MediaQuery.of(ctx).size.height * 0.7,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // header -------------------------------------------------
-                  // Title + cancel action
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 14,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'select_day'.tr,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          child: Text('cancel'.tr),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // list ---------------------------------------------------
-                  // Shows all available schedule days
-                  for (int i = 0; i < _controller.days.length; i++)
-                    ListTile(
-                      title: Text(
-                        _controller.dayKeyToLabel(_controller.days[i].dayKey),
-                        style: TextStyle(color: colorScheme.onSurface),
-                      ),
-                      subtitle: Text(
-                        _controller.days[i].date,
-                        style: TextStyle(color: colorScheme.onSurface),
-                      ),
-                      trailing: i == _controller.selectedDayIndex
-                          ? Icon(Icons.check, color: colorScheme.primary)
-                          : null,
-                      onTap: () {
-                        // Update the selected day and close the bottom sheet
-                        _controller.selectDay(i);
-                        Navigator.of(ctx).pop();
-                      },
-                    ),
-
-                  const SizedBox(height: 10),
-                ],
-              ),
-            ),
-          ),
+        return DayPickerBottomSheet(
+          dayLabels: _controller.days.map((day) => _controller.dayKeyToLabel(day.dayKey)).toList(),
+          dayDates: _controller.days.map((day) => day.date).toList(),
+          selectedIndex: _controller.selectedDayIndex,
+          onDaySelected: _controller.selectDay,
         );
       },
     );
   }
 }
 
-// ===========================================================================
-// Helper: disable page transition animations for bottom nav
-PageRoute<void> _noAnimationRoute(Widget page) {
-  return PageRouteBuilder<void>(
-    pageBuilder: (context, animation, secondaryAnimation) => page,
-    transitionDuration: Duration.zero,
-    reverseTransitionDuration: Duration.zero,
-  );
-}

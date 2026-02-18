@@ -6,7 +6,10 @@ import '../account_settings_user/account_settings_user.dart';
 import '../bus_schedule_user/bus_schedule_user.dart';
 import 'package:mobile_app/user/controller/homepage/homepage_routes_controller.dart';
 import 'package:mobile_app/user/widget/homepage/expandable_route_card.dart';
+
 import '../../../services/localization_service.dart';
+
+import '../../../common/pull_to_refresh.dart';
 //========================================================
 
 // rendering user homepage screen, that contains :
@@ -108,7 +111,10 @@ class _HomepageUserState extends State<HomepageUser> {
       body: SafeArea(
         //-------------------------------------------------------------------------------------------------------
         // Makes the page scrollable so it fits all screen sizes.
-        child: SingleChildScrollView(
+        child: PullToRefresh(
+          onRefresh: () async {
+            await _homepageRoutesController.loadRoutes();
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
 
@@ -225,7 +231,7 @@ class _HomepageUserState extends State<HomepageUser> {
           // icon for Live Buses Status -------------------------------------------
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_bus_outlined),
-            label: 'Live',
+            label: 'Routes',
           ),
 
           // icon for Bus Schedule -------------------------------------------------

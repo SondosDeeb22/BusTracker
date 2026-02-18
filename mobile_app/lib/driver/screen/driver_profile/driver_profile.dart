@@ -21,6 +21,9 @@ import '../../widget/profile/edit_phone_dialog.dart';
 import '../../widget/auth/logout/logout_card.dart';
 import '../../widget/auth/logout/confirm_logout_dialog.dart';
 
+
+import '../../../common/pull_to_refresh.dart';
+
 //========================================================
 
 class DriverProfile extends StatefulWidget {
@@ -201,7 +204,10 @@ class _DriverProfileState extends State<DriverProfile> {
 
       // body ================================================================================
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: PullToRefresh(
+          onRefresh: () async {
+            await _controller.fetch();
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
 

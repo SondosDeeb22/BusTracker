@@ -10,6 +10,7 @@ import '../../widget/schedule/bus_schedule/schedule_day_header.dart';
 import '../../widget/schedule/bus_schedule/schedule_trip_card.dart';
 import '../driver_profile/driver_profile.dart';
 import '../homepage_driver/homepage_driver.dart';
+import '../../../common/pull_to_refresh.dart';
 
 //========================================================
 class BusSchedule extends StatefulWidget {
@@ -72,7 +73,10 @@ class _BusScheduleState extends State<BusSchedule> {
 
       // ---------------------------------------------------
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: PullToRefresh(
+          onRefresh: () async {
+            await _controller.fetch();
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
             child: Column(

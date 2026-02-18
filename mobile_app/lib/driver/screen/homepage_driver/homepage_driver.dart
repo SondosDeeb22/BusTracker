@@ -12,6 +12,7 @@ import '../../controller/homepage/driver_homepage_header_controller.dart';
 import '../../model/homepage/bus_option.dart';
 import '../../widget/homepage/tracking_card.dart';
 import '../../widget/homepage/welcome_card.dart';
+import '../../../common/pull_to_refresh.dart';
 
 //========================================================
 class HomepageDriver extends StatefulWidget {
@@ -115,7 +116,10 @@ class _HomepageDriverState extends State<HomepageDriver> {
 
       // ---------------------------------------------------
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: PullToRefresh(
+          onRefresh: () async {
+            await _headerController.fetch();
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
 
