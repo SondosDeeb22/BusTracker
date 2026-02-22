@@ -62,8 +62,7 @@ export type StationStatus = (typeof stationStatus)[keyof typeof stationStatus];
 export const stationDefaultType = {
   start: 'START',
   end: 'END',
-  notDefault: 'NOT_DEFAULT',
 } as const;
 
-export type StationDefaultType = (typeof stationDefaultType)[keyof typeof stationDefaultType];
+export type StationDefaultType = ((typeof stationDefaultType)[keyof typeof stationDefaultType]) | null;
 

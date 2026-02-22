@@ -10,6 +10,5 @@ export enum status{
 // default stations enum
 export enum defaultType{
    start = 'START',
-   end = 'END',
-   notDefault = 'NOT_DEFAULT'
+   end = 'END'
 }

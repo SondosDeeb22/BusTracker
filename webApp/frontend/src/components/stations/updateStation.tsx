@@ -6,7 +6,6 @@ import axios from 'axios';
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
-import { stationStatus } from '../../enums/statusEnums';
 import { useTranslation } from 'react-i18next';
 import { stationDefaultType } from '../../enums/statusEnums';
 import type { StationDefaultType } from '../../enums/statusEnums';
@@ -40,7 +39,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
     longitude: null,
 	status: '',
 	isDefault: false,
-	defaultType: stationDefaultType.notDefault,
+	defaultType: null,
   });
   const [initialData, setInitialData] = useState<StationData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -72,7 +71,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           longitude: Number(currentStation.longitude),
 			status: currentStation.status,
 			isDefault: Boolean(currentStation.isDefault),
-			defaultType: (currentStation.defaultType as StationDefaultType) || stationDefaultType.notDefault,
+			defaultType: (currentStation.defaultType as StationDefaultType) || null,
         };
 
         setFormData(nextData);
@@ -103,7 +102,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
 		setFormData(prev => ({
 			...prev,
 			[name]: checked,
-			defaultType: checked ? (prev.defaultType === stationDefaultType.notDefault ? stationDefaultType.end : prev.defaultType) : stationDefaultType.notDefault,
+			defaultType: checked ? (prev.defaultType == null ? stationDefaultType.end : prev.defaultType) : null,
 		}));
 	};
 
@@ -112,7 +111,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
 		setFormData(prev => ({
 			...prev,
 			defaultType: value as StationDefaultType,
-			isDefault: value !== stationDefaultType.notDefault,
+			isDefault: value != null,
 		}));
 	};
 
@@ -260,30 +259,11 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
               )}
             </div>
           </div>
-          {/* ================================================================================================= */}
+          
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('updateForm.status')}
-               
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            >
-              <option value="">{t('updateForm.selectStatus')}</option>
-              {(Object.values(stationStatus) as string[]).map((status) => (
-                <option key={status} value={status}>
-                  {status === 'covered' ? t('updateForm.statusCovered') : t('updateForm.statusNotCovered')}
-                </option>
-              ))}
-            </select>
-          </div>
 
-		  <div className="mb-4">
+		  {/* ====================================================================================== */}
+      <div className="mb-4">
 			<label className="inline-flex items-center gap-2 text-gray-700 text-sm font-bold">
 				<input
 					type="checkbox"
@@ -297,7 +277,9 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
 		  </div>
 
 		  {Boolean(formData.isDefault) && (
-			<div className="mb-4 pl-6">
+			<div className="mb-4 pl-6 border-l-4 rounded p-1"
+           style={{ backgroundColor: `${COLORS.navbar}80`, borderLeftColor: COLORS.navbar}}>
+              
 				<div className="text-gray-700 text-sm font-bold mb-2">Default type</div>
 				<div className="flex gap-6">
 					<label className="inline-flex items-center gap-2 text-gray-700 text-sm">

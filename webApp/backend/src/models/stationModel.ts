@@ -25,9 +25,8 @@ class stationModel extends Model< InferAttributes<stationModel>, InferCreationAt
     declare latitude: number;
     declare longitude: number;
     declare status: CreationOptional<keyof typeof status>;
-	declare isDefault: CreationOptional<boolean>;
-	declare defaultType: CreationOptional<keyof typeof defaultType>;
-    // declare assignedRoute: string[];
+    declare isDefault: CreationOptional<boolean>;
+    declare defaultType: CreationOptional<keyof typeof defaultType> | null;
 }
 
 //======================================================================================================================
@@ -63,8 +62,8 @@ stationModel.init( {
 	},
 	defaultType: {
 	  type: DataTypes.ENUM(...Object.values(defaultType) as string[]),
-	  allowNull: false,
-	  defaultValue: defaultType.notDefault
+	  allowNull: true,
+	  defaultValue: null
 	},
     // assignedRoute: {
     //   type: DataTypes.JSON,

@@ -1,4 +1,5 @@
 export declare class StationService {
+    private syncDefaultStationsToAllRoutes;
     private fetchDefaultStationIdsByType;
     addStation(payload: Record<string, any>): Promise<{
         messageKey: string;

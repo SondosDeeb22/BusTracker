@@ -14,6 +14,5 @@ var defaultType;
 (function (defaultType) {
     defaultType["start"] = "START";
     defaultType["end"] = "END";
-    defaultType["notDefault"] = "NOT_DEFAULT";
 })(defaultType || (exports.defaultType = defaultType = {}));
 //# sourceMappingURL=stationEnum.js.map

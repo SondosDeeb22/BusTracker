@@ -8,7 +8,7 @@ declare class stationModel extends Model<InferAttributes<stationModel>, InferCre
     longitude: number;
     status: CreationOptional<keyof typeof status>;
     isDefault: CreationOptional<boolean>;
-    defaultType: CreationOptional<keyof typeof defaultType>;
+    defaultType: CreationOptional<keyof typeof defaultType> | null;
 }
 export default stationModel;
 //# sourceMappingURL=stationModel.d.ts.map

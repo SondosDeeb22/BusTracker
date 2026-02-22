@@ -34,7 +34,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
     latitude: null,
     longitude: null,
 	isDefault: false,
-	defaultType: stationDefaultType.notDefault,
+	defaultType: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -64,7 +64,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
 		setFormData(prev => ({
 			...prev,
 			[name]: checked, // when checked, defaultType is set to end, otherwise notDefault
-			defaultType: checked ? stationDefaultType.end : stationDefaultType.notDefault,
+			defaultType: checked ? stationDefaultType.end : null,
 		}));
 	};
 
@@ -73,7 +73,7 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
 		setFormData(prev => ({
 			...prev,
 			defaultType: value as StationDefaultType,
-			isDefault: value !== stationDefaultType.notDefault,
+			isDefault: value != null,
 		}));
 	};
 

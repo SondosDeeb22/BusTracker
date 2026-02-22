@@ -14,7 +14,7 @@ export interface stationAttributes{
     longitude: number;
     status: keyof typeof status;
 	isDefault?: boolean;
-	defaultType?: keyof typeof defaultType;
+	defaultType?: keyof typeof defaultType | null;
 }
 
 // interface for fetched defaultstation  

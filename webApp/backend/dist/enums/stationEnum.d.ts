@@ -4,7 +4,6 @@ export declare enum status {
 }
 export declare enum defaultType {
     start = "START",
-    end = "END",
-    notDefault = "NOT_DEFAULT"
+    end = "END"
 }
 //# sourceMappingURL=stationEnum.d.ts.map

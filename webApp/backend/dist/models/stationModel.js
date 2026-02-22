@@ -45,8 +45,8 @@ stationModel.init({
     },
     defaultType: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(stationEnum_1.defaultType)),
-        allowNull: false,
-        defaultValue: stationEnum_1.defaultType.notDefault
+        allowNull: true,
+        defaultValue: null
     },
     // assignedRoute: {
     //   type: DataTypes.JSON,
