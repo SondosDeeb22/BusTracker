@@ -29,6 +29,22 @@ export class RouteController{
     }
 
     // =================================================================================================================================
+    //? View Routes Map Data 
+    // =================================================================================================================================
+    async viewRoutesMap(req:Request, res:Response){
+        try {
+            const result = await routeService.fetchRoutesMap();
+            sendResponse(res, 200, result.messageKey, result.data as any);
+            return;
+
+        // ---------------------------------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
+
+    // =================================================================================================================================
     // Remove
     async removeRoute(req:Request, res:Response){
         try {

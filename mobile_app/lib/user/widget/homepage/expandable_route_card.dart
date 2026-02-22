@@ -8,6 +8,7 @@ import '../../../services/localization_service.dart';
 import '../../../theme/app_colors.dart';
 
 import '../../model/homepage/user_route_model.dart';
+import '../../screen/route_map_user/route_map_user.dart';
 
 //========================================================
 
@@ -114,27 +115,41 @@ class _ExpandableRouteCardState extends State<ExpandableRouteCard> {
           child: Padding(
             padding: const EdgeInsets.only(top: 14),
             child: Column(
+
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.burgundy,
-                      foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                if (widget.route.stations.isNotEmpty) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton(
+                      // Button to Navigate to Route map screen
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => RouteMapUserScreen(
+                              routeId: widget.route.id,
+                              routeTitle: widget.route.title,
+                              routeColorInt: widget.route.colorInt,
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.burgundy,
+                        foregroundColor: AppColors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'homepage_view_route_on_map'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
-                    child: Text(
-                      'homepage_view_route_on_map'.tr,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                for (final station in widget.route.stations)
+                  const SizedBox(height: 14),
+                ],
+                for (var stationIndex = 0; stationIndex < widget.route.stations.length; stationIndex++)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: Container(
@@ -151,7 +166,7 @@ class _ExpandableRouteCardState extends State<ExpandableRouteCard> {
                         ),
                       ),
                       child: Text(
-                        station.stationName,
+                        '${stationIndex + 1}. ${widget.route.stations[stationIndex].stationName}',
                         style: TextStyle(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w500,

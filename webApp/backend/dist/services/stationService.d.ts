@@ -1,4 +1,5 @@
 export declare class StationService {
+    private fetchDefaultStationIdsByType;
     addStation(payload: Record<string, any>): Promise<{
         messageKey: string;
     }>;
@@ -10,6 +11,22 @@ export declare class StationService {
         messageKey: string;
     }>;
     fetchAllStations(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
+    fetchDefaultStations(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
+    fetchStationsForPicker(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
+    fetchDefaultStartStations(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
+    fetchDefaultEndStations(): Promise<{
         messageKey: string;
         data: unknown;
     }>;

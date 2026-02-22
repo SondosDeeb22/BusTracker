@@ -1059,6 +1059,38 @@
     ```
   - Error: 500 Internal Server Error
 
+#### Endpoint: `GET /api/user/routes/map`
+========================================================================================================================
+- **HTTP**: `GET`
+- **Usage**: View all routes map points (ordered station coordinates for drawing a polyline)
+- **Input**:
+  - Query parameters: None
+- **Output**:
+  - Success (200):
+    ```json
+    {
+      "message": "common.crud.fetched",
+      "data": [
+        {
+          "id": "R001",
+          "title": "route 1",
+          "color": "#00ff00",
+          "colorInt": 4278255360,
+          "points": [
+            {
+              "stationId": "S001",
+              "stationName": "NEU Campus Main Station (8th Dormitory)",
+              "latitude": 35.2297,
+              "longitude": 33.3247,
+              "orderIndex": 0
+            }
+          ]
+        }
+      ]
+    }
+    ```
+  - Error: 500 Internal Server Error
+
 #### Endpoint: `GET /api/user/routes/operating`
 ========================================================================================================================
 - **HTTP**: `GET`

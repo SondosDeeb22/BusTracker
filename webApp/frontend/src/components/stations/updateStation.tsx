@@ -8,6 +8,8 @@ import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
 import { stationStatus } from '../../enums/statusEnums';
 import { useTranslation } from 'react-i18next';
+import { stationDefaultType } from '../../enums/statusEnums';
+import type { StationDefaultType } from '../../enums/statusEnums';
 
 interface StationData {
   id: string;
@@ -15,6 +17,8 @@ interface StationData {
   latitude: number | null;
   longitude: number | null;
   status: string;
+	isDefault?: boolean;
+	defaultType: StationDefaultType;
 }
 
 interface UpdateStationProps {
@@ -34,7 +38,9 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
     stationName: '',
     latitude: null,
     longitude: null,
-    status: ''
+	status: '',
+	isDefault: false,
+	defaultType: stationDefaultType.notDefault,
   });
   const [initialData, setInitialData] = useState<StationData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -64,7 +70,9 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
           stationName: currentStation.stationName,
           latitude: Number(currentStation.latitude),
           longitude: Number(currentStation.longitude),
-          status: currentStation.status
+			status: currentStation.status,
+			isDefault: Boolean(currentStation.isDefault),
+			defaultType: (currentStation.defaultType as StationDefaultType) || stationDefaultType.notDefault,
         };
 
         setFormData(nextData);
@@ -89,6 +97,24 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
       [name]: value
     }));
   };
+
+	const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, checked } = e.target;
+		setFormData(prev => ({
+			...prev,
+			[name]: checked,
+			defaultType: checked ? (prev.defaultType === stationDefaultType.notDefault ? stationDefaultType.end : prev.defaultType) : stationDefaultType.notDefault,
+		}));
+	};
+
+	const handleDefaultTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.target;
+		setFormData(prev => ({
+			...prev,
+			defaultType: value as StationDefaultType,
+			isDefault: value !== stationDefaultType.notDefault,
+		}));
+	};
 
   // Map interactions: update coordinates when admin clicks on map
   const handleMapClick = (lat: number, lng: number) => {
@@ -125,6 +151,8 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
       if (initialData) {
         if (formData.stationName !== initialData.stationName) updates.stationName = formData.stationName;
         if (formData.status !== initialData.status) updates.status = formData.status;
+		if (formData.defaultType !== initialData.defaultType) updates.defaultType = formData.defaultType;
+		if (Boolean(formData.isDefault) !== Boolean(initialData.isDefault)) updates.isDefault = Boolean(formData.isDefault);
 
         const latChanged = formData.latitude !== initialData.latitude;
         const lngChanged = formData.longitude !== initialData.longitude;
@@ -254,6 +282,50 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
               ))}
             </select>
           </div>
+
+		  <div className="mb-4">
+			<label className="inline-flex items-center gap-2 text-gray-700 text-sm font-bold">
+				<input
+					type="checkbox"
+					name="isDefault"
+					checked={Boolean(formData.isDefault)}
+					onChange={handleCheckboxChange}
+					className="h-4 w-4"
+				/>
+				Default station
+			</label>
+		  </div>
+
+		  {Boolean(formData.isDefault) && (
+			<div className="mb-4 pl-6">
+				<div className="text-gray-700 text-sm font-bold mb-2">Default type</div>
+				<div className="flex gap-6">
+					<label className="inline-flex items-center gap-2 text-gray-700 text-sm">
+						<input
+							type="radio"
+							name="defaultType"
+							value={stationDefaultType.start}
+							checked={formData.defaultType === stationDefaultType.start}
+							onChange={handleDefaultTypeChange}
+							className="h-4 w-4"
+						/>
+						START
+					</label>
+
+					<label className="inline-flex items-center gap-2 text-gray-700 text-sm">
+						<input
+							type="radio"
+							name="defaultType"
+							value={stationDefaultType.end}
+							checked={formData.defaultType === stationDefaultType.end}
+							onChange={handleDefaultTypeChange}
+							className="h-4 w-4"
+						/>
+						END
+					</label>
+				</div>
+			</div>
+		  )}
 
           <div className="flex justify-end space-x-3">
             <button

@@ -24,6 +24,8 @@ interface TableProps {
   filterButtons?: React.ReactNode;
   columnConfig?: ColumnConfig[];
   customActions?: (item: TableData) => React.ReactNode;
+  rowClassName?: (item: TableData) => string;
+  rowStyle?: (item: TableData) => React.CSSProperties;
   showActions?: boolean;
   actionsLabel?: string;
   showAddButton?: boolean;
@@ -43,6 +45,8 @@ const Table: React.FC<TableProps> = ({
   filterButtons,
   columnConfig,
   customActions,
+  rowClassName,
+  rowStyle,
   showActions = true,
   actionsLabel,
   showAddButton = true,
@@ -207,7 +211,11 @@ const Table: React.FC<TableProps> = ({
                 </tr>
               ) : (
                 data.map((row, index) => (
-                  <tr key={row.id || index} className="hover:bg-gray-50">
+                  <tr
+                    key={row.id || index}
+                    className={`${rowClassName ? rowClassName(row) : ''} hover:bg-gray-50`}
+                    style={rowStyle ? rowStyle(row) : undefined}
+                  >
                     {columns.map((column) => (
                       <td
                         key={column}

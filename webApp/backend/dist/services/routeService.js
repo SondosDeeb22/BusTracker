@@ -19,6 +19,10 @@ const errors_1 = require("../errors");
 const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
 const colorHelper_1 = require("../helpers/colorHelper");
+const routeHelper_1 = require("../helpers/routeHelper");
+//import service
+const stationService_1 = require("./stationService");
+const stationService = new stationService_1.StationService();
 //===================================================================================================
 class RouteService {
     //===================================================================================================
@@ -27,9 +31,14 @@ class RouteService {
     async addRoute(payload) {
         const body = payload || {};
         const stations = Array.isArray(body.stations) ? body.stations : [];
+        const startDefaultsResult = await stationService.fetchDefaultStartStations();
+        const endDefaultsResult = await stationService.fetchDefaultEndStations();
+        const startDefaultIds = startDefaultsResult.data;
+        const endDefaultIds = endDefaultsResult.data;
+        const finalStations = (0, routeHelper_1.buildFinalStations)(stations, startDefaultIds, endDefaultIds);
         const finalPayload = {
             ...body,
-            totalStops: stations.length
+            totalStops: finalStations.length
         };
         try {
             await helper.add(routeModel_1.default, finalPayload, {
@@ -52,13 +61,13 @@ class RouteService {
                 //-----------------------------------------------------------
             });
             // attach stations to route_stations table if provided
-            if (stations.length > 0 && finalPayload.title) {
+            if (finalStations.length > 0 && finalPayload.title) {
                 const createdRoute = await routeModel_1.default.findOne({
                     where: { title: String(finalPayload.title).toLowerCase().trim() },
                     attributes: ['id']
                 });
                 if (createdRoute) {
-                    const rows = stations.map((stationId, idx) => ({
+                    const rows = finalStations.map((stationId, idx) => ({
                         routeId: createdRoute.id,
                         stationId,
                         orderIndex: idx
@@ -100,6 +109,11 @@ class RouteService {
             const body = payload || {};
             const { id, title, color, status: routeStatusValue } = body;
             const stations = Array.isArray(body.stations) ? body.stations : [];
+            const startDefaultsResult = await stationService.fetchDefaultStartStations();
+            const endDefaultsResult = await stationService.fetchDefaultEndStations();
+            const startDefaultIds = startDefaultsResult.data;
+            const endDefaultIds = endDefaultsResult.data;
+            const finalStations = (0, routeHelper_1.buildFinalStations)(stations, startDefaultIds, endDefaultIds);
             if (!id) {
                 throw new errors_1.ValidationError('routes.validation.idRequired');
             }
@@ -124,7 +138,7 @@ class RouteService {
                 updates.color = color;
             if (routeStatusValue !== undefined)
                 updates.status = routeStatusValue;
-            updates.totalStops = stations.length;
+            updates.totalStops = finalStations.length;
             const [updatedCount] = await routeModel_1.default.update(updates, {
                 where: { id }
             });
@@ -135,8 +149,8 @@ class RouteService {
             await routeStationModel_1.default.destroy({
                 where: { routeId: id }
             });
-            if (stations.length > 0) {
-                const rows = stations.map((stationId, idx) => ({
+            if (finalStations.length > 0) {
+                const rows = finalStations.map((stationId, idx) => ({
                     routeId: id,
                     stationId,
                     orderIndex: idx
@@ -222,6 +236,104 @@ class RouteService {
         }
         catch (error) {
             console.error('Error occured while viewing routes.', error);
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? function to Fetch All Routes for Map View (station coordinates)
+    //===================================================================================================
+    async fetchRoutesMap() {
+        try {
+            const routes = await routeModel_1.default.findAll({
+                attributes: ['id', 'title', 'color', 'totalStops', 'status']
+            });
+            for (const route of routes) {
+                route.dataValues.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(route?.color);
+            }
+            // attach ordered points per route -------------------------------------------------
+            for (const route of routes) {
+                const routeStations = await routeStationModel_1.default.findAll({
+                    where: { routeId: route.id },
+                    attributes: ['stationId', 'orderIndex'],
+                    order: [['orderIndex', 'ASC']]
+                });
+                // get route stations with their order index ------------------------------------------
+                const routeStationsTyped = routeStations.map((rs) => ({
+                    stationId: String(rs.stationId),
+                    orderIndex: Number(rs.orderIndex ?? 0),
+                }));
+                // get route stations ids ordered by orderIndex ------------------------------------------
+                const stationIdsFromDb = routeStationsTyped
+                    .map((routeStation) => routeStation.stationId)
+                    .map((id) => String(id));
+                // if default start/end stations are missing, enforce them-------------------------------
+                const startDefaultsResult = await stationService.fetchDefaultStartStations();
+                const endDefaultsResult = await stationService.fetchDefaultEndStations();
+                const startDefaultIds = startDefaultsResult.data;
+                const endDefaultIds = endDefaultsResult.data;
+                const requiredDefaultIds = Array.from(new Set([
+                    ...(Array.isArray(startDefaultIds) ? startDefaultIds : []),
+                    ...(Array.isArray(endDefaultIds) ? endDefaultIds : []),
+                ]));
+                const hasAllRequiredDefaults = requiredDefaultIds.every((id) => stationIdsFromDb.includes(id));
+                const stationIdsOrdered = hasAllRequiredDefaults
+                    ? stationIdsFromDb
+                    : (0, routeHelper_1.buildFinalStations)(stationIdsFromDb, startDefaultIds, endDefaultIds);
+                // -------------------------------------------------------------------
+                // use unique ids only for DB fetch, but keep ordered list for points
+                const stationIdsFetch = Array.from(new Set(stationIdsOrdered));
+                if (stationIdsFetch.length === 0) {
+                    route.dataValues.points = [];
+                    continue;
+                }
+                // get stations data from db ---------------------
+                const stationRows = await stationModel_1.default.findAll({
+                    where: { id: stationIdsFetch },
+                    attributes: ['id', 'stationName', 'latitude', 'longitude']
+                });
+                const stationRowsTyped = stationRows.map((st) => ({
+                    id: String(st.id),
+                    stationName: String(st.stationName ?? ''),
+                    latitude: Number(st.latitude ?? 0),
+                    longitude: Number(st.longitude ?? 0),
+                }));
+                const stationMap = new Map(stationRowsTyped.map((st) => [st.id, st]));
+                //--------------------------------------------------
+                const orderIndexMap = new Map(routeStationsTyped.map((rs) => [rs.stationId, rs.orderIndex]));
+                // create points array from ordered stations "stationIdsOrdered" -------------------------
+                const points = [];
+                const pointCoords = [];
+                // loop through ordered stations and ensure they are found wiht valid coordinates
+                for (const stationId of stationIdsOrdered) {
+                    const station = stationMap.get(stationId);
+                    // skip if station not found 
+                    if (!station) {
+                        continue;
+                    }
+                    // skip if station has invalid coordinates
+                    if (station.latitude === 0 || station.longitude === 0) {
+                        continue;
+                    }
+                    // else push to points
+                    points.push({
+                        stationId,
+                        stationName: station.stationName,
+                        latitude: station.latitude,
+                        longitude: station.longitude,
+                        orderIndex: Number(orderIndexMap.get(stationId) ?? 0)
+                    });
+                    pointCoords.push({ latitude: station.latitude, longitude: station.longitude });
+                }
+                // get road-following polyline geometry ---------------------------------------------
+                const routedGeometry = await (0, routeHelper_1.fetchOsrmGeometry)(pointCoords);
+                route.dataValues.geometry = routedGeometry ?? pointCoords;
+                route.dataValues.points = points;
+            }
+            return { messageKey: 'common.crud.fetched', data: routes };
+            // ---------------------------------------
+        }
+        catch (error) {
+            console.error('Error occured while fetching routes map data.', error);
             throw new errors_1.InternalError('common.errors.internal');
         }
     }

@@ -78,6 +78,8 @@ router.patch('/driver/update',  accessRequireToken(loginToken), authorizeRole(ro
 
 router.get('/stations/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.fetchAllStations);
 
+router.get('/stations/picker', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.fetchStationsForPicker);
+
 router.post('/station/add', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.addStation);
 
 router.delete('/station/remove', accessRequireToken(loginToken), authorizeRole(role.admin), stationController.removeStation);

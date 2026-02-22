@@ -11,6 +11,8 @@ import RemoveStation from '../components/stations/removeStation';
 import StatusBadge from '../components/StatusBadge';
 import { useTranslation } from 'react-i18next';
 
+
+import { COLORS } from '../styles/colorPalette';
 //======================================================================================
 //? Stations page
 //======================================================================================
@@ -254,6 +256,14 @@ const StationsPage = () => {
         title={t('title')}
         subtitle={t('subtitle')}
         endpoint="http://localhost:3001/api/admin/stations/fetch"
+        // rowClassName={(row: any) => (row?.isDefault ? 'bg-amber-50 border-l-4 border-amber-300' : '')}
+		rowClassName={(row: any) => (row?.isDefault ? 'border-l-4' : '')}
+		rowStyle={(row: any) =>
+			row?.isDefault
+				? { backgroundColor: `${COLORS.navbar}4D`, borderLeftColor: COLORS.navbar } // 4D is 30% opacity
+				: {}
+		}
+        
         onAddNew={handleAddNew}
         onEdit={handleEditStation}
         onDelete={handleRemoveStation}

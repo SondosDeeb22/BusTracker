@@ -12,5 +12,9 @@ export declare class RouteService {
         messageKey: string;
         data: unknown;
     }>;
+    fetchRoutesMap(): Promise<{
+        messageKey: string;
+        data: unknown;
+    }>;
 }
 //# sourceMappingURL=routeService.d.ts.map

@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../model/homepage/user_route_model.dart';
+
+import '../model/map/route_map_model.dart';
+
 import '../../services/api_config.dart';
 //========================================================
 //? Data model representing a bus route from the API
@@ -61,6 +64,11 @@ class RouteApiService {
   // return list of user routes including stations
   Future<List<UserRouteModel>> fetchAllUserRoutes() {
     return _fetchUserRoutes('$baseUrl/api/user/routes/all');
+  }
+
+  // return list of route points for map display
+  Future<List<RouteMapModel>> fetchRoutesMap() {
+    return _fetchRoutesMap('$baseUrl/api/user/routes/map');
   }
 
   // return a filtered list of active routes
@@ -151,6 +159,41 @@ class RouteApiService {
           .toList();
 
           
+    } finally {
+      client.close(force: true);
+    }
+  }
+
+  //----------------------------------------------------------------------------------------
+  //? User routes map endpoint that returns points under each route
+  //----------------------------------------------------------------------------------------
+  Future<List<RouteMapModel>> _fetchRoutesMap(String url) async {
+    final client = HttpClient();
+
+    try {
+      final request = await client.getUrl(Uri.parse(url));
+      request.headers.set(HttpHeaders.acceptHeader, 'application/json');
+
+      final response = await request.close();
+      final body = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('Request failed (${response.statusCode}): $body');
+      }
+
+      final decoded = jsonDecode(body);
+      final data = (decoded is Map<String, dynamic>) ? decoded['data'] : null;
+
+      if (data is! List) {
+        return const [];
+      }
+
+      return data
+          .whereType<Map>()
+          .map((raw) => RouteMapModel.fromJson(raw.cast<String, dynamic>()))
+          .where((r) => r.title.isNotEmpty)
+          .toList();
+
     } finally {
       client.close(force: true);
     }

@@ -33,6 +33,9 @@ import { accessRequireToken } from '../middlewares/tokenRequired'; // for authen
 // view all routes buses are covering
 router.get('/routes/all' , routeController.viewAllRoutes);
 
+// view routes points for map display
+router.get('/routes/map' , routeController.viewRoutesMap);
+
 // view routes of operating buses
 router.get('/routes/operating', routeController.viewOperatingRoutes);
 

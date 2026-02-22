@@ -19,6 +19,15 @@ const userHelper_1 = require("../helpers/userHelper");
 const helper = new userHelper_1.UserHelper();
 //===================================================================================================
 class StationService {
+    async fetchDefaultStationIdsByType(type) {
+        const rows = await stationModel_1.default.findAll({
+            attributes: ['id'],
+            where: { defaultType: type }
+        });
+        return Array.from(rows)
+            .map((station) => String(station?.id))
+            .filter((id) => id.trim().length > 0);
+    }
     //===================================================================================================
     //? function to Add Station
     //===================================================================================================
@@ -32,7 +41,13 @@ class StationService {
                     if (out.stationName) {
                         out.stationName = String(data.stationName).toLowerCase().trim();
                     }
-                    out.status = stationEnum_1.status.notCovered;
+                    if (out.defaultType === undefined) {
+                        out.defaultType = stationEnum_1.defaultType.notDefault;
+                    }
+                    out.isDefault = out.defaultType !== stationEnum_1.defaultType.notDefault;
+                    if (out.isDefault === true) {
+                        out.status = stationEnum_1.status.covered;
+                    }
                     return out;
                 },
             });
@@ -59,9 +74,19 @@ class StationService {
     //? function to Update station
     //===================================================================================================
     async updateStation(payload) {
-        const result = await helper.update(stationModel_1.default, payload, {
+        const nextPayload = { ...(payload || {}) };
+        if (nextPayload.defaultType === undefined) {
+            nextPayload.defaultType = stationEnum_1.defaultType.notDefault;
+        }
+        nextPayload.isDefault = nextPayload.defaultType !== stationEnum_1.defaultType.notDefault;
+        if (nextPayload.isDefault === true) {
+            nextPayload.status = stationEnum_1.status.covered;
+        }
+        const result = await helper.update(stationModel_1.default, nextPayload, {
             enumFields: [{ field: "status", enumObj: stationEnum_1.status }]
         });
+        // ensure default stations are always covered
+        await stationModel_1.default.update({ status: stationEnum_1.status.covered }, { where: { defaultType: { [sequelize_1.Op.not]: stationEnum_1.defaultType.notDefault } } });
         return {
             updated: result.updated,
             messageKey: result.updated ? 'common.crud.updated' : 'common.crud.noChanges'
@@ -89,13 +114,90 @@ class StationService {
             else {
                 await stationModel_1.default.update({ status: stationEnum_1.status.notCovered }, { where: {} });
             }
+            // default stations are always covered
+            await stationModel_1.default.update({ status: stationEnum_1.status.covered }, { where: { defaultType: { [sequelize_1.Op.not]: stationEnum_1.defaultType.notDefault } } });
             const stations = await stationModel_1.default.findAll({
-                attributes: ['id', 'stationName', 'status', 'latitude', 'longitude']
+                attributes: ['id', 'stationName', 'status', 'latitude', 'longitude', 'isDefault', 'defaultType']
             });
             return { messageKey: 'stations.success.fetched', data: stations };
+            // -----------------------------------------------------------------------------------
         }
         catch (error) {
             console.error('Error occured while fetching stations.', error);
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    // =====================================================================================================
+    //? Function to fetch default stations (fixed stations - stations that must exists in all routes)
+    // ===================================================================================================== 
+    async fetchDefaultStations() {
+        try {
+            const stations = await stationModel_1.default.findAll({
+                attributes: ['id'],
+                where: { defaultType: { [sequelize_1.Op.not]: stationEnum_1.defaultType.notDefault } }
+            });
+            const defaultStations = Array.from(stations);
+            // return string array of default stations' ids
+            const fixedStationIds = defaultStations
+                .map((station) => String(station?.id))
+                .filter((id) => id.trim().length > 0);
+            return { messageKey: 'stations.success.fetched', data: fixedStationIds };
+            // -----------------------------------------------------------------------------------
+        }
+        catch (error) {
+            console.error('Error occured while fetching Default Stations', error);
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    //===================================================================================================
+    //? function to Fetch Stations for Route Picker (exclude fixed/default stations)
+    //===================================================================================================
+    async fetchStationsForPicker() {
+        try {
+            const defaultStationsResult = await this.fetchDefaultStations();
+            const defaultStations = defaultStationsResult.data;
+            // -----------------------------------------------------------------
+            const stations = await stationModel_1.default.findAll({
+                attributes: ['id', 'stationName', 'status', 'latitude', 'longitude', 'isDefault', 'defaultType']
+            });
+            const filteredStations = stations.filter((station) => {
+                const id = String(station?.id);
+                const isDefaultByType = String(station?.defaultType) !== String(stationEnum_1.defaultType.notDefault);
+                return !isDefaultByType && !defaultStations.includes(id);
+            });
+            return { messageKey: 'stations.success.fetched', data: filteredStations };
+            // -----------------------------------------------------------------------------------
+        }
+        catch (error) {
+            console.error('Error occured while fetching stations for picker.', error);
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    // ==================================================================================
+    //? function to Fetch Default START Stations
+    // ==================================================================================
+    async fetchDefaultStartStations() {
+        try {
+            const ids = await this.fetchDefaultStationIdsByType(stationEnum_1.defaultType.start);
+            return { messageKey: 'stations.success.fetched', data: ids };
+            // -----------------------------------------------------------------------------------
+        }
+        catch (error) {
+            console.error('Error occured while fetching Default Start Stations', error);
+            throw new errors_1.InternalError('common.errors.internal');
+        }
+    }
+    // ==================================================================================
+    //? function to Fetch Default END Stations
+    // ==================================================================================
+    async fetchDefaultEndStations() {
+        try {
+            const ids = await this.fetchDefaultStationIdsByType(stationEnum_1.defaultType.end);
+            return { messageKey: 'stations.success.fetched', data: ids };
+            // -----------------------------------------------------------------------------------
+        }
+        catch (error) {
+            console.error('Error occured while fetching Default End Stations', error);
             throw new errors_1.InternalError('common.errors.internal');
         }
     }

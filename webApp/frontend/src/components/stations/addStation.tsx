@@ -7,11 +7,15 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
+import { stationDefaultType } from '../../enums/statusEnums';
+import type { StationDefaultType } from '../../enums/statusEnums';
 
 interface StationData {
   stationName: string;
   latitude: number | null;
   longitude: number | null;
+	isDefault: boolean;
+	defaultType: StationDefaultType;
 }
 
 interface AddStationProps {
@@ -29,6 +33,8 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
     stationName: '',
     latitude: null,
     longitude: null,
+	isDefault: false,
+	defaultType: stationDefaultType.notDefault,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -52,6 +58,24 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
       [name]: value
     }));
   };
+
+	const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, checked } = e.target;
+		setFormData(prev => ({
+			...prev,
+			[name]: checked, // when checked, defaultType is set to end, otherwise notDefault
+			defaultType: checked ? stationDefaultType.end : stationDefaultType.notDefault,
+		}));
+	};
+
+	const handleDefaultTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.target;
+		setFormData(prev => ({
+			...prev,
+			defaultType: value as StationDefaultType,
+			isDefault: value !== stationDefaultType.notDefault,
+		}));
+	};
 
   //  handling map operations -----------------------------------
   const handleMapClick = (lat: number, lng: number) => {
@@ -190,6 +214,52 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
               )}
             </div>
           </div>
+
+		  <div className="mb-4">
+			<label className="inline-flex items-center gap-2 text-gray-700 text-sm font-bold">
+				<input
+					type="checkbox"
+					name="isDefault"
+					checked={formData.isDefault}
+					onChange={handleCheckboxChange}
+					className="h-4 w-4"
+				/>
+				Default station
+			</label>
+		  </div>
+
+		  {/* Default type ------------------------------------------------------------------- */}
+      {formData.isDefault && (
+			<div className="mb-4 pl-6">
+				<div className="text-gray-700 text-sm font-bold mb-2">Default type</div>
+				<div className="flex gap-6">
+					<label className="inline-flex items-center gap-2 text-gray-700 text-sm">
+						<input
+							type="radio"
+							name="defaultType"
+							value={stationDefaultType.start}
+							checked={formData.defaultType === stationDefaultType.start}
+							onChange={handleDefaultTypeChange}
+							className="h-4 w-4"
+						/>
+						START
+					</label>
+
+					<label className="inline-flex items-center gap-2 text-gray-700 text-sm">
+						<input
+							type="radio"
+							name="defaultType"
+							value={stationDefaultType.end}
+							checked={formData.defaultType === stationDefaultType.end}
+							onChange={handleDefaultTypeChange}
+							className="h-4 w-4"
+						/>
+						END
+					</label>
+				</div>
+			</div>
+		  )}
+      {/* ----------------------------------------------------------------- */}
 
        
           <div className="flex justify-end space-x-3">

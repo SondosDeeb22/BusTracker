@@ -9,7 +9,7 @@ import {sequelize} from '../config/database';
 import { stationAttributes } from '../interfaces/stationInterface';
 
 //importing enums
-import {status} from '../enums/stationEnum';
+import {defaultType, status} from '../enums/stationEnum';
 
 //==============================================================================================================================================
 //? Model class
@@ -25,6 +25,8 @@ class stationModel extends Model< InferAttributes<stationModel>, InferCreationAt
     declare latitude: number;
     declare longitude: number;
     declare status: CreationOptional<keyof typeof status>;
+	declare isDefault: CreationOptional<boolean>;
+	declare defaultType: CreationOptional<keyof typeof defaultType>;
     // declare assignedRoute: string[];
 }
 
@@ -54,6 +56,16 @@ stationModel.init( {
       allowNull: false,
       defaultValue: status.notCovered
     },
+	isDefault: {
+	  type: DataTypes.BOOLEAN,
+	  allowNull: false,
+	  defaultValue: false
+	},
+	defaultType: {
+	  type: DataTypes.ENUM(...Object.values(defaultType) as string[]),
+	  allowNull: false,
+	  defaultValue: defaultType.notDefault
+	},
     // assignedRoute: {
     //   type: DataTypes.JSON,
     //   allowNull: false

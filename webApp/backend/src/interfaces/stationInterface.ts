@@ -1,5 +1,11 @@
-import { status } from "../enums/stationEnum";
+// ==================================================================
+//? improt 
+// =================================================================
 
+import { defaultType, status } from "../enums/stationEnum";
+
+
+// ==================================================================
 
 export interface stationAttributes{
     id:string;
@@ -7,5 +13,11 @@ export interface stationAttributes{
     latitude: number;
     longitude: number;
     status: keyof typeof status;
-    // assignedRoute: string[];
+	isDefault?: boolean;
+	defaultType?: keyof typeof defaultType;
+}
+
+// interface for fetched defaultstation  
+export interface stationListObjects {
+    id: string;
 }

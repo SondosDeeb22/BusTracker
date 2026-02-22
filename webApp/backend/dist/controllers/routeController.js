@@ -22,6 +22,21 @@ class RouteController {
         }
     }
     // =================================================================================================================================
+    //? View Routes Map Data 
+    // =================================================================================================================================
+    async viewRoutesMap(req, res) {
+        try {
+            const result = await routeService.fetchRoutesMap();
+            (0, messageTemplate_1.sendResponse)(res, 200, result.messageKey, result.data);
+            return;
+            // ---------------------------------------
+        }
+        catch (error) {
+            (0, controllerErrorMapper_1.handleControllerError)(res, error);
+            return;
+        }
+    }
+    // =================================================================================================================================
     // Remove
     async removeRoute(req, res) {
         try {

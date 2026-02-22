@@ -45,6 +45,7 @@ router.delete('/driver/remove', (0, tokenRequired_1.accessRequireToken)(tokenNam
 router.patch('/driver/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.updateDriver);
 // Station  -------------------------------------------------------------------------------------------------------------------------
 router.get('/stations/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.fetchAllStations);
+router.get('/stations/picker', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.fetchStationsForPicker);
 router.post('/station/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.addStation);
 router.delete('/station/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.removeStation);
 router.patch('/station/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), stationController.updateStation);

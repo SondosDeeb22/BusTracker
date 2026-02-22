@@ -63,6 +63,20 @@ class StationController {
             return;
         }
     }
+    // =================================================================================================================================
+    //? Fetch Stations For Route Picker (exclude fixed/default stations)
+    // =================================================================================================================================
+    async fetchStationsForPicker(req, res) {
+        try {
+            const result = await stationService.fetchStationsForPicker();
+            (0, messageTemplate_1.sendResponse)(res, 200, result.messageKey, result.data);
+            return;
+        }
+        catch (error) {
+            (0, controllerErrorMapper_1.handleControllerError)(res, error);
+            return;
+        }
+    }
 }
 exports.StationController = StationController;
 //# sourceMappingURL=stationController.js.map

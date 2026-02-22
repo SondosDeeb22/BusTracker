@@ -4,5 +4,6 @@ export declare class StationController {
     removeStation(req: Request, res: Response): Promise<void>;
     updateStation(req: Request, res: Response): Promise<void>;
     fetchAllStations(req: Request, res: Response): Promise<void>;
+    fetchStationsForPicker(req: Request, res: Response): Promise<void>;
 }
 //# sourceMappingURL=stationController.d.ts.map

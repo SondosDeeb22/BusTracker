@@ -70,4 +70,18 @@ export class StationController{
         }
     }
 
+	// =================================================================================================================================
+	//? Fetch Stations For Route Picker (exclude fixed/default stations)
+	// =================================================================================================================================
+	async fetchStationsForPicker(req:Request, res:Response){
+		try {
+			const result = await stationService.fetchStationsForPicker();
+			sendResponse(res, 200, result.messageKey, result.data as any);
+			return;
+		} catch (error) {
+			handleControllerError(res, error);
+			return;
+		}
+	}
+
 }
