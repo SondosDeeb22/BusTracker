@@ -3,11 +3,12 @@
 //====================================================================================================================================
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 import { useSearchParams } from 'react-router-dom';
-import ErrorScreen from './ErrorScreen';
+import ErrorScreen from '../errors/ErrorScreen';
+
+import { apiClient } from '../../../services/apiClient';
 
 interface ResetPasswordProtectionProps {
   children: React.ReactNode;
@@ -36,7 +37,7 @@ const ResetPasswordProtection: React.FC<ResetPasswordProtectionProps> = ({ child
       }
       try {
         // Make a HEAD request to check if resetPasswordToken is valid
-        const response = await axios.head(`http://localhost:3001/api/auth/reset-password/${token}`, {
+        const response = await apiClient.head(`/api/auth/reset-password/${token}`, {
           withCredentials: false,
           timeout: 8000,
         });

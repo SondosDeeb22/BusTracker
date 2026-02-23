@@ -9,6 +9,8 @@ import { userGender, userRole, userStatus } from '../../enums/statusEnums';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 //====================================================================================================================================
 interface AddDriverProps {
   onClose: () => void;
@@ -72,11 +74,10 @@ const AddDriver: React.FC<AddDriverProps> = ({ onClose, onSuccess }) => {
 
     try {
       console.log(document.cookie)
-      await axios.post('http://localhost:3001/api/admin/driver/add', driverData, {
+      await apiClient.post('/api/admin/driver/add', driverData, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true
+        }
       });
       
       onSuccess(); // refresh table and trigger success message

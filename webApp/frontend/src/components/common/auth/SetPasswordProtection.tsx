@@ -3,14 +3,15 @@
 //====================================================================================================================================
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { burgundy } from '../styles/colorPalette';
+import { burgundy } from '../../../styles/colorPalette';
 
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 import { useSearchParams } from 'react-router-dom';
-import ErrorScreen from './ErrorScreen';
+import ErrorScreen from '../errors/ErrorScreen';
+
+import { apiClient } from '../../../services/apiClient';
 
 interface SetPasswordProtectionProps {
   children: React.ReactNode;
@@ -39,9 +40,7 @@ const SetPasswordProtection: React.FC<SetPasswordProtectionProps> = ({ children 
       }
       try {
         // Make a HEAD request to check if resetPasswordToken is valid
-        const response = await axios.head(`http://localhost:3001/api/auth/set-password/${token}`, {
-          withCredentials: true,
-        });
+        const response = await apiClient.head(`/api/auth/set-password/${token}`);
 
         if (response.status === 200) {// Token is valid
           setIsValid(true);

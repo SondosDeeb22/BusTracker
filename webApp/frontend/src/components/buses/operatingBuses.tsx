@@ -2,9 +2,10 @@
 //? Importing
 //======================================================================================
 import  { useState, useEffect } from 'react'
-import axios from 'axios'
 import { COLORS } from '../../styles/colorPalette'
 import { useTranslation } from 'react-i18next'
+
+import { apiClient } from '../../services/apiClient'
 
 // interface 
 interface Route {
@@ -24,7 +25,7 @@ const OperatingBuses = () => {
   useEffect(() => {
     const getOperatingRoutes = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/user/routes/operating')
+        const response = await apiClient.get('/api/user/routes/operating')
 
         //console.log('API Response:', response.data)
         const actualData = response.data.data || []

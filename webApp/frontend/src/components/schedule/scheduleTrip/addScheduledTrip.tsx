@@ -2,11 +2,12 @@
 //? Importing
 //======================================================================================
 import React, { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
-import { COLORS } from '../../styles/colorPalette';
+import { COLORS } from '../../../styles/colorPalette';
+
+import { apiClient } from '../../../services/apiClient';
 
 //======================================================================================
 //? Types
@@ -31,7 +32,6 @@ type SelectedCell = {
 
 type AddScheduledTripProps = {
   open: boolean;
-  backendBaseUrl: string;
   selectedCell: SelectedCell | null;
   detailedScheduleId?: string;
   initialDriverId?: string;
@@ -47,7 +47,6 @@ type AddScheduledTripProps = {
 
 const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
   open,
-  backendBaseUrl,
   selectedCell,
   detailedScheduleId,
   initialDriverId,
@@ -107,8 +106,8 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
 
     try {
       const [driversRes, busesRes] = await Promise.all([
-        axios.get(`${backendBaseUrl}/api/admin/drivers/fetch`, { withCredentials: true }),
-        axios.get(`${backendBaseUrl}/api/admin/buses/fetch`, { withCredentials: true }),
+        apiClient.get('/api/admin/drivers/fetch'),
+        apiClient.get('/api/admin/buses/fetch'),
       ]);
 
       const driversRows: DriverRow[] = Array.isArray(driversRes.data?.data) ? driversRes.data.data : [];
@@ -135,13 +134,13 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
     try {
       // if we have detailedScheduleId, we update the trip, else we add a new trip
       const res = detailedScheduleId
-        ? await axios.patch(
-            `${backendBaseUrl}/api/admin/schedule/trip/update`,
+        ? await apiClient.patch(
+            `/api/admin/schedule/trip/update`,
             { detailedScheduleId, driverId, busId },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+            { headers: { 'Content-Type': 'application/json' } }
           )
-        : await axios.post(
-            `${backendBaseUrl}/api/admin/schedule/trip/add`,
+        : await apiClient.post(
+            `/api/admin/schedule/trip/add`,
             {
               scheduleId: tripInfo.scheduleId,
               time: tripInfo.time,
@@ -149,7 +148,7 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
               driverId,
               busId,
             },
-            { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+            { headers: { 'Content-Type': 'application/json' } }
           );
 
       const serverMessageKey = String(res?.data?.message || '').trim();

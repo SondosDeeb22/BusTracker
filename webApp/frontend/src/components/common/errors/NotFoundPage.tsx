@@ -1,8 +1,13 @@
+// ============================================================
+//? Importing
+// ============================================================
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ErrorScreen from './ErrorScreen';
-import LanguageSwitcher from './LanguageSwitcher';
-import { burgundy } from '../styles/colorPalette';
+import LanguageSwitcher from '../LanguageSwitcher';
+import { burgundy } from '../../../styles/colorPalette';
+
+// ============================================================
 
 const NotFoundPage: React.FC = () => {
   const { t } = useTranslation('translation');

@@ -2,24 +2,43 @@
 //? Importing
 //======================================================================================
 import { useState } from 'react';
-import Table from '../components/Table';
+import Table from '../components/common/Table';
 import { useTranslation } from 'react-i18next';
 
-import AddDriver from '../components/driver/addDriver';
-import RemoveDriver from '../components/driver/removeDriver';
-import UpdateDriver from '../components/driver/updateDriver';
 
-import StatusBadge from '../components/StatusBadge';
+// hooks
+import { useToastMessage } from '../hooks/useToastMessage';
+import { useTableRefreshKey } from '../hooks/useTableRefreshKey';
+
+// components
+import AddDriver from '../components/drivers/addDriver';
+import RemoveDriver from '../components/drivers/removeDriver';
+import UpdateDriver from '../components/drivers/updateDriver';
+
+import StatusBadge from '../components/common/StatusBadge';
+import SuccessToast from '../components/common/SuccessToast';
+
+// driver defined type
+import type { Driver } from '../types/drivers';
+
 //======================================================================================
 const DriversPage = () => {
   const { t } = useTranslation('drivers');
+
+  type TableRow = Record<string, unknown>;
+
+  const isDriverRow = (row: TableRow): row is Driver => {
+    return typeof row.id === 'number';
+  };
+  // ========================================================
+
   const [showModel, setShowModel] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [tableKey, setTableKey] = useState(0);
+  const toast = useToastMessage({ timeoutMs: 5000 });
+  const tableRefresh = useTableRefreshKey(0);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [driverToRemove, setDriverToRemove] = useState<{id: number, name: string} | null>(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [driverToUpdate, setDriverToUpdate] = useState<any>(null);
+  const [driverToUpdate, setDriverToUpdate] = useState<Driver | null>(null);
 
 
   // Column configuration for drivers table
@@ -31,8 +50,8 @@ const DriversPage = () => {
     { key: 'licenseNumber', label: t('columns.licenseNumber') },
     { key: 'licenseExpiryDate', label: t('columns.licenseExpiryDate') },
     { key: 'status', label: t('columns.status'),
-      formatter: (value: any) => {
-        return <StatusBadge status={value} type="driver" />;
+      formatter: (value: unknown) => {
+        return <StatusBadge status={String(value)} type="driver" />;
       }
     }
   ];
@@ -49,13 +68,8 @@ const DriversPage = () => {
   // close Model windo and show Success message. 
   const handleAddDriverSuccess = () => {
     setShowModel(false);
-    setSuccessMessage(t('success.added'));
-    setTableKey(prev => prev + 1); // Force table refresh
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000); // 10 seconds
+    toast.show(t('success.added'));
+    tableRefresh.refresh(); // Force table refresh
   };
 
   // Case : user click close button in the window, so close it
@@ -71,9 +85,10 @@ const DriversPage = () => {
 
 
   // ------------------------------------------------
-  const handleDelete = (driver: any) => {
-    console.log('Delete driver:', driver);
-    setDriverToRemove({ id: driver.id, name: driver.name || driver.email || 'this driver' });
+  const handleDelete = (row: TableRow) => {
+    console.log('Delete driver:', row);
+    if (!isDriverRow(row)) return;
+    setDriverToRemove({ id: row.id, name: row.name || row.email || 'this driver' });
     setShowRemoveModal(true);
   };
 
@@ -85,21 +100,17 @@ const DriversPage = () => {
 
   // Handle successful driver removal
   const handleRemoveSuccess = () => {
-    setSuccessMessage(t('success.removed'));
-    setTableKey(prev => prev + 1); // Force table refresh
-    
-    // Clear success message after 5 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
+    toast.show(t('success.removed'));
+    tableRefresh.refresh(); // Force table refresh
   };
 
 
   
   // ------------------------------------------------
-  const handleEdit = (driver: any) => {
-    console.log('Edit driver:', driver);
-    setDriverToUpdate(driver);
+  const handleEdit = (row: TableRow) => {
+    console.log('Edit driver:', row);
+    if (!isDriverRow(row)) return;
+    setDriverToUpdate(row);
     setShowUpdateModal(true);
   };
   
@@ -111,13 +122,8 @@ const DriversPage = () => {
 
   // Handle successful driver update
   const handleUpdateSuccess = () => {
-    setSuccessMessage(t('success.updated'));
-    setTableKey(prev => prev + 1); // Force table refresh
-    
-    // Clear success message after 5 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
+    toast.show(t('success.updated'));
+    tableRefresh.refresh(); // Force table refresh
   };
 
 
@@ -127,16 +133,12 @@ const DriversPage = () => {
   //======================================================================================
   return (
     <>
-      {successMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
-          {successMessage}
-        </div>
-      )}
+      <SuccessToast message={toast.message} />
       <Table
-        key={tableKey}
+        key={tableRefresh.key}
         title={t('title')}
         subtitle={t('subtitle')}
-        endpoint="http://localhost:3001/api/admin/drivers/fetch"
+        endpoint="/api/admin/drivers/fetch"
         onEdit={handleEdit}
         onDelete={handleDelete}
         onAddNew={handleAddNew}

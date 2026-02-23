@@ -6,6 +6,8 @@ import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 interface RemoveStationProps {
   stationId: string;
   stationName?: string;
@@ -35,9 +37,8 @@ const RemoveStation: React.FC<RemoveStationProps> = ({
     setError('');
 
     try {
-      await axios.delete(`http://localhost:3001/api/admin/station/remove`, {
+      await apiClient.delete(`/api/admin/station/remove`, {
         data: { id: stationId },
-        withCredentials: true
       });
 
       onSuccess();

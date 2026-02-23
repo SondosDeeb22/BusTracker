@@ -1,7 +1,17 @@
+// ========================================================================
+//? Importing
+// ========================================================================
+
 import React, { useState, useEffect } from 'react';
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { COLORS } from '../styles/colorPalette';
+import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
+
+import { apiClient } from '../../services/apiClient';
+
+
+// ========================================================================
+// Interfaces
 
 interface TableData {
   [key: string]: any; // Dynamic keys based on API response
@@ -33,6 +43,11 @@ interface TableProps {
   emptyComponent?: React.ReactNode;
   errorComponent?: (error: string) => React.ReactNode;
 }
+
+
+// ========================================================================
+//? Table Component
+// ========================================================================
 
 const Table: React.FC<TableProps> = ({
   title,
@@ -68,18 +83,10 @@ const Table: React.FC<TableProps> = ({
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch data: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      const tableData = result.data || [];
+
+      const response = await apiClient.get(endpoint);
+      const result = response.data;
+      const tableData = result?.data || [];
       
       console.log('API Response Data:', tableData); // debug log ----------------------------------
       

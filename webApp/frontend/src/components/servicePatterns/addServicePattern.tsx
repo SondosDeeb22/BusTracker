@@ -2,11 +2,12 @@
 //? Importing
 //===============================================================================================
 
-import axios from 'axios';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
+
+import { apiClient } from '../../services/apiClient';
 
 //===============================================================================================
 //? Types
@@ -14,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 
 type AddServicePatternProps = {
   open: boolean;
-  backendBaseUrl: string;
   startOperatingHour: number;
   endOperatingHour: number;
   startOperatingMinuteLabel: string;
@@ -30,7 +30,6 @@ type AddServicePatternProps = {
 
 const AddServicePattern = ({
   open,
-  backendBaseUrl,
   startOperatingHour,
   endOperatingHour,
   startOperatingMinuteLabel,
@@ -90,8 +89,8 @@ const AddServicePattern = ({
 
     setCreating(true);
     try {
-      const res = await axios.post(
-        `${backendBaseUrl}/api/admin/service-pattern/add`,
+      const res = await apiClient.post(
+        `/api/admin/service-pattern/add`,
         {
           title: trimmedTitle,
           hours: selectedHours,

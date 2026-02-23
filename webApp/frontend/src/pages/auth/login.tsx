@@ -1,13 +1,22 @@
+// ==============================================================================================================
+//? Importing
+// ==============================================================================================================
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import loginPicture from '../assets/loginPicture.png';
-import busTrackerLogo from '../assets/busTrackerlogo.png';
-import { burgundy } from '../styles/colorPalette';
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import loginPicture from '../../assets/loginPicture.png';
+import busTrackerLogo from '../../assets/busTrackerlogo.png';
+import { burgundy } from '../../styles/colorPalette';
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
 
+
+// =================================================================================================================
+//? login
+// =================================================================================================================
 
 const Login = () => {
   const { t } = useTranslation('auth/loginPage');
@@ -22,7 +31,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      await axios.post('http://localhost:3001/api/auth/login', 
+      await apiClient.post('/api/auth/login', 
         { email, password },
         {
           headers: {
@@ -33,9 +42,7 @@ const Login = () => {
       );
       //if user is not admin, prevent access ---------------------------------------------------------------------
       try {
-        const checkAuthority = await axios.get('http://localhost:3001/api/auth/user-info', {
-          withCredentials: true // Important: include cookies
-        });
+        const checkAuthority = await apiClient.get('/api/auth/user-info');
         
         const userData = checkAuthority.data.data;
         console.log(userData);
@@ -43,11 +50,7 @@ const Login = () => {
 
         if (userData.userRole !== 'admin') {
           try {
-          await axios.post(
-            'http://localhost:3001/api/auth/logout',
-            {},
-            { withCredentials: true }
-          );
+          await apiClient.post('/api/auth/logout', {});
           navigate('/', { replace: true });
           setError(t('common.errors.forbidden', { ns: 'translation' }));
          }catch(error){

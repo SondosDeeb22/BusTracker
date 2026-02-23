@@ -1,9 +1,14 @@
+// ============================================================
+//? Importing
+// ============================================================
 import React from 'react';
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ErrorScreen from './ErrorScreen';
-import LanguageSwitcher from './LanguageSwitcher';
-import { burgundy } from '../styles/colorPalette';
+import LanguageSwitcher from '../LanguageSwitcher';
+import { burgundy } from '../../../styles/colorPalette';
+
+// ==============================================================
 
 const RouterErrorElement: React.FC = () => {
   const error = useRouteError();

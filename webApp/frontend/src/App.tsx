@@ -1,14 +1,18 @@
 //===============================================================================================
 //? Importing
 //===============================================================================================
-// import './App.css'
-import Login from "./pages/login";
-import ForgotPassword from "./pages/ForgotPasswordPage";
-import ResetPassword from "./pages/resetPasswordPage";
-import SetPassword from "./pages/setPassword";
 
+
+// auth pages --------------------------------------------------
+import Login from "./pages/auth/login";
+import ForgotPassword from "./pages/auth/ForgotPasswordPage";
+import ResetPassword from "./pages/auth/resetPasswordPage";
+import SetPassword from "./pages/auth/setPassword";
+
+// protected pages --------------------------------------------------
 import Homepage from "./pages/homepage";
 import HomepageLayout from "./layouts/homepageLayout";
+
 
 import DriversPage from "./pages/driversPage";
 import BusesPage from "./pages/busesPage";
@@ -19,11 +23,12 @@ import ServicePatterns from './pages/servicePatterns';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import ResetPasswordProtection from "./components/ResetPasswordProtection";
-import SetPasswordProtection from "./components/SetPasswordProtection";
-import RouterErrorElement from "./components/RouterErrorElement";
-import NotFoundPage from "./components/NotFoundPage";
+// components --------------------------------------------------
+import ProtectedRoute from "./components/common/auth/ProtectedRoute";
+import ResetPasswordProtection from "./components/common/auth/ResetPasswordProtection";
+import SetPasswordProtection from "./components/common/auth/SetPasswordProtection";
+import RouterErrorElement from "./components/common/errors/RouterErrorElement";
+import NotFoundPage from "./components/common/errors/NotFoundPage";
 
 
 //===============================================================================================

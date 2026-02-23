@@ -4,26 +4,42 @@
 import { useMemo, useState } from 'react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
-import Table from '../components/Table';
+import Table from '../components/common/Table';
 import AddStation from '../components/stations/addStation';
 import UpdateStation from '../components/stations/updateStation';
 import RemoveStation from '../components/stations/removeStation';
-import StatusBadge from '../components/StatusBadge';
+import StatusBadge from '../components/common/StatusBadge';
 import { useTranslation } from 'react-i18next';
 
+import SuccessToast from '../components/common/SuccessToast';
+import { useToastMessage } from '../hooks/useToastMessage';
+import { useTableRefreshKey } from '../hooks/useTableRefreshKey';
 
-import { COLORS } from '../styles/colorPalette';
+// station defined type
+import type { StationRow } from '../types/stations';
+
 //======================================================================================
 //? Stations page
 //======================================================================================
 
 const StationsPage = () => {
   const { t } = useTranslation('stations');
+
+  // ========================================================
+  type TableRow = Record<string, unknown>;
+
+  const isStationRow = (row: TableRow): row is StationRow => {
+    return typeof row.id === 'string';
+  };  
+  // ========================================================
+
   const [showModel, setShowModel] = useState(false);
   const [showUpdateModel, setShowUpdateModel] = useState(false);
   const [showRemoveModel, setShowRemoveModel] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [tableKey, setTableKey] = useState(0);
+
+  const toast = useToastMessage({ timeoutMs: 5000 });
+  const tableRefresh = useTableRefreshKey(0);
+  
   const [selectedStationId, setSelectedStationId] = useState<string>('');
   const [selectedStationName, setSelectedStationName] = useState<string>('');
   // 
@@ -151,15 +167,17 @@ const StationsPage = () => {
     {
       key: 'map',
       label: t('columns.map'),
-      formatter: (_value: any, _columnName: string, row: any) => (
-        <MapPreview latitude={row.latitude} longitude={row.longitude} />
-      ),
+      formatter: (_value: unknown, _columnName: string, row: TableRow) => {
+        const latitude = String((row as StationRow).latitude ?? '');
+        const longitude = String((row as StationRow).longitude ?? '');
+        return <MapPreview latitude={latitude} longitude={longitude} />;
+      },
     },
     { 
       key: 'status', 
       label: t('columns.status'),
-      formatter: (value: any) => {
-        return <StatusBadge status={value} type="station" />;
+      formatter: (value: unknown) => {
+        return <StatusBadge status={String(value)} type="station" />;
       }
     }
   ];
@@ -171,17 +189,19 @@ const StationsPage = () => {
   };
 
   // Open Update Model window-----------------------------------------
-  const handleEditStation = (station: any) => {
-    console.log('Edit station:', station);
-    setSelectedStationId(station.id);
+  const handleEditStation = (row: TableRow) => {
+    console.log('Edit station:', row);
+    if (!isStationRow(row)) return;
+    setSelectedStationId(row.id);
     setShowUpdateModel(true);
   };
 
   // Open Remove Model window-----------------------------------------
-  const handleRemoveStation = (station: any) => {
-    console.log('Remove station:', station);
-    setSelectedStationId(station.id);
-    setSelectedStationName(station.stationName);
+  const handleRemoveStation = (row: TableRow) => {
+    console.log('Remove station:', row);
+    if (!isStationRow(row)) return;
+    setSelectedStationId(row.id);
+    setSelectedStationName(row.stationName || '');
     setShowRemoveModel(true);
   };
 
@@ -190,40 +210,25 @@ const StationsPage = () => {
   // close Model windo and show Success message. 
   const handleAddStationSuccess = () => {
     setShowModel(false);
-    setSuccessMessage(t('success.added'));
-    setTableKey(prev => prev + 1); // Force table refresh
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
+    toast.show(t('success.added'));
+    tableRefresh.refresh(); // Force table refresh
   };
 
   // Case: Station was Updated  ------------------------------------------------
   const handleUpdateStationSuccess = () => {
     setShowUpdateModel(false);
-    setSuccessMessage(t('success.updated'));
-    setTableKey(prev => prev + 1); // Force table refresh
+    toast.show(t('success.updated'));
+    tableRefresh.refresh(); // Force table refresh
     setSelectedStationId('');
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
   };
 
   // Case: Station was Removed  ------------------------------------------------
   const handleRemoveStationSuccess = () => {
     setShowRemoveModel(false);
-    setSuccessMessage(t('success.removed'));
-    setTableKey(prev => prev + 1); // Force table refresh
+    toast.show(t('success.removed'));
+    tableRefresh.refresh(); // Force table refresh
     setSelectedStationId('');
     setSelectedStationName('');
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
   };
 
   // Case : user click close button in the window, so close it
@@ -246,24 +251,12 @@ const StationsPage = () => {
   //======================================================================================
   return (
     <>
-      {successMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
-          {successMessage}
-        </div>
-      )}
+      <SuccessToast message={toast.message} />
       <Table
-        key={tableKey}
+        key={tableRefresh.key}
         title={t('title')}
         subtitle={t('subtitle')}
-        endpoint="http://localhost:3001/api/admin/stations/fetch"
-        // rowClassName={(row: any) => (row?.isDefault ? 'bg-amber-50 border-l-4 border-amber-300' : '')}
-		rowClassName={(row: any) => (row?.isDefault ? 'border-l-4' : '')}
-		rowStyle={(row: any) =>
-			row?.isDefault
-				? { backgroundColor: `${COLORS.navbar}4D`, borderLeftColor: COLORS.navbar } // 4D is 30% opacity
-				: {}
-		}
-        
+        endpoint="/api/admin/stations/fetch"
         onAddNew={handleAddNew}
         onEdit={handleEditStation}
         onDelete={handleRemoveStation}

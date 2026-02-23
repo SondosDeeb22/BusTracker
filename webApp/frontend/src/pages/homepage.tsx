@@ -1,4 +1,4 @@
-import OperatingBuses from '../components/ui/operatingBuses';
+import OperatingBuses from '../components/buses/operatingBuses';
 import buses from '../assets/buses.png';
 
 const Homepage = () => {

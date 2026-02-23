@@ -6,6 +6,8 @@ import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 interface RemoveRouteProps {
   routeId: string;
   routeTitle?: string;
@@ -35,9 +37,8 @@ const RemoveRoute: React.FC<RemoveRouteProps> = ({
     setError('');
 
     try {
-      await axios.delete(`http://localhost:3001/api/admin/route/remove`, {
+      await apiClient.delete(`/api/admin/route/remove`, {
         data: { id: routeId },
-        withCredentials: true
       });
 
       onSuccess();

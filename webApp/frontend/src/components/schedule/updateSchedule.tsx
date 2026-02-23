@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 
 import { COLORS } from '../../styles/colorPalette';
 
+import { apiClient } from '../../services/apiClient';
+
 //======================================================================================
 //? Types
 //======================================================================================
@@ -26,7 +28,6 @@ export type ScheduleRecord = {
 
 type UpdateScheduleProps = {
   open: boolean;
-  backendBaseUrl: string;
   record: ScheduleRecord | null;
   onClose: () => void;
   onSuccess: (message: string) => void;
@@ -37,7 +38,7 @@ type UpdateScheduleProps = {
 //? Component
 //======================================================================================
 
-const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, record, onClose, onSuccess, onRefresh }) => {
+const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, record, onClose, onSuccess, onRefresh }) => {
   const { t: tBusSchedule } = useTranslation('busScedule');
   const { t: tGlobal } = useTranslation('translation');
 
@@ -72,7 +73,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
   const fetchPatterns = async () => {
     setLoadingPatterns(true);
     try {
-      const res = await axios.get(`${backendBaseUrl}/api/admin/service-pattern/fetch`, { withCredentials: true });
+      const res = await apiClient.get('/api/admin/service-pattern/fetch');
       const rows: ServicePattern[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setPatterns(rows);
     } catch (e: any) {
@@ -104,11 +105,7 @@ const UpdateSchedule: React.FC<UpdateScheduleProps> = ({ open, backendBaseUrl, r
       if (date !== originalDate) updates.date = date;
       if (servicePatternId !== originalServicePatternId) updates.servicePatternId = servicePatternId;
 
-      await axios.patch(
-        `${backendBaseUrl}/api/admin/schedule/update`,
-        updates,
-        { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-      );
+      await apiClient.patch('/api/admin/schedule/update', updates, { headers: { 'Content-Type': 'application/json' } });
 
       onSuccess(tBusSchedule('success.updated'));
       onClose();

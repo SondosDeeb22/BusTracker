@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { stationDefaultType } from '../../enums/statusEnums';
 import type { StationDefaultType } from '../../enums/statusEnums';
 
+import { apiClient } from '../../services/apiClient';
+
 interface StationData {
   stationName: string;
   latitude: number | null;
@@ -110,11 +112,10 @@ const AddStation: React.FC<AddStationProps> = ({ onClose, onSuccess }) => {
 
 
     try {
-      await axios.post('http://localhost:3001/api/admin/station/add', formData, {
+      await apiClient.post('/api/admin/station/add', formData, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true
+        }
       });
       onSuccess();
       onClose();

@@ -1,17 +1,24 @@
-import { COLORS } from '../styles/colorPalette';
+// =======================================================================
+//? Importing
+// =======================================================================
+
+import { COLORS } from '../../styles/colorPalette';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
-//importing pictures ==============================
-import BusLogoWhite from '../assets/BusLogoWhite.png';
-import user from '../assets/user.png';
+import { apiClient } from '../../services/apiClient';
 
-//importing icons ==============================
+// pictures 
+import BusLogoWhite from '../../assets/BusLogoWhite.png';
+import user from '../../assets/user.png';
+
+// icons 
 import { HomeIcon, UserIcon, TruckIcon, MapIcon, CalendarDaysIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
 
+
+// ==========================================================================
 const Header = () => {
   const { t } = useTranslation('header');
   const [userName, setUserName] = useState('Loading...');
@@ -22,9 +29,7 @@ const Header = () => {
     // Fetch current user data from secure backend API
     const fetchCurrentUser = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/auth/user-info', {
-          withCredentials: true // Important: include cookies
-        });
+        const response = await apiClient.get('/api/auth/user-info');
         
         const userData = response.data.data;
         setUserName(userData.userName || 'User');
@@ -39,9 +44,7 @@ const Header = () => {
   // Handle logout ==================================================
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3001/api/auth/logout', {}, {
-        withCredentials: true
-      });
+      await apiClient.post('/api/auth/logout', {});
       // Redirect to login page
       navigate('/', { replace: true });
     } catch (error) {

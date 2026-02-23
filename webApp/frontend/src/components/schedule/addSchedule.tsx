@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 
 import { COLORS } from '../../styles/colorPalette';
 
+import { apiClient } from '../../services/apiClient';
+
 //======================================================================================
 //? Types
 //======================================================================================
@@ -19,7 +21,6 @@ type ServicePattern = {
 
 type AddScheduleProps = {
   open: boolean;
-  backendBaseUrl: string;
   onClose: () => void;
   onSuccess: (message: string) => void;
   onRefresh: () => Promise<void>;
@@ -29,7 +30,7 @@ type AddScheduleProps = {
 //? Component
 //======================================================================================
 
-const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose, onSuccess, onRefresh }) => {
+const AddSchedule: React.FC<AddScheduleProps> = ({ open, onClose, onSuccess, onRefresh }) => {
   const { t: tBusSchedule } = useTranslation('busScedule');
   const { t: tGlobal } = useTranslation('translation');
 
@@ -62,7 +63,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
     setLoadingPatterns(true);
     setError('');
     try {
-      const res = await axios.get(`${backendBaseUrl}/api/admin/service-pattern/fetch`, { withCredentials: true });
+      const res = await apiClient.get('/api/admin/service-pattern/fetch');
       const rows: ServicePattern[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setPatterns(rows);
     } catch (e: any) {
@@ -91,11 +92,7 @@ const AddSchedule: React.FC<AddScheduleProps> = ({ open, backendBaseUrl, onClose
     setError('');
 
     try {
-      await axios.post(
-        `${backendBaseUrl}/api/admin/schedule/add`,
-        { date, servicePatternId },
-        { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
-      );
+      await apiClient.post('/api/admin/schedule/add', { date, servicePatternId }, { headers: { 'Content-Type': 'application/json' } });
 
       onSuccess(tBusSchedule('success.added'));
       resetAndClose();

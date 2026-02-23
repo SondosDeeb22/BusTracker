@@ -3,11 +3,12 @@
 //? Importing
 //===============================================================================================
 
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
+
+import { apiClient } from '../../services/apiClient';
 
 //===============================================================================================
 //? Types
@@ -26,7 +27,6 @@ type ServicePatternDto = {
 
 type UpdateServicePatternProps = {
   open: boolean;
-  backendBaseUrl: string;
   pattern: ServicePatternDto | null;
   startOperatingHour: number;
   endOperatingHour: number;
@@ -43,7 +43,6 @@ type UpdateServicePatternProps = {
 
 const UpdateServicePattern = ({
   open,
-  backendBaseUrl,
   pattern,
   startOperatingHour,
   endOperatingHour,
@@ -121,8 +120,8 @@ const UpdateServicePattern = ({
 
     setUpdating(true);
     try {
-      const res = await axios.patch(
-        `${backendBaseUrl}/api/admin/service-pattern/update`,
+      const res = await apiClient.patch(
+        `/api/admin/service-pattern/update`,
         {
           servicePatternId: pattern.servicePatternId,
           title: trimmedTitle,

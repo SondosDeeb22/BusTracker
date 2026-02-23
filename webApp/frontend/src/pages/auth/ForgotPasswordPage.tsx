@@ -1,12 +1,20 @@
+//===============================================================================================
+//? Importing
+//===============================================================================================
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import loginPicture from '../assets/loginPicture.png';
-import busTrackerLogo from '../assets/busTrackerlogo.png';
-import { burgundy } from '../styles/colorPalette';
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import loginPicture from '../../assets/loginPicture.png';
+import busTrackerLogo from '../../assets/busTrackerlogo.png';
+import { burgundy } from '../../styles/colorPalette';
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
+
+// ===============================================================================================
 
 const ForgotPassword = () => {
   const { t } = useTranslation('auth/forgot-passwordPage');
@@ -21,7 +29,7 @@ const ForgotPassword = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/admin/forgot-password', 
+      const response = await apiClient.post('/api/auth/admin/forgot-password', 
         { email: targetEmail},
         {
           headers: {

@@ -2,7 +2,7 @@
 //? Importing
 //======================================================================================
 import React from 'react';
-import { getStatusConfig, type StatusType } from '../styles/colorPalette';
+import { getStatusConfig, type StatusType } from '../../styles/colorPalette';
 
 interface StatusBadgeProps {
   status: string;

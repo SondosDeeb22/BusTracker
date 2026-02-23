@@ -1,7 +1,6 @@
 //===============================================================================================
 //? Importing
 //===============================================================================================
-import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import { COLORS } from '../styles/colorPalette';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -9,6 +8,7 @@ import AddServicePattern from '../components/servicePatterns/addServicePattern';
 import RemoveServicePattern from '../components/servicePatterns/removeServicePattern';
 import UpdateServicePattern from '../components/servicePatterns/updateServicePattern';
 import { useTranslation } from 'react-i18next';
+import { apiClient } from '../services/apiClient';
 
 //===============================================================================================
 //? Types
@@ -28,8 +28,6 @@ type ServicePatternDto = {
 //===============================================================================================
 //? Constants
 //===============================================================================================
-
-const backendBaseUrl = 'http://localhost:3001';
 
 //define when the bus system starts and stops operating
 const startOperatingHour = 6;
@@ -66,9 +64,7 @@ const ServicePatterns = () => {
       setError(null);
 
       try {
-        const res = await axios.get(`${backendBaseUrl}/api/admin/service-pattern/fetch`, {
-          withCredentials: true,
-        });
+        const res = await apiClient.get('/api/admin/service-pattern/fetch');
 
         const rows: ServicePatternDto[] = Array.isArray(res.data?.data) ? res.data.data : [];
         if (!cancelled) {
@@ -96,9 +92,7 @@ const ServicePatterns = () => {
     setError(null);
 
     try {
-      const res = await axios.get(`${backendBaseUrl}/api/admin/service-pattern/fetch`, {
-        withCredentials: true,
-      });
+      const res = await apiClient.get('/api/admin/service-pattern/fetch');
 
       const rows: ServicePatternDto[] = Array.isArray(res.data?.data) ? res.data.data : [];
       setPatterns(rows);
@@ -147,7 +141,6 @@ const ServicePatterns = () => {
 
       <AddServicePattern
         open={showAddModel}
-        backendBaseUrl={backendBaseUrl}
         startOperatingHour={startOperatingHour}
         endOperatingHour={endOperatingHour}
         startOperatingMinuteLabel={startOperatingMinuteLabel}
@@ -164,7 +157,6 @@ const ServicePatterns = () => {
 
       <UpdateServicePattern
         open={Boolean(editPattern)}
-        backendBaseUrl={backendBaseUrl}
         pattern={editPattern}
         startOperatingHour={startOperatingHour}
         endOperatingHour={endOperatingHour}
@@ -182,7 +174,6 @@ const ServicePatterns = () => {
 
       <RemoveServicePattern
         open={Boolean(removePattern)}
-        backendBaseUrl={backendBaseUrl}
         servicePatternId={removePattern?.servicePatternId ?? null}
         title={removePattern?.title ?? null}
         onClose={() => setRemovePattern(null)}

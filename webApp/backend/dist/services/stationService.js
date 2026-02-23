@@ -32,13 +32,15 @@ class StationService {
         const endDefaultsResult = await this.fetchDefaultEndStations();
         const startDefaultIds = Array.isArray(startDefaultsResult.data) ? startDefaultsResult.data : [];
         const endDefaultIds = Array.isArray(endDefaultsResult.data) ? endDefaultsResult.data : [];
-        // remove station ids from all routes
-        const removeStationIdsFromAllRoutes = Array.isArray(options?.removeStationIdsFromAllRoutes)
-            ? options.removeStationIdsFromAllRoutes
+        // ------------------------------------------------------------------
+        // if removedDefaultStationIds is provided, means that a station was reseted as notDefault --- so we have to remove it from all routes that had it as default station
+        const removedDefaultStationIds = Array.isArray(options?.removedDefaultStationIds)
+            ? options.removedDefaultStationIds
                 .map((id) => String(id))
                 .map((id) => id.trim())
                 .filter((id) => id.length > 0)
             : [];
+        // ------------------------------------------------------------------
         const routes = await routeModel_1.default.findAll({ attributes: ['id'] });
         // update all routes
         await database_1.sequelize.transaction(async (t) => {
@@ -55,9 +57,9 @@ class StationService {
                 const currentStationIds = routeStations
                     .map((rs) => String(rs.stationId))
                     .filter((id) => id.trim().length > 0);
-                // delete "removedStations" from route ---------------------------------------
-                const effectiveStationIds = removeStationIdsFromAllRoutes.length > 0
-                    ? currentStationIds.filter((id) => !removeStationIdsFromAllRoutes.includes(id))
+                // get the routes' stations after excluding removedDefaultStations (which gives us effectiveStationIds)
+                const effectiveStationIds = removedDefaultStationIds.length > 0
+                    ? currentStationIds.filter((id) => !removedDefaultStationIds.includes(id))
                     : currentStationIds;
                 const nextStationIds = (0, routeHelper_1.buildFinalStations)(effectiveStationIds, startDefaultIds, endDefaultIds);
                 const sameLength = currentStationIds.length === nextStationIds.length; // check if the length of the current stations(in db) is the same as the next stations(the one we modified)
@@ -149,6 +151,7 @@ class StationService {
         const prev = stationId
             ? await stationModel_1.default.findOne({ where: { id: String(stationId) }, attributes: ['defaultType'] })
             : null;
+        // perfrom needed updated procedures in case of adjustment in Defautl status or type ======================================
         // get the previous default type
         const prevDefaultTypeRaw = prev?.defaultType;
         const prevDefaultType = prevDefaultTypeRaw == null ? null : String(prevDefaultTypeRaw);
@@ -156,6 +159,7 @@ class StationService {
         if (nextPayload.defaultType === undefined) {
             nextPayload.defaultType = null;
         }
+        // check if the station is default
         nextPayload.isDefault = nextPayload.defaultType !== null;
         if (nextPayload.isDefault === true) {
             nextPayload.status = stationEnum_1.status.covered;
@@ -167,18 +171,19 @@ class StationService {
         const nextDefaultTypeRaw = nextPayload?.defaultType;
         const nextDefaultType = nextDefaultTypeRaw == null ? null : String(nextDefaultTypeRaw);
         const defaultTypeChanged = prev != null && prevDefaultType !== nextDefaultType;
+        // check if the station was removed from default
         const removedFromDefault = prev != null
             && prevDefaultType !== null
             && nextDefaultType === null
             && stationId != null
             && String(stationId).trim().length > 0;
-        // if the default type has changed, sync default stations to all routes
+        // if the default type has changed, then update the stations for all routes
         if (result.updated && (defaultTypeChanged || Object.prototype.hasOwnProperty.call(nextPayload, 'defaultType'))) {
             await this.syncDefaultStationsToAllRoutes(removedFromDefault
-                ? { removeStationIdsFromAllRoutes: [String(stationId)] }
+                ? { removedDefaultStationIds: [String(stationId)] }
                 : undefined);
         }
-        // --------------------------------------------------------------------------------------------
+        // =========================================================================================================================
         // ensure default stations are always covered
         await stationModel_1.default.update({ status: stationEnum_1.status.covered }, { where: { defaultType: { [sequelize_1.Op.not]: null } } });
         return {

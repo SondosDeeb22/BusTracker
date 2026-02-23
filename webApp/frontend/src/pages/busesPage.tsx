@@ -2,21 +2,44 @@
 //? Importing
 //======================================================================================
 import { useState } from 'react';
-import Table from '../components/Table';
+import Table from '../components/common/Table';
 import AddBus from '../components/buses/addBus';
 import UpdateBus from '../components/buses/updateBus';
 import RemoveBus from '../components/buses/removeBus';
-import StatusBadge from '../components/StatusBadge';
+import StatusBadge from '../components/common/StatusBadge';
+
+import SuccessToast from '../components/common/SuccessToast';
+import { useToastMessage } from '../hooks/useToastMessage';
+import { useTableRefreshKey } from '../hooks/useTableRefreshKey';
+
 import { useTranslation } from 'react-i18next';
 
+// bus defined type
+import type { Bus } from '../types/buses';
+
 //======================================================================================
+//? BusesPage
+//======================================================================================
+
 const BusesPage = () => {
+  
   const { t } = useTranslation('buses');
+
+  // ========================================================
+  type TableRow = Record<string, unknown>;
+
+  const isBusRow = (row: TableRow): row is Bus => {
+    return typeof row.id === 'string';
+  };
+  // ========================================================
+  
   const [showModel, setShowModel] = useState(false);
   const [showUpdateModel, setShowUpdateModel] = useState(false);
   const [showRemoveModel, setShowRemoveModel] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [tableKey, setTableKey] = useState(0);
+
+  const toast = useToastMessage({ timeoutMs: 5000 });
+  const tableRefresh = useTableRefreshKey(0);
+  
   const [selectedBusId, setSelectedBusId] = useState<string>('');
   const [selectedBusPlate, setselectedBusPlate] = useState<string>('');
 
@@ -28,22 +51,24 @@ const BusesPage = () => {
     { 
       key: 'status', 
       label: t('columns.status'),
-      formatter: (value: any) => {
-        return <StatusBadge status={value} type="bus" />;
+      formatter: (value: unknown) => {
+        return <StatusBadge status={String(value)} type="bus" />;
       }
     },
     { 
       key: 'assignedDriver', 
       label: t('columns.assignedDriver'),
-      formatter: (value: any, _columnName: string, row: any) => {
-        return row.driver?.name || value || t('unassigned');
+      formatter: (value: unknown, _columnName: string, row: TableRow) => {
+        if (!isBusRow(row)) return String(value || '') || t('unassigned');
+        return row.driver?.name || String(value || '') || t('unassigned');
       }
     },
     { 
       key: 'assignedRoute', 
       label: t('columns.assignedRoute'),
-      formatter: (value: any, _columnName: string, row: any) => {
-        return row.route?.title || value || t('unassigned');
+      formatter: (value: unknown, _columnName: string, row: TableRow) => {
+        if (!isBusRow(row)) return String(value || '') || t('unassigned');
+        return row.route?.title || String(value || '') || t('unassigned');
       }
     }
   ];
@@ -55,59 +80,46 @@ const BusesPage = () => {
   };
 
   // Open Update Model window-----------------------------------------
-  const handleEditBus = (bus: any) => {
-    console.log('Edit bus:', bus);
-    setSelectedBusId(bus.id);
+  const handleEditBus = (row: TableRow) => {
+    console.log('Edit bus:', row);
+    if (!isBusRow(row)) return;
+    setSelectedBusId(row.id);
     setShowUpdateModel(true);
   };
 
   // Open Remove Model window-----------------------------------------
-  const handleRemoveBus = (bus: any) => {
-    console.log('Remove bus:', bus);
-    setSelectedBusId(bus.id);
-    setselectedBusPlate(bus.serialNumber);
+  const handleRemoveBus = (row: TableRow) => {
+    console.log('Remove bus:', row);
+    if (!isBusRow(row)) return;
+    setSelectedBusId(row.id);
+    setselectedBusPlate(row.serialNumber || '');
     setShowRemoveModel(true);
   };
 
   
-  // Case: Bus was Added  ------------------------------------------------
+  // Bus was Added  ------------------------------------------------
   // close Model windo and show Success message. 
   const handleAddBusSuccess = () => {
     setShowModel(false);
-    setSuccessMessage(t('success.added'));
-    setTableKey(prev => prev + 1); // Force table refresh
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000); // 10 seconds
+    toast.show(t('success.added'));
+    tableRefresh.refresh(); // Force table refresh
   };
 
-  // Case: Bus was Updated  ------------------------------------------------
+  // Bus was Updated  ------------------------------------------------
   const handleUpdateBusSuccess = () => {
     setShowUpdateModel(false);
-    setSuccessMessage(t('success.updated'));
-    setTableKey(prev => prev + 1); // Force table refresh
+    toast.show(t('success.updated'));
+    tableRefresh.refresh(); // Force table refresh
     setSelectedBusId('');
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
   };
 
-  // Case: Bus was Removed  ------------------------------------------------
+  // Bus was Removed  ------------------------------------------------
   const handleRemoveBusSuccess = () => {
     setShowRemoveModel(false);
-    setSuccessMessage(t('success.removed'));
-    setTableKey(prev => prev + 1); // Force table refresh
+    toast.show(t('success.removed'));
+    tableRefresh.refresh(); // Force table refresh
     setSelectedBusId('');
     setselectedBusPlate('');
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage('');
-    }, 5000);
   };
 
   // Case : user click close button in the window, so close it
@@ -130,16 +142,12 @@ const BusesPage = () => {
   //======================================================================================
   return (
     <>
-      {successMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
-          {successMessage}
-        </div>
-      )}
+      <SuccessToast message={toast.message} />
       <Table
-        key={tableKey}
+        key={tableRefresh.key}
         title={t('title')}
         subtitle={t('subtitle')}
-        endpoint="http://localhost:3001/api/admin/buses/fetch"
+        endpoint="/api/admin/buses/fetch"
         onAddNew={handleAddNew}
         onEdit={handleEditBus}
         onDelete={handleRemoveBus}

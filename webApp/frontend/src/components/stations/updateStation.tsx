@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { stationDefaultType } from '../../enums/statusEnums';
 import type { StationDefaultType } from '../../enums/statusEnums';
 
+import { apiClient } from '../../services/apiClient';
+
 interface StationData {
   id: string;
   stationName: string;
@@ -58,8 +60,7 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
   ///-------------------------------------------------------------------------
   const fetchStationData = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/admin/stations/fetch', { 
-        withCredentials: true,
+      const response = await apiClient.get('/api/admin/stations/fetch', {
         headers: { 'Content-Type': 'application/json' }
       });
       const currentStation = response.data.data.find((station: any) => station.id === stationId);
@@ -161,11 +162,10 @@ const UpdateStation: React.FC<UpdateStationProps> = ({ onClose, onSuccess, stati
         Object.assign(updates, formData);
       }
 
-      await axios.patch('http://localhost:3001/api/admin/station/update', updates, {
+      await apiClient.patch('/api/admin/station/update', updates, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true
+        }
       });
       onSuccess();
       onClose();

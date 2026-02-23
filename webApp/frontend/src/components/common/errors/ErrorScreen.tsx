@@ -1,7 +1,12 @@
+// ============================================================
+//? Importing
+// ============================================================
 import React from 'react';
-import { COLORS } from '../styles/colorPalette';
-import BusLogoWhite from '../assets/BusLogoWhite.png';
+import { COLORS } from '../../../styles/colorPalette';
+import BusLogoWhite from '../../../assets/BusLogoWhite.png';
 
+
+// ========================================================
 interface ErrorScreenProps {
   title: string;
   message: string;

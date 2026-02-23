@@ -7,6 +7,8 @@ import { COLORS } from '../../styles/colorPalette';
 import { routeStatus } from '../../enums/statusEnums';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 interface RouteData {
   id: string;
   title: string;
@@ -48,8 +50,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
   ///-------------------------------------------------------------------------
   const fetchRouteData = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/user/routes/all', { 
-        withCredentials: true,
+      const response = await apiClient.get('/api/user/routes/all', {
         headers: { 'Content-Type': 'application/json' }
       });
       const currentRoute = response.data.data.find((route: any) => route.id === routeId);
@@ -81,9 +82,7 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/admin/stations/picker', {
-          withCredentials: true
-        });
+        const response = await apiClient.get('/api/admin/stations/picker');
         setStations(response.data.data || response.data || []);
       } catch (err: any) {
         if (axios.isAxiosError(err)) {
@@ -172,11 +171,10 @@ const UpdateRoute: React.FC<UpdateRouteProps> = ({ onClose, onSuccess, routeId }
         Object.assign(updates, formData, { totalStops: formData.stations.length });
       }
 
-      await axios.patch('http://localhost:3001/api/admin/route/update', updates, {
+      await apiClient.patch('/api/admin/route/update', updates, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true
+        }
       });
       onSuccess();
       onClose();

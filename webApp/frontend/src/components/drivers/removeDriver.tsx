@@ -3,6 +3,8 @@ import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 interface RemoveDriverProps {
   driverId: number;
   driverName?: string;
@@ -28,9 +30,8 @@ const RemoveDriver: React.FC<RemoveDriverProps> = ({
     setError('');
 
     try {
-      await axios.delete(`http://localhost:3001/api/admin/driver/remove`, {
+      await apiClient.delete(`/api/admin/driver/remove`, {
         data: { id: driverId },
-        withCredentials: true
       });
 
       onSuccess();

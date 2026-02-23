@@ -2,9 +2,10 @@
 //? Importing
 //======================================================================================
 import React, { useMemo, useState } from 'react';
-import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+
+import { apiClient } from '../../../services/apiClient';
 
 //======================================================================================
 //? Types
@@ -12,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 
 type RemoveScheduledTripProps = {
   open: boolean;
-  backendBaseUrl: string;
   detailedScheduleId: string | null;
   tripInfo: string;
   onClose: () => void;
@@ -26,7 +26,6 @@ type RemoveScheduledTripProps = {
 
 const RemoveScheduledTrip: React.FC<RemoveScheduledTripProps> = ({
   open,
-  backendBaseUrl,
   detailedScheduleId,
   tripInfo,
   onClose,
@@ -56,10 +55,9 @@ const RemoveScheduledTrip: React.FC<RemoveScheduledTripProps> = ({
     setError('');
 
     try {
-      const res = await axios.delete(`${backendBaseUrl}/api/admin/schedule/trip/remove`, {
+      const res = await apiClient.delete('/api/admin/schedule/trip/remove', {
         data: { detailedScheduleId },
         headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
       });
 
       const serverMessageKey = String(res?.data?.message || '').trim();

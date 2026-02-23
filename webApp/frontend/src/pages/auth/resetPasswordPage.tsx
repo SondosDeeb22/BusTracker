@@ -1,16 +1,24 @@
+// ==============================================================================================================
+//? Importing
+// ==============================================================================================================
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import loginPicture from '../assets/loginPicture.png';
-import busTrackerLogo from '../assets/busTrackerlogo.png';
-import { burgundy } from '../styles/colorPalette';
-import LanguageSwitcher from '../components/LanguageSwitcher';
+import loginPicture from '../../assets/loginPicture.png';
+import busTrackerLogo from '../../assets/busTrackerlogo.png';
+import { burgundy } from '../../styles/colorPalette';
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
 import { useSearchParams } from 'react-router-dom';
 
+import { apiClient } from '../../services/apiClient';
 
 
+
+// ============================================================================================================== 
+//? ResetPassword
+// ============================================================================================================== 
 const ResetPassword = () => {
   const { t } = useTranslation('auth/resetPasswordPage');
   const [newPassword, setNewPassword] = useState('');
@@ -28,7 +36,7 @@ const ResetPassword = () => {
     setError('');
     setLoading(true);
     try {
-      await axios.patch(`http://localhost:3001/api/auth/reset-password/${token}`, 
+      await apiClient.patch(`/api/auth/reset-password/${token}`, 
         { newPassword, confirmPassword },
         {
           headers: {

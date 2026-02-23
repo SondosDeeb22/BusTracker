@@ -7,6 +7,8 @@ import { busStatus } from '../../enums/statusEnums';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 
 interface BusData{
     brand: string,
@@ -54,8 +56,8 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
     setLoadingDropdowns(true);
     try {
       const [routesResponse, driversResponse] = await Promise.all([
-        axios.get('http://localhost:3001/api/user/routes/all', { withCredentials: true , headers: {'Content-Type': 'application/json',}, }),
-        axios.get('http://localhost:3001/api/admin/drivers/fetch', { withCredentials: true , headers: {'Content-Type': 'application/json',},})
+        apiClient.get('/api/user/routes/all', { headers: { 'Content-Type': 'application/json' } }),
+        apiClient.get('/api/admin/drivers/fetch', { headers: { 'Content-Type': 'application/json' } })
       ]);
       
       console.log('Routes response:', JSON.stringify(routesResponse.data, null, 2));
@@ -80,11 +82,10 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
 
     try {
       console.log('Form data being sent to backend:', JSON.stringify(formData, null, 2));
-      await axios.post('http://localhost:3001/api/admin/bus/add', formData, {
+      await apiClient.post('/api/admin/bus/add', formData, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true
+        }
       });
       onSuccess();
       onClose();

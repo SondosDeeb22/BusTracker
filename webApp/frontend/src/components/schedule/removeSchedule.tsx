@@ -7,13 +7,14 @@ import axios from 'axios';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 //======================================================================================
 //? Types
 //======================================================================================
 
 type RemoveScheduleProps = {
   open: boolean;
-  backendBaseUrl: string;
   scheduleId: string | null;
   scheduleInfo: string;
   onClose: () => void;
@@ -27,7 +28,6 @@ type RemoveScheduleProps = {
 
 const RemoveSchedule: React.FC<RemoveScheduleProps> = ({
   open,
-  backendBaseUrl,
   scheduleId,
   scheduleInfo,
   onClose,
@@ -54,10 +54,9 @@ const RemoveSchedule: React.FC<RemoveScheduleProps> = ({
     setLoading(true);
     setError('');
     try {
-      await axios.delete(`${backendBaseUrl}/api/admin/schedule/remove`, {
+      await apiClient.delete('/api/admin/schedule/remove', {
         data: { scheduleId },
         headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
       });
 
       onSuccess(tBusSchedule('success.removed'));

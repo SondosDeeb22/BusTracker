@@ -8,6 +8,8 @@ import { busStatus } from '../../enums/statusEnums';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 interface BusData{
     id: string,
     plate: string,
@@ -63,9 +65,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
   // Fetch current bus data
   const fetchBusData = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/admin/buses/fetch`, { 
-        withCredentials: true 
-      });
+      const response = await apiClient.get('/api/admin/buses/fetch');
       const buses = response.data.data || [];
       const currentBus = buses.find((bus: any) => bus.id === busId);
       
@@ -96,8 +96,8 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
     setLoadingDropdowns(true);
     try {
       const [routesResponse, driversResponse] = await Promise.all([
-        axios.get('http://localhost:3001/api/user/routes/all', { withCredentials: true , headers: {'Content-Type': 'application/json',}, }),
-        axios.get('http://localhost:3001/api/admin/drivers/fetch', { withCredentials: true , headers: {'Content-Type': 'application/json',},})
+        apiClient.get('/api/user/routes/all', { headers: { 'Content-Type': 'application/json' } }),
+        apiClient.get('/api/admin/drivers/fetch', { headers: { 'Content-Type': 'application/json' } })
       ]);
       
       // console.log('Routes response:', JSON.stringify(routesResponse.data, null, 2));
@@ -132,11 +132,10 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
       }
 
       console.log('Form data being sent to backend:', JSON.stringify(updates, null, 2));
-      await axios.patch('http://localhost:3001/api/admin/bus/update', updates, {
+      await apiClient.patch('/api/admin/bus/update', updates, {
         headers: {
           'Content-Type': 'application/json',
-        },
-        withCredentials: true
+        }
       });
       onSuccess();
       onClose();

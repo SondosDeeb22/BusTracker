@@ -6,6 +6,8 @@ import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 interface RemoveBusProps {
   busId: string;
   busSerialNumber?: string;
@@ -35,9 +37,8 @@ const RemoveBus: React.FC<RemoveBusProps> = ({
     setError('');
 
     try {
-      await axios.delete(`http://localhost:3001/api/admin/bus/remove`, {
+      await apiClient.delete(`/api/admin/bus/remove`, {
         data: { id: busId },
-        withCredentials: true
       });
 
       onSuccess();

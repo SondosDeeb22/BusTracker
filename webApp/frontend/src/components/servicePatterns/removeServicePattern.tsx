@@ -7,13 +7,14 @@ import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { apiClient } from '../../services/apiClient';
+
 //===============================================================================================
 //? Types
 //===============================================================================================
 
 type RemoveServicePatternProps = {
   open: boolean;
-  backendBaseUrl: string;
   servicePatternId: string | null;
   title: string | null;
   onClose: () => void;
@@ -27,7 +28,6 @@ type RemoveServicePatternProps = {
 
 const RemoveServicePattern = ({
   open,
-  backendBaseUrl,
   servicePatternId,
   title,
   onClose,
@@ -48,7 +48,7 @@ const RemoveServicePattern = ({
     setLoading(true);
     setError('');
     try {
-      await axios.delete(`${backendBaseUrl}/api/admin/service-pattern/remove`, {
+      await apiClient.delete(`/api/admin/service-pattern/remove`, {
         withCredentials: true,
         data: { servicePatternId },
       });
