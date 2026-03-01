@@ -91,7 +91,7 @@ const CoveredRoutes = () => {
     <div className="w-full mb-20">
       <div className="bg-white rounded-lg border-2 p-6 w-full" style={{ borderColor: COLORS.navbar }}>
         <p className="text-lg text-black font-semibold mb-4">
-          {routes.length} Covered Routes
+          {routes.length} {t('coveredRoutes')}
         </p>
 
         {/* view the cards of covered routes -----------------------------------------       */}

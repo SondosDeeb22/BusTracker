@@ -1,5 +1,11 @@
 {
   "loading": "Loading operating buses...",
   "errorPrefix": "Error:",
-  "busesOperating": "Buses Operating"
+  "busesOperating": "Buses Operating",
+  "activeDrivers": "Active Drivers",
+  "coveredRoutes": "Covered Routes",
+  "todaySchedule": "Today Schedule",
+  "todayScheduleWithDate": "Today Schedule ({{date}})",
+  "noSchedulesToday": "No schedules for today",
+  "noRoutes": "No routes"
 }

@@ -63,6 +63,26 @@ export class ScheduleController {
     }
 
     // ==================================================================
+    //? Get Today User Schedule (widget in admin dashboard)
+    // ==================================================================
+    async getTodayUserSchedule(req: Request, res: Response) {
+        try {
+            const now = new Date();
+
+            const two = (v: number) => String(v).padStart(2, '0');
+            const today = `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())}`;
+
+            const data = await scheduleService.getUserSchedule({ date: today });
+            sendResponse(res, 200, null, data as any);
+            return;
+
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
+
+    // ==================================================================
     //? Add Schedule 
     // ================================================================== 
     async addSchedule(req: Request, res: Response) {

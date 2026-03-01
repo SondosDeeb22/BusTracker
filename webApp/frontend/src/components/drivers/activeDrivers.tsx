@@ -75,7 +75,7 @@ const ActiveDrivers = () => {
     <div className="w-full">
       <div className="bg-white rounded-lg border-2 p-6 w-full" style={{ borderColor: COLORS.navbar }}>
         <p className="text-lg text-black font-semibold mb-4">
-          {drivers.length} Active Drivers
+          {drivers.length} {t('activeDrivers')}
         </p>
 
         <div className="flex flex-col gap-3">

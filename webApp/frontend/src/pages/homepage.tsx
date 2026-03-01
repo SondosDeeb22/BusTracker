@@ -1,6 +1,7 @@
 import OperatingBuses from '../components/buses/operatingBuses';
 import ActiveDrivers from '../components/drivers/activeDrivers';
 import CoveredRoutes from '../components/routes/coveredRoutes';
+import TodayScheduleWidget from '../components/schedule/TodayScheduleWidget';
 import buses from '../assets/buses.png';
 
 const Homepage = () => {
@@ -20,6 +21,8 @@ const Homepage = () => {
 
             <div className="min-w-0">
               <CoveredRoutes/>
+
+              <TodayScheduleWidget/>
             </div>
           </div>
         </div>

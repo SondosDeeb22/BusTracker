@@ -115,6 +115,8 @@ router.patch('/service-pattern/update', accessRequireToken(loginToken), authoriz
 
 router.get('/schedule/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.getSchedule);
 
+router.get('/schedule/today', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.getTodayUserSchedule);
+
 router.post('/schedule/add', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.addSchedule);
 
 router.delete('/schedule/remove', accessRequireToken(loginToken), authorizeRole(role.admin), scheduleController.removeSchedule);

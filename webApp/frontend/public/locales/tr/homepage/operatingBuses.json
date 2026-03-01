@@ -1,5 +1,11 @@
 {
   "loading": "Çalışan otobüsler yükleniyor...",
   "errorPrefix": "Hata:",
-  "busesOperating": "Hizmette Olan Otobüsler"
+  "busesOperating": "Hizmette Olan Otobüsler",
+  "activeDrivers": "Aktif Sürücüler",
+  "coveredRoutes": "Kapsanan Rotalar",
+  "todaySchedule": "Bugünün Programı",
+  "todayScheduleWithDate": "Bugünün Programı ({{date}})",
+  "noSchedulesToday": "Bugün için program yok",
+  "noRoutes": "Rota yok"
 }

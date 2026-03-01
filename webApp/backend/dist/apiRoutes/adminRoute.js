@@ -62,6 +62,7 @@ router.delete('/service-pattern/remove', (0, tokenRequired_1.accessRequireToken)
 router.patch('/service-pattern/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), servicePatternController.updateServicePattern);
 // Schedule  -------------------------------------------------------------------------------------------------------------------------
 router.get('/schedule/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), scheduleController.getSchedule);
+router.get('/schedule/today', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), scheduleController.getTodayUserSchedule);
 router.post('/schedule/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), scheduleController.addSchedule);
 router.delete('/schedule/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), scheduleController.removeSchedule);
 router.patch('/schedule/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), scheduleController.updateSchedule);
