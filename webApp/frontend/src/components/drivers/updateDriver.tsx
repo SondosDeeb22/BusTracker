@@ -44,7 +44,7 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
   useEffect(() => {
     const fetchDriverData = async () => {
       try {
-        const response = await apiClient.get('/api/admin/drivers/fetch');
+        const response = await apiClient.get('/api/admin/drivers/all');
         const drivers = response.data.data || [];
         const currentDriver = drivers.find((d: any) => String(d.id) === String(driver.id));
 

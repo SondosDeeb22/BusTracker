@@ -9,7 +9,7 @@ export declare class BusService {
         updated: boolean;
         messageKey: string;
     }>;
-    fetchAllBuses(): Promise<{
+    viewBuses(displayAll: boolean): Promise<{
         messageKey: string;
         data: unknown;
     }>;

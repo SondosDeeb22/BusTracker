@@ -114,19 +114,37 @@ export class DriverService{
     }
 
     //===================================================================================================
-    //? function to Fetch All Drivers
+    //? function fetch All/ Active drivers 
     //===================================================================================================
 
-    async fetchAllDrivers(driverId?: unknown): Promise<{ messageKey: string; data: unknown}> {
+    async fetchDrivers(displayAll: boolean, driverId?: unknown): Promise<{ messageKey: string; data: unknown}> {
         try {
             const id = typeof driverId === 'string' ? driverId.trim() : '';
 
-            const drivers = await UserModel.findAll({
+            let drivers; 
+
+            if( displayAll){
+
+             drivers = await UserModel.findAll({
                 where: id
                     ? { role: role.driver, id }
                     : { role: role.driver },
                 attributes: ['id', 'name', 'gender', 'birthDate', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
-            });
+             });   
+
+            // view only active drivers ------------------------------------------------------
+            } else{
+                drivers = await UserModel.findAll({
+                    attributes: ['id', 'name', 'gender', 'birthDate', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status'],
+                    where: {
+                        role: role.driver,
+                        status: status.active
+                    }            
+                });   
+
+            }
+            
+            
 
             return { messageKey: 'drivers.success.fetched', data: drivers };
         

@@ -65,21 +65,35 @@ export class BusService{
 
 
     //===================================================================================================
-    //? function to Fetch All Buses
+    //? function to view All/Operating Buses 
     //===================================================================================================
+    async viewBuses(displayAll: boolean): Promise<{ messageKey: string; data: unknown }> {
+        try{
 
-    async fetchAllBuses(): Promise<{ messageKey: string; data: unknown }> {
-        try {
-            const buses = await BusModel.findAll({
-                attributes: ['id', 'plate', 'brand', 'status'],
-            });
+            let routes: any[] = [];
 
-            return { messageKey: 'buses.success.fetched', data: buses };
-        
-        // --------------------------------------------------
-        } catch (error) {
-            console.error('Error occured while fetching buses.', error);
+            if(displayAll){
+                routes = await BusModel.findAll({
+                    attributes: ['id', 'plate', 'brand',  'status']
+                });
+
+            }else{
+                routes = await BusModel.findAll({
+                    attributes: ['id', 'plate', 'brand',  'status'],
+                    where: {
+                        status: status.operating,
+                    }
+                });
+              
+            }
+
+            return { messageKey: 'common.crud.fetched', data: routes };
+
+        // ---------------------------------------
+        }catch(error){
+            console.error('Error occured while viewing routes.', error);
             throw new InternalError('common.errors.internal');
         }
     }
+ 
 }

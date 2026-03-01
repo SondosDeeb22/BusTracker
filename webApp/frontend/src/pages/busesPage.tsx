@@ -131,7 +131,7 @@ const BusesPage = () => {
         key={tableRefresh.key}
         title={t('title')}
         subtitle={t('subtitle')}
-        endpoint="/api/admin/buses/fetch"
+        endpoint="/api/admin/buses/all"
         onAddNew={handleAddNew}
         onEdit={handleEditBus}
         onDelete={handleRemoveBus}

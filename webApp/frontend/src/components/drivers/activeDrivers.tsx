@@ -1,50 +1,55 @@
 //======================================================================================
 //? Importing
 //======================================================================================
-import  { useState, useEffect } from 'react'
-import { COLORS } from '../../styles/colorPalette'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { apiClient } from '../../services/apiClient'
 
-// interface 
-interface OperatingBus {
+import { COLORS } from '../../styles/colorPalette'
+
+//======================================================================================
+//? interface
+//======================================================================================
+interface ActiveDriver {
   id: string
-  plate: string
+  name?: string
   status?: string
 }
 
 //======================================================================================
-
-const OperatingBuses = () => {
+//? ActiveDrivers
+//======================================================================================
+const ActiveDrivers = () => {
   const { t } = useTranslation('homepage/operatingBuses')
   const { t: tGlobal } = useTranslation('translation')
-  const [buses, setBuses] = useState<OperatingBus[]>([])
+
+  const [drivers, setDrivers] = useState<ActiveDriver[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  //======================================================================================
+  //? Fetch only Active drivers
+  //======================================================================================
   useEffect(() => {
-    const getOperatingBuses = async () => {
+    const getActiveDrivers = async () => {
       try {
-        const response = await apiClient.get('/api/admin/buses/operating')
+        const response = await apiClient.get('/api/admin/drivers/active')
 
-        //console.log('API Response:', response.data)
         const actualData = response.data.data || []
-        setBuses(actualData)
-        //console.log(response.data)
-        //console.log([response.data] )
-        //console.log(routes);
+        setDrivers(actualData)
       } catch (err) {
-        void err;
+        void err
         setError(tGlobal('common.errors.internal'))
       } finally {
         setLoading(false)
       }
     }
 
-    getOperatingBuses()
+    getActiveDrivers()
   }, [t])
 
+  //======================================================================================
   if (loading) {
     return (
       <div className="w-full">
@@ -65,23 +70,22 @@ const OperatingBuses = () => {
     )
   }
 
+  //======================================================================================
   return (
-    // view the Number of operating buses =================================================================================
     <div className="w-full">
       <div className="bg-white rounded-lg border-2 p-6 w-full" style={{ borderColor: COLORS.navbar }}>
         <p className="text-lg text-black font-semibold mb-4">
-          {buses.length} {t('busesOperating')}
+          {drivers.length} Active Drivers
         </p>
 
-        {/* view the title of operating buses -----------------------------------------       */}
         <div className="flex flex-col gap-3">
-          {buses.map((bus, index) => (
+          {drivers.map((driver, index) => (
             <div
               key={index}
               className="px-4 py-2 rounded-lg text-white font-medium w-full min-w-0 truncate"
               style={{ backgroundColor: COLORS.burgundy }}
             >
-              {bus.id} - {bus.plate}
+              {driver.id} - {driver.name || ''}
             </div>
           ))}
         </div>
@@ -91,4 +95,4 @@ const OperatingBuses = () => {
 }
 
 //======================================================================================
-export default OperatingBuses
+export default ActiveDrivers

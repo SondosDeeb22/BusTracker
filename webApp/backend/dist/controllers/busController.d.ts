@@ -4,5 +4,6 @@ export declare class BusController {
     removeBus(req: Request, res: Response): Promise<void>;
     updateBus(req: Request, res: Response): Promise<void>;
     fetchAllBuses(req: Request, res: Response): Promise<void>;
+    fetchOperatingBuses(req: Request, res: Response): Promise<void>;
 }
 //# sourceMappingURL=busController.d.ts.map

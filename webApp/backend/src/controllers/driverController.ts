@@ -111,7 +111,23 @@ export class DriverController{
     async fetchAllDrivers(req:Request, res:Response){
         try {
             const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
-            const result = await driverService.fetchAllDrivers(driverIdFromQuery);
+            const result = await driverService.fetchDrivers(true,driverIdFromQuery);
+            sendResponse(res, 200, result.messageKey, result.data as any);
+            return;
+        // -----------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
+
+    // =================================================================================================================================
+    //? Fetch Active Drivers only 
+    // =================================================================================================================================
+    async fetchActiveDrivers(req:Request, res:Response){
+        try {
+
+            const result = await driverService.fetchDrivers(false );
             sendResponse(res, 200, result.messageKey, result.data as any);
             return;
         // -----------------

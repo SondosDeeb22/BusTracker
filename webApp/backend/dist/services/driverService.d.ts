@@ -9,7 +9,7 @@ export declare class DriverService {
         updated: boolean;
         messageKey: string;
     }>;
-    fetchAllDrivers(driverId?: unknown): Promise<{
+    fetchDrivers(displayAll: boolean, driverId?: unknown): Promise<{
         messageKey: string;
         data: unknown;
     }>;

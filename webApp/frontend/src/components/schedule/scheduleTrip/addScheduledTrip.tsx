@@ -106,8 +106,8 @@ const AddScheduledTrip: React.FC<AddScheduledTripProps> = ({
 
     try {
       const [driversRes, busesRes] = await Promise.all([
-        apiClient.get('/api/admin/drivers/fetch'),
-        apiClient.get('/api/admin/buses/fetch'),
+        apiClient.get('/api/admin/drivers/all'),
+        apiClient.get('/api/admin/buses/all'),
       ]);
 
       const driversRows: DriverRow[] = Array.isArray(driversRes.data?.data) ? driversRes.data.data : [];

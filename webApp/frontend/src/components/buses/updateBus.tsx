@@ -60,7 +60,7 @@ const UpdateBus = ({ onClose, onSuccess, busId }: UpdateBusProps) => {
   // Fetch current bus data
   const fetchBusData = async () => {
     try {
-      const response = await apiClient.get('/api/admin/buses/fetch');
+      const response = await apiClient.get('/api/admin/buses/all');
       const buses = response.data.data || [];
       const currentBus = buses.find((bus: any) => bus.id === busId);
       

@@ -46,18 +46,29 @@ class BusService {
         };
     }
     //===================================================================================================
-    //? function to Fetch All Buses
+    //? function to view All/Operating Buses 
     //===================================================================================================
-    async fetchAllBuses() {
+    async viewBuses(displayAll) {
         try {
-            const buses = await busModel_1.default.findAll({
-                attributes: ['id', 'plate', 'brand', 'status'],
-            });
-            return { messageKey: 'buses.success.fetched', data: buses };
-            // --------------------------------------------------
+            let routes = [];
+            if (displayAll) {
+                routes = await busModel_1.default.findAll({
+                    attributes: ['id', 'plate', 'brand', 'status']
+                });
+            }
+            else {
+                routes = await busModel_1.default.findAll({
+                    attributes: ['id', 'plate', 'brand', 'status'],
+                    where: {
+                        status: busEnum_1.status.operating,
+                    }
+                });
+            }
+            return { messageKey: 'common.crud.fetched', data: routes };
+            // ---------------------------------------
         }
         catch (error) {
-            console.error('Error occured while fetching buses.', error);
+            console.error('Error occured while viewing routes.', error);
             throw new errors_1.InternalError('common.errors.internal');
         }
     }

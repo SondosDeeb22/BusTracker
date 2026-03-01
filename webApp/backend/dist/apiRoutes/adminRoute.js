@@ -34,12 +34,14 @@ const authorizeRole_1 = require("../middlewares/authorizeRole"); // for authoriz
 // Router
 //===========================================================================================================================
 // Bus   -------------------------------------------------------------------------------------------------------------------------
-router.get('/buses/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchAllBuses);
+router.get('/buses/all', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchAllBuses);
+router.get('/buses/operating', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.fetchOperatingBuses);
 router.post('/bus/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.addBus);
 router.delete('/bus/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.removeBus);
 router.patch('/bus/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), busController.updateBus);
 // Driver  -------------------------------------------------------------------------------------------------------------------------
-router.get('/drivers/fetch', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.fetchAllDrivers);
+router.get('/drivers/all', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.fetchAllDrivers);
+router.get('/drivers/active', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.fetchActiveDrivers);
 router.post('/driver/add', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.addDriver);
 router.delete('/driver/remove', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.removeDriver);
 router.patch('/driver/update', (0, tokenRequired_1.accessRequireToken)(tokenNameEnum_1.loginToken), (0, authorizeRole_1.authorizeRole)(userEnum_1.role.admin), driverController.updateDriver);

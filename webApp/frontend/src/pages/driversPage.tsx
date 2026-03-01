@@ -171,7 +171,7 @@ const DriversPage = () => {
         key={tableRefresh.key}
         title={t('title')}
         subtitle={t('subtitle')}
-        endpoint="/api/admin/drivers/fetch"
+        endpoint="/api/admin/drivers/all"
         onEdit={handleEdit}
         onDelete={handleDelete}
         onAddNew={handleAddNew}

@@ -52,7 +52,8 @@ import  {authorizeRole} from '../middlewares/authorizeRole'; // for authorizatio
 
 // Bus   -------------------------------------------------------------------------------------------------------------------------
 
-router.get('/buses/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), busController.fetchAllBuses);
+router.get('/buses/all', accessRequireToken(loginToken), authorizeRole(role.admin), busController.fetchAllBuses);
+router.get('/buses/operating', accessRequireToken(loginToken), authorizeRole(role.admin), busController.fetchOperatingBuses);
 
 router.post('/bus/add', accessRequireToken(loginToken), authorizeRole(role.admin), busController.addBus);
 
@@ -64,7 +65,8 @@ router.patch('/bus/update', accessRequireToken(loginToken), authorizeRole(role.a
 
 // Driver  -------------------------------------------------------------------------------------------------------------------------
 
-router.get('/drivers/fetch', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.fetchAllDrivers);
+router.get('/drivers/all', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.fetchAllDrivers);
+router.get('/drivers/active', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.fetchActiveDrivers);
 
 router.post('/driver/add', accessRequireToken(loginToken), authorizeRole(role.admin), driverController.addDriver);
 

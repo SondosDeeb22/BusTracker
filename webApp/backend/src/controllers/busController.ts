@@ -69,7 +69,22 @@ export class BusController{
     // =================================================================================================================================
     async fetchAllBuses(req:Request, res:Response){
         try {
-            const result = await busService.fetchAllBuses();
+            const result = await busService.viewBuses(true);
+            sendResponse(res, 200, result.messageKey, result.data as any);
+            return;
+
+        // ------------------------------------------------------
+        } catch (error) {
+            handleControllerError(res, error);
+            return;
+        }
+    }
+    // =================================================================================================================================
+    //? Fetch Operating Buses
+    // =================================================================================================================================
+    async fetchOperatingBuses(req:Request, res:Response){
+        try {
+            const result = await busService.viewBuses(false);
             sendResponse(res, 200, result.messageKey, result.data as any);
             return;
 

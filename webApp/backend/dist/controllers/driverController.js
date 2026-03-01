@@ -94,7 +94,22 @@ class DriverController {
     async fetchAllDrivers(req, res) {
         try {
             const driverIdFromQuery = typeof req.query?.driverId === 'string' ? req.query.driverId.trim() : '';
-            const result = await driverService.fetchAllDrivers(driverIdFromQuery);
+            const result = await driverService.fetchDrivers(true, driverIdFromQuery);
+            (0, messageTemplate_1.sendResponse)(res, 200, result.messageKey, result.data);
+            return;
+            // -----------------
+        }
+        catch (error) {
+            (0, controllerErrorMapper_1.handleControllerError)(res, error);
+            return;
+        }
+    }
+    // =================================================================================================================================
+    //? Fetch Active Drivers only 
+    // =================================================================================================================================
+    async fetchActiveDrivers(req, res) {
+        try {
+            const result = await driverService.fetchDrivers(false);
             (0, messageTemplate_1.sendResponse)(res, 200, result.messageKey, result.data);
             return;
             // -----------------

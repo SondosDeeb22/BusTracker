@@ -95,17 +95,30 @@ class DriverService {
         };
     }
     //===================================================================================================
-    //? function to Fetch All Drivers
+    //? function fetch All/ Active drivers 
     //===================================================================================================
-    async fetchAllDrivers(driverId) {
+    async fetchDrivers(displayAll, driverId) {
         try {
             const id = typeof driverId === 'string' ? driverId.trim() : '';
-            const drivers = await userModel_1.default.findAll({
-                where: id
-                    ? { role: userEnum_1.role.driver, id }
-                    : { role: userEnum_1.role.driver },
-                attributes: ['id', 'name', 'gender', 'birthDate', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
-            });
+            let drivers;
+            if (displayAll) {
+                drivers = await userModel_1.default.findAll({
+                    where: id
+                        ? { role: userEnum_1.role.driver, id }
+                        : { role: userEnum_1.role.driver },
+                    attributes: ['id', 'name', 'gender', 'birthDate', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
+                });
+                // view only active drivers ------------------------------------------------------
+            }
+            else {
+                drivers = await userModel_1.default.findAll({
+                    attributes: ['id', 'name', 'gender', 'birthDate', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status'],
+                    where: {
+                        role: userEnum_1.role.driver,
+                        status: userEnum_1.status.active
+                    }
+                });
+            }
             return { messageKey: 'drivers.success.fetched', data: drivers };
             // --------------------------------------------------------------------------
         }
