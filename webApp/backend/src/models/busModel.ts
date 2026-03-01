@@ -26,10 +26,6 @@ class BusModel extends Model< InferAttributes<BusModel>, InferCreationAttributes
     declare plate: string;
     declare brand: string;
     declare status: keyof typeof status;
-    declare assignedRoute: CreationOptional<string | null>;
-    declare assignedDriver: CreationOptional<string | null>;
-    // declare assignedRoute: string;
-    // declare assignedDriver: string;
 }
 
 //======================================================================================================================
@@ -54,30 +50,6 @@ BusModel.init( {
       type: DataTypes.ENUM(...Object.values(status) as string[]),
       allowNull: false
     },
-
-
-    assignedRoute: {
-      type: DataTypes.STRING(4) || null,
-      allowNull: true,
-      references: {
-        model: 'routes',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-    assignedDriver: {
-      type: DataTypes.STRING(4)|| null,
-      allowNull: true,
-      references: {
-        model: 'users',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-
-
   },
   {
     sequelize,// to attach the User model to the database connection i've defined in databaseConnection.ts

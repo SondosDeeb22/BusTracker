@@ -14,9 +14,6 @@ interface BusData{
     brand: string,
     plate: string, 
     status : keyof typeof busStatus | '',
-    assignedRoute: string,
-    assignedDriver: string
-
 }
 //======================================================================================
 //? AddBus
@@ -28,14 +25,9 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
     plate: '',
     brand: '',
     status: '',
-    assignedRoute: '',
-    assignedDriver: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [routes, setRoutes] = useState<any[]>([]);
-  const [drivers, setDrivers] = useState<any[]>([]);
-  const [loadingDropdowns, setLoadingDropdowns] = useState(false);
 
   ///-------------------------------------------------------------------------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -46,33 +38,6 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
     }));
   };
 
-  useEffect(() => {
-    fetchRoutesAndDrivers();
-  }, []);
-
-  ///-------------------------------------------------------------------------
-  // get all drivers and routes , so  the admin can set the association between the (driver, bus, route)
-  const fetchRoutesAndDrivers = async () => {
-    setLoadingDropdowns(true);
-    try {
-      const [routesResponse, driversResponse] = await Promise.all([
-        apiClient.get('/api/user/routes/all', { headers: { 'Content-Type': 'application/json' } }),
-        apiClient.get('/api/admin/drivers/fetch', { headers: { 'Content-Type': 'application/json' } })
-      ]);
-      
-      console.log('Routes response:', JSON.stringify(routesResponse.data, null, 2));
-      console.log('Drivers response:', JSON.stringify(driversResponse.data, null, 2));
-      console.log('Routes array:', JSON.stringify(routesResponse.data.data || [], null, 2));
-      console.log('Drivers array:', JSON.stringify(driversResponse.data.data || [], null, 2));
-      
-      setRoutes(routesResponse.data.data || []);
-      setDrivers(driversResponse.data.data || []);
-    } catch (err) {
-      console.error('Error fetching dropdown data:', err);
-    } finally {
-      setLoadingDropdowns(false);
-    }
-  };
   ///-------------------------------------------------------------------------
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -149,59 +114,6 @@ const AddBus = ({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => 
 
         {/* --------------------------------------------------------------------------------------- */}
 
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('addForm.assignedRoute')}
-            </label>
-            {loadingDropdowns ? (
-              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                {t('addForm.loadingRoutes')}
-              </div>
-            ) : (
-              <select
-                name="assignedRoute"
-                value={formData.assignedRoute}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">{t('addForm.selectRoute')}</option>
-                {routes.map((route: any, index: number) => (
-                  <option key={route.id || `route-${index}`} value={route.id}>
-                    {route.title || route.name || `Route ${index + 1}`}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-        {/* --------------------------------------------------------------------------------------- */}
-
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              {t('addForm.assignedDriver')}
-            </label>
-            {loadingDropdowns ? (
-              <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100">
-                {t('addForm.loadingDrivers')}
-              </div>
-            ) : (
-              <select
-                name="assignedDriver"
-                value={formData.assignedDriver}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">{t('addForm.selectDriver')}</option>
-                {drivers.map((driver: any) => (
-                  <option key={`driver-${driver.id }`} value={driver.id}>
-                    {driver.name || driver.email || `Driver ${driver.id}`}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-        
-        {/* --------------------------------------------------------------------------------------- */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               {t('addForm.status')}

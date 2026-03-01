@@ -6,7 +6,4 @@ export interface BusAttributes{
     plate: string;
     brand: string;
     status: keyof typeof status;
-    assignedRoute?: string | null;
-    assignedDriver?: string | null;
-    
 }

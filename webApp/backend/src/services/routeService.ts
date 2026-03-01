@@ -4,11 +4,9 @@
 
 //import Enums
 import {status } from '../enums/routeEnum';
-import {status as busStatus } from '../enums/busEnum';
 
 //import models
 import RouteModel from "../models/routeModel";
-import BusModel from "../models/busModel";
 import RouteStationModel from "../models/routeStationModel";
 import stationModel from "../models/stationModel";
 
@@ -252,28 +250,15 @@ export class RouteService{
                 }
                 
             }else{
-                const routeId = await BusModel.findAll({
+                routes = await RouteModel.findAll({
                     where: {
-                        status: busStatus.operating
+                        status: status.covered,
                     },
-                    attributes: ['assignedRoute']
-                })
+                    attributes: ['id', 'title', 'color', 'totalStops', 'status']
+                });
 
-                for(let i = 0; i< routeId.length; i++){
-                    const assignedRouteId = routeId[i]?.assignedRoute;
-                    if (!assignedRouteId) {
-                        continue;
-                    }
-                    let route = await RouteModel.findOne({
-                        where: {
-                            id: assignedRouteId
-                        },
-                        attributes: ['id', 'title', 'color', 'totalStops', 'status']
-                    });
-                    if(route) {
-                        (route as any).dataValues.colorInt = normalizeColorToArgbInt((route as any)?.color);
-                        routes.push(route);
-                    }
+                for (const route of routes) {
+                    (route as any).dataValues.colorInt = normalizeColorToArgbInt((route as any)?.color);
                 }
             }
 

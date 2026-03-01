@@ -18,23 +18,6 @@ const scheduledTripsModel_1 = __importDefault(require("./scheduledTripsModel"));
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? Buses Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
-busModel_1.default.belongsTo(userModel_1.default, {
-    foreignKey: 'assignedDriver',
-    as: 'driver',
-    onDelete: 'CASCADE',
-});
-userModel_1.default.hasOne(busModel_1.default, {
-    foreignKey: 'assignedDriver',
-});
-//---------------------------------------------------------------------------------
-busModel_1.default.belongsTo(routeModel_1.default, {
-    foreignKey: 'assignedRoute',
-    as: 'route',
-    onDelete: 'CASCADE',
-});
-routeModel_1.default.hasMany(busModel_1.default, {
-    foreignKey: 'assignedRoute',
-});
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? RouteStation Tables associatoin: define the foreign keys relation /
 //-------------------------------------------------------------------------------------------------------------------------------------

@@ -15,10 +15,10 @@ const validateUserById = async (driverId, busId) => {
         if (!busId) {
             throw new errors_1.ForbiddenError("common.errors.forbidden");
         }
+        void driverId;
         const userauthorized = await busModel_1.default.findOne({
             where: {
                 id: busId,
-                assignedDriver: driverId,
             },
             attributes: ['id'],
         });

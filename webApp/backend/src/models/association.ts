@@ -16,29 +16,6 @@ import ScheduledTripsModel from './scheduledTripsModel';
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? Buses Tables associatoin: define the foreign keys relation
 //-------------------------------------------------------------------------------------------------------------------------------------
-BusModel.belongsTo(UserModel,{
-    foreignKey: 'assignedDriver',
-    as: 'driver', 
-    onDelete: 'CASCADE',
-});
-
-UserModel.hasOne(BusModel,{
-    foreignKey: 'assignedDriver',
-})
-
-//---------------------------------------------------------------------------------
-
-BusModel.belongsTo(RouteModel,{
-    foreignKey: 'assignedRoute',
-    as: 'route',
-    onDelete: 'CASCADE',
-});
-
-RouteModel.hasMany(BusModel,{ //many buses per route
-    foreignKey: 'assignedRoute',
-})
-
-
 //-------------------------------------------------------------------------------------------------------------------------------------
 //? RouteStation Tables associatoin: define the foreign keys relation /
 //-------------------------------------------------------------------------------------------------------------------------------------

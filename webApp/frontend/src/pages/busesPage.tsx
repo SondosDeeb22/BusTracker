@@ -54,22 +54,6 @@ const BusesPage = () => {
       formatter: (value: unknown) => {
         return <StatusBadge status={String(value)} type="bus" />;
       }
-    },
-    { 
-      key: 'assignedDriver', 
-      label: t('columns.assignedDriver'),
-      formatter: (value: unknown, _columnName: string, row: TableRow) => {
-        if (!isBusRow(row)) return String(value || '') || t('unassigned');
-        return row.driver?.name || String(value || '') || t('unassigned');
-      }
-    },
-    { 
-      key: 'assignedRoute', 
-      label: t('columns.assignedRoute'),
-      formatter: (value: unknown, _columnName: string, row: TableRow) => {
-        if (!isBusRow(row)) return String(value || '') || t('unassigned');
-        return row.route?.title || String(value || '') || t('unassigned');
-      }
     }
   ];
 

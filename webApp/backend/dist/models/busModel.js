@@ -35,26 +35,6 @@ BusModel.init({
         type: sequelize_1.DataTypes.ENUM(...Object.values(busEnum_1.status)),
         allowNull: false
     },
-    assignedRoute: {
-        type: sequelize_1.DataTypes.STRING(4) || null,
-        allowNull: true,
-        references: {
-            model: 'routes',
-            key: 'id',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    },
-    assignedDriver: {
-        type: sequelize_1.DataTypes.STRING(4) || null,
-        allowNull: true,
-        references: {
-            model: 'users',
-            key: 'id',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    },
 }, {
     sequelize: database_1.sequelize, // to attach the User model to the database connection i've defined in databaseConnection.ts
     tableName: 'buses',

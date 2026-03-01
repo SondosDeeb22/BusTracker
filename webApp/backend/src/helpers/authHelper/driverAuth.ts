@@ -14,10 +14,11 @@ export const validateUserById = async (driverId: string, busId: string): Promise
             throw new ForbiddenError("common.errors.forbidden");
         }
 
+        void driverId;
+
         const userauthorized = await BusModel.findOne({
             where: {
                 id: busId,
-                assignedDriver: driverId,
             },
             attributes: ['id'],
         });

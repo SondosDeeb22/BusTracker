@@ -9,10 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouteService = void 0;
 //import Enums
 const routeEnum_1 = require("../enums/routeEnum");
-const busEnum_1 = require("../enums/busEnum");
 //import models
 const routeModel_1 = __importDefault(require("../models/routeModel"));
-const busModel_1 = __importDefault(require("../models/busModel"));
 const routeStationModel_1 = __importDefault(require("../models/routeStationModel"));
 const stationModel_1 = __importDefault(require("../models/stationModel"));
 const errors_1 = require("../errors");
@@ -208,27 +206,14 @@ class RouteService {
                 }
             }
             else {
-                const routeId = await busModel_1.default.findAll({
+                routes = await routeModel_1.default.findAll({
                     where: {
-                        status: busEnum_1.status.operating
+                        status: routeEnum_1.status.covered,
                     },
-                    attributes: ['assignedRoute']
+                    attributes: ['id', 'title', 'color', 'totalStops', 'status']
                 });
-                for (let i = 0; i < routeId.length; i++) {
-                    const assignedRouteId = routeId[i]?.assignedRoute;
-                    if (!assignedRouteId) {
-                        continue;
-                    }
-                    let route = await routeModel_1.default.findOne({
-                        where: {
-                            id: assignedRouteId
-                        },
-                        attributes: ['id', 'title', 'color', 'totalStops', 'status']
-                    });
-                    if (route) {
-                        route.dataValues.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(route?.color);
-                        routes.push(route);
-                    }
+                for (const route of routes) {
+                    route.dataValues.colorInt = (0, colorHelper_1.normalizeColorToArgbInt)(route?.color);
                 }
             }
             return { messageKey: 'common.crud.fetched', data: routes };

@@ -71,21 +71,7 @@ export class BusService{
     async fetchAllBuses(): Promise<{ messageKey: string; data: unknown }> {
         try {
             const buses = await BusModel.findAll({
-                attributes: ['id', 'plate', 'brand', 'status', 'assignedRoute', 'assignedDriver'],
-                include: [
-                    {
-                        model: UserModel,
-                        as: 'driver',
-                        attributes: ['id', 'name', 'email'],
-                        required: false
-                    },
-                    {
-                        model: RouteModel,
-                        as: 'route',
-                        attributes: ['id', 'title'],
-                        required: false
-                    }
-                ]
+                attributes: ['id', 'plate', 'brand', 'status'],
             });
 
             return { messageKey: 'buses.success.fetched', data: buses };
