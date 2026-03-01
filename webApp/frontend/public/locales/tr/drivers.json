@@ -11,6 +11,8 @@
     "name": "Ad Soyad",
     "phone": "Telefon",
     "email": "E-posta",
+    "gender": "Cinsiyet",
+    "birthDate":"Doğum Tarihi",
     "licenseNumber": "Ehliyet Numarası",
     "licenseExpiryDate": "Ehliyet Bitiş Tarihi",
     "status": "Durum",

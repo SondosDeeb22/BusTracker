@@ -34,7 +34,7 @@ export type UserGender = (typeof userGender)[keyof typeof userGender];
 //? User Status
 export const userStatus = {
   active: 'active',
-  passive: 'passive',
+  inactive: 'inactive',
 } as const;
 
 export type UserStatus = (typeof userStatus)[keyof typeof userStatus];

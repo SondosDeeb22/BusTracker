@@ -11,6 +11,8 @@
     "name": "Name",
     "phone": "Phone",
     "email": "Email",
+    "gender": "Gender",
+    "birthDate": "Birth Date",
     "licenseNumber": "License Number",
     "licenseExpiryDate": "License Expiry Date",
     "status": "Status",

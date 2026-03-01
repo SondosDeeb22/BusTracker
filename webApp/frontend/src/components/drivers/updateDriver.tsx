@@ -1,14 +1,20 @@
 //================================================================================
 //? Import 
 //================================================================================
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { COLORS } from '../../styles/colorPalette';
 import { useTranslation } from 'react-i18next';
 
+import { userGender } from '../../enums/statusEnums';
+
+import { apiClient } from '../../services/apiClient';
+
+import type { Driver } from '../../types/drivers';
+
 //interfaces
 interface UpdateDriverProps {
-  driver: any;
+  driver: Driver;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -21,14 +27,53 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [formData, setFormData] = useState({
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [initialData, setInitialData] = useState<Driver | null>(null);
+  const [formData, setFormData] = useState<Driver>({
+    id: driver.id,
     name: driver.name || '',
+    gender: driver.gender || '',
+    birthDate: driver.birthDate || '',
     phone: driver.phone || '',
     email: driver.email || '',
     licenseNumber: driver.licenseNumber || '',
     licenseExpiryDate: driver.licenseExpiryDate || '',
-    status: driver.status || ''
+    status: driver.status || '',
   });
+
+  useEffect(() => {
+    const fetchDriverData = async () => {
+      try {
+        const response = await apiClient.get('/api/admin/drivers/fetch');
+        const drivers = response.data.data || [];
+        const currentDriver = drivers.find((d: any) => String(d.id) === String(driver.id));
+
+        if (currentDriver) {
+          const nextData: Driver = {
+            id: String(currentDriver.id),
+            name: currentDriver.name || '',
+            phone: currentDriver.phone || '',
+            email: currentDriver.email || '',
+            licenseNumber: currentDriver.licenseNumber || '',
+            licenseExpiryDate: currentDriver.licenseExpiryDate || '',
+            status: currentDriver.status || '',
+            gender: currentDriver.gender,
+            birthDate: typeof currentDriver.birthDate === 'string' ? currentDriver.birthDate.split('T')[0] : '',
+          };
+
+          setFormData(nextData);
+          setInitialData(nextData);
+        }
+      } catch (err) {
+        void err;
+        setError(t('updateForm.loadError'));
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    void fetchDriverData();
+  }, [driver.id, t]);
 
   // change the new value only, keep former ones as they are
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -47,31 +92,40 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
     //================================================================================
 
     try {
-      const updates: Record<string, any> = { id: driver.id };
+      const updates: Record<string, unknown> = { id: formData.id };
 
-      (Object.keys(formData) as Array<keyof typeof formData>).forEach((key) => {
-        if (formData[key] !== driver?.[key]) {
-          updates[key] = formData[key];
-        }
-      });
+      if (initialData) {
+        (Object.keys(formData) as Array<keyof Driver>).forEach((key) => {
+          if (key === 'id') return;
 
-      // use the endpoint to update data given from user
-      await axios.patch(`http://localhost:3001/api/admin/driver/update`, updates, {
-        withCredentials: true
+          const next = formData[key];
+          const prev = initialData[key];
+          if (next !== prev) updates[key] = next;
+        });
+      } else {
+        Object.assign(updates, formData);
+      }
+
+      if (Object.keys(updates).length === 1) {
+        onClose();
+        return;
+      }
+
+      await apiClient.patch('/api/admin/driver/update', updates, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       onSuccess();
       onClose();
-    } catch (err: any) {
-      console.log('Full error:', err);
-      console.log('Error response:', err.response);
-      console.log('Error status:', err.response?.status);
-      console.log('Error data:', err.response?.data);
-      
-      const messageKey = err.response?.data?.message;
-      if (messageKey) {
-        setError(tGlobal(messageKey, { defaultValue: messageKey }));
-        return;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const messageKey = err.response?.data?.message as string | undefined;
+        if (messageKey) {
+          setError(tGlobal(messageKey, { defaultValue: messageKey }));
+          return;
+        }
       }
 
       setError(t('updateForm.error'));
@@ -97,6 +151,16 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
 
 
   //================================================================================
+  if (initialLoading) {
+    return (
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="text-center">{t('updateForm.loadingData')}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
       {/* Main Update Modal */}
@@ -122,6 +186,37 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
                 type="text"
                 name="name"
                 value={formData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('columns.gender')}
+              </label>
+              <select
+                name="gender"
+                value={formData.gender ?? ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {Object.values(userGender).map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t('columns.birthDate')}
+              </label>
+              <input
+                type="date"
+                name="birthDate"
+                value={formData.birthDate ?? ''}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -191,8 +286,8 @@ const UpdateDriver: React.FC<UpdateDriverProps> = ({ driver, onClose, onSuccess 
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="active">Active</option>
-                <option value="passive">Passive</option>
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
               </select>
             </div>
 

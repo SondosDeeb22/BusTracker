@@ -27,16 +27,32 @@ const DriversPage = () => {
 
   type TableRow = Record<string, unknown>;
 
-  const isDriverRow = (row: TableRow): row is Driver => {
-    return typeof row.id === 'number';
+  // function to view dates form left to right ( DD-MM-YYYY) ----------------------
+  const formatDateDDMMYYYY = (value: unknown): string => {
+    if (typeof value !== 'string') return '';
+    const raw = value.trim();
+    if (!raw) return '';
+
+    const datePart = raw.includes('T') ? raw.split('T')[0] : raw;
+    const [yyyy, mm, dd] = datePart.split('-');
+    if (!yyyy || !mm || !dd) return raw;
+
+    return `${dd.padStart(2, '0')}-${mm.padStart(2, '0')}-${yyyy}`;
   };
+  // -------------------------------------------------------------------------
+
+  const isDriverRow = (row: TableRow): row is TableRow & { id: string } => {
+    return typeof row.id === 'string' && row.id.trim() !== '';
+  };
+
+  const toDriver = (row: TableRow & { id: string }): Driver => row as unknown as Driver;
   // ========================================================
 
   const [showModel, setShowModel] = useState(false);
   const toast = useToastMessage({ timeoutMs: 5000 });
   const tableRefresh = useTableRefreshKey(0);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [driverToRemove, setDriverToRemove] = useState<{id: number, name: string} | null>(null);
+  const [driverToRemove, setDriverToRemove] = useState<{id: string, name: string} | null>(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [driverToUpdate, setDriverToUpdate] = useState<Driver | null>(null);
 
@@ -45,10 +61,26 @@ const DriversPage = () => {
   const columnConfig = [
     { key: 'id', label: t('columns.id') },
     { key: 'name', label: t('columns.name') },
+    { key: 'gender', label: t('columns.gender') },
+    {
+      key: 'birthDate',
+      label: t('columns.birthDate'),
+      formatter: (value: unknown) => {
+        const formatted = formatDateDDMMYYYY(value);
+        return <span dir="ltr">{formatted}</span>;
+      },
+    },
     { key: 'phone', label: t('columns.phone') },
     { key: 'email', label: t('columns.email') },
     { key: 'licenseNumber', label: t('columns.licenseNumber') },
-    { key: 'licenseExpiryDate', label: t('columns.licenseExpiryDate') },
+    {
+      key: 'licenseExpiryDate',
+      label: t('columns.licenseExpiryDate'),
+      formatter: (value: unknown) => {
+        const formatted = formatDateDDMMYYYY(value);
+        return <span dir="ltr">{formatted}</span>;
+      },
+    },
     { key: 'status', label: t('columns.status'),
       formatter: (value: unknown) => {
         return <StatusBadge status={String(value)} type="driver" />;
@@ -88,7 +120,8 @@ const DriversPage = () => {
   const handleDelete = (row: TableRow) => {
     console.log('Delete driver:', row);
     if (!isDriverRow(row)) return;
-    setDriverToRemove({ id: row.id, name: row.name || row.email || 'this driver' });
+    const driver = toDriver(row);
+    setDriverToRemove({ id: String(driver.id), name: driver.name || driver.email || 'this driver' });
     setShowRemoveModal(true);
   };
 
@@ -110,7 +143,7 @@ const DriversPage = () => {
   const handleEdit = (row: TableRow) => {
     console.log('Edit driver:', row);
     if (!isDriverRow(row)) return;
-    setDriverToUpdate(row);
+    setDriverToUpdate(toDriver(row));
     setShowUpdateModal(true);
   };
   

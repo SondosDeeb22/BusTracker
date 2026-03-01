@@ -8,7 +8,7 @@ export declare enum gender {
 }
 export declare enum status {
     active = "active",
-    passive = "passive"
+    inactive = "inactive"
 }
 export declare enum language {
     english = "english",

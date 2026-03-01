@@ -51,9 +51,9 @@ export const statusConfig = {
       label: 'Active',
       priority: 'high'
     },
-    [userStatus.passive]: { 
+    [userStatus.inactive]: { 
       color: 'bg-red-100 text-red-800', 
-      label: 'Passive',
+      label: 'Inactive',
       priority: 'low'
     }
   },

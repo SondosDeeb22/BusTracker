@@ -101,6 +101,7 @@ export class DriverService{
             enumFields: [
                 { field: "status", enumObj: status },
                 { field: "role", enumObj: role },
+                { field: "gender", enumObj: gender },
             ]
           }
         );
@@ -124,7 +125,7 @@ export class DriverService{
                 where: id
                     ? { role: role.driver, id }
                     : { role: role.driver },
-                attributes: ['id', 'name', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
+                attributes: ['id', 'name', 'gender', 'birthDate', 'phone', 'email', 'licenseNumber', 'licenseExpiryDate', 'status']
             });
 
             return { messageKey: 'drivers.success.fetched', data: drivers };

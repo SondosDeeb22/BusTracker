@@ -20,7 +20,7 @@ export enum gender{
 //==============================
 export enum status{
     active = 'active',
-    passive = 'passive'
+    inactive = 'inactive',
 }
 
 //==============================

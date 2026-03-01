@@ -23,7 +23,7 @@ var gender;
 var status;
 (function (status) {
     status["active"] = "active";
-    status["passive"] = "passive";
+    status["inactive"] = "inactive";
 })(status || (exports.status = status = {}));
 //==============================
 //? app language

@@ -57,7 +57,7 @@ UserModel.init({
     status: {
         type: sequelize_1.DataTypes.ENUM(...Object.values(userEnum_1.status)),
         allowNull: false,
-        defaultValue: userEnum_1.status.passive
+        defaultValue: userEnum_1.status.inactive
     },
     hashedPassword: {
         type: sequelize_1.DataTypes.STRING(150),

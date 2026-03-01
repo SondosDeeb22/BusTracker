@@ -92,7 +92,7 @@ UserModel.init( {
     status: {
       type: DataTypes.ENUM(...Object.values(status) as string[]),
       allowNull: false,
-      defaultValue: status.passive
+      defaultValue: status.inactive
     },
     hashedPassword: { 
       type: DataTypes.STRING(150),

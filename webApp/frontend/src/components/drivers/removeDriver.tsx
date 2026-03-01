@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { apiClient } from '../../services/apiClient';
 
 interface RemoveDriverProps {
-  driverId: number;
+  driverId: string;
   driverName?: string;
   onClose: () => void;
   onSuccess: () => void;
