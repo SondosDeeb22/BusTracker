@@ -65,10 +65,7 @@ stationModel.init( {
 	  allowNull: true,
 	  defaultValue: null
 	},
-    // assignedRoute: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false
-    // },
+
 
   },
   {

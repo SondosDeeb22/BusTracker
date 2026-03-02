@@ -15,22 +15,7 @@ export default {
   //-------------------------------------------------------------------
 
   async down(queryInterface: QueryInterface): Promise<void> {
-    await queryInterface.bulkDelete("route_stations", {
-      routeStationId: [
-        "RS01",
-        "RS02",
-        "RS03",
-        "RS04",
-        "RS05",
-        "RS06",
-        "RS07",
-        "RS08",
-        "RS09",
-        "RS10",
-        "RS11",
-        "RS12",
-      ],
-    });
+    await queryInterface.bulkDelete("route_stations", {});
     console.log("route stations successfully removed!");
   },
 };

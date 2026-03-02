@@ -24,10 +24,8 @@ class RouteModel extends Model< InferAttributes<RouteModel>, InferCreationAttrib
     declare id: string;
     declare title: string;
     declare color: string;
-    // declare stopStations: string[];
     declare totalStops: number;
     declare status: keyof typeof status;
-    // declare assignedBuses: string[];
 }
 
 //======================================================================================================================

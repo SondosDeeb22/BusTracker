@@ -15,10 +15,10 @@ class RouteStationModel extends sequelize_1.Model {
 //======================================================================================================================
 RouteStationModel.init({
     routeStationId: {
-        type: sequelize_1.DataTypes.BIGINT,
-        autoIncrement: true,
+        type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true
     },
     routeId: {
         type: sequelize_1.DataTypes.STRING(4),
@@ -34,7 +34,7 @@ RouteStationModel.init({
         type: sequelize_1.DataTypes.STRING(4),
         allowNull: false,
         references: {
-            model: 'bus_Stations',
+            model: 'stations',
             key: 'id',
         },
         onDelete: 'CASCADE',

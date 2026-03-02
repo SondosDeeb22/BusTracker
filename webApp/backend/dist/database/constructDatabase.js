@@ -12,7 +12,6 @@ const database_1 = require("../config/database");
 // running the models for thier side-effects(for them to be added in sequelize.model )
 const userModel_1 = __importDefault(require("../models/userModel"));
 const busModel_1 = __importDefault(require("../models/busModel"));
-const busScheduleModel_1 = __importDefault(require("../models/busScheduleModel"));
 const routeModel_1 = __importDefault(require("../models/routeModel"));
 const stationModel_1 = __importDefault(require("../models/stationModel"));
 const routeStationModel_1 = __importDefault(require("../models/routeStationModel"));
@@ -25,7 +24,6 @@ require("../models/association");
 //import the seeders
 const sampleUser_1 = __importDefault(require("../seeders/sampleUser"));
 const sampleBus_1 = __importDefault(require("../seeders/sampleBus"));
-const sampleBusSchedule_1 = __importDefault(require("../seeders/sampleBusSchedule"));
 const sampleRoute_1 = __importDefault(require("../seeders/sampleRoute"));
 const sampleBusStation_1 = __importDefault(require("../seeders/sampleBusStation"));
 const sampleRouteStation_1 = __importDefault(require("../seeders/sampleRouteStation"));
@@ -65,7 +63,6 @@ const seedData = async () => {
         // 1- Delete all data (if we had data before, so we have no conflicts)
         await database_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
         await loginAttempModel_1.default.destroy({ where: {} });
-        await busScheduleModel_1.default.destroy({ where: {} });
         await routeStationModel_1.default.destroy({ where: {} });
         await scheduledTripsModel_1.default.destroy({ where: {} });
         await scheduleModel_1.default.destroy({ where: {} });
@@ -90,9 +87,6 @@ const seedData = async () => {
             returning: true
         });
         await routeStationModel_1.default.bulkCreate(sampleRouteStation_1.default, {
-            returning: true
-        });
-        await busScheduleModel_1.default.bulkCreate(sampleBusSchedule_1.default, {
             returning: true
         });
         await loginAttempModel_1.default.bulkCreate(sampleLoginAttempt_1.default, {

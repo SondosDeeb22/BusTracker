@@ -8,13 +8,11 @@ import { sequelize } from '../config/database';
 
 import UserModel from '../models/userModel';
 import BusModel from '../models/busModel';
-import BusScheduleModel from '../models/busScheduleModel';
 import RouteModel from '../models/routeModel';
 import stationModel from '../models/stationModel';
 import RouteStationModel from '../models/routeStationModel';
 import loginAttemptModel from '../models/loginAttempModel';
 
-import ScheduledTripsModel from '../models/scheduledTripsModel';
 import ServicePatternModel from '../models/servicePatternModel';
 import OperatingHoursModel from '../models/operatingHoursModel';
 import TripModel from '../models/scheduledTripsModel';
@@ -25,7 +23,6 @@ import '../models/association';
 //import the seeders
 import users from '../seeders/sampleUser';
 import buses from '../seeders/sampleBus';
-import busSchedules from '../seeders/sampleBusSchedule';
 import routes from '../seeders/sampleRoute';
 import busStations from '../seeders/sampleBusStation';
 import routeStation from '../seeders/sampleRouteStation';
@@ -69,7 +66,6 @@ const seedData = async () => {
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
     await loginAttemptModel.destroy({where: {}});
 
-    await BusScheduleModel.destroy({where: {}});
     await RouteStationModel.destroy({where: {}});
 
     await TripModel.destroy({where: {}});
@@ -104,9 +100,6 @@ const seedData = async () => {
       returning: true 
     });
 
-    await BusScheduleModel.bulkCreate(busSchedules, {
-      returning: true 
-    });
     
     await loginAttemptModel.bulkCreate(loginAttempts, {
       returning: true 

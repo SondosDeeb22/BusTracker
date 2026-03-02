@@ -48,10 +48,6 @@ stationModel.init({
         allowNull: true,
         defaultValue: null
     },
-    // assignedRoute: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false
-    // },
 }, {
     sequelize: database_1.sequelize, // to attach the User model to the database connection i've defined in databaseConnection.ts
     tableName: 'stations',

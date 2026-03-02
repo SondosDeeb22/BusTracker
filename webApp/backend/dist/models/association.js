@@ -32,56 +32,6 @@ stationModel_1.default.belongsToMany(routeModel_1.default, {
     otherKey: 'routeId',
 });
 //-------------------------------------------------------------------------------------------------------------------------------------
-//? BusSchedule Tables associatoin: define the foreign keys relation
-//-------------------------------------------------------------------------------------------------------------------------------------
-// // Route Model ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(RouteModel,{
-//     foreignKey: 'routeId',
-//     as: 'route',
-//     onDelete: 'CASCADE',
-// });
-// RouteModel.hasMany(BusScheduleModel,{
-//     foreignKey: 'routeId',
-// });
-// // User Model (creator) ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(UserModel, {
-//     foreignKey: 'createdBy',
-//     as: 'creator',
-//     onDelete: 'CASCADE',
-// });
-// UserModel.hasOne(BusScheduleModel,{
-//     foreignKey: 'createdBy',
-// });
-// // User Model (updater) ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(UserModel,{
-//     foreignKey: 'updatedBy',
-//     as: 'updater',
-//     onDelete: 'CASCADE',
-// });
-// UserModel.hasMany(BusScheduleModel,{
-//     foreignKey: 'updatedBy',
-// });
-// // User Model (driver) ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(UserModel, {
-//   foreignKey: 'driverId',
-//   as: 'driver',
-//   onDelete: 'RESTRICT',
-// });
-// UserModel.hasMany(BusScheduleModel, {
-//   foreignKey: 'driverId',
-// });
-// // Bus Model ---------------------------------------------------------------------------------
-// BusScheduleModel.belongsTo(BusModel, {
-//     foreignKey: 'busId',
-//     onDelete: 'RESTRICT',
-// });
-// BusModel.hasMany(BusScheduleModel, {
-//     foreignKey: 'busId',
-// });
-//-------------------------------------------------------------------------------------------------------------------------------------
-//?? Service Pattern Model 
-//-------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------------
 //?? Operating Hours Model 
 //-------------------------------------------------------------------------------------------------------------------------------------
 operatingHoursModel_1.default.belongsTo(servicePatternModel_1.default, {

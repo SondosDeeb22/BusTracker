@@ -24,13 +24,12 @@ class RouteStationModel extends Model<InferAttributes<RouteStationModel>, InferC
 RouteStationModel.init(
   {
     routeStationId:{
-      type: DataTypes.BIGINT,
-            autoIncrement: true, 
-            primaryKey: true,
-            allowNull: false
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+      autoIncrement: true
     },
     
-
     routeId: {
       type: DataTypes.STRING(4),
       allowNull: false,
@@ -45,7 +44,7 @@ RouteStationModel.init(
       type: DataTypes.STRING(4),
       allowNull: false,
       references: {
-        model: 'bus_Stations',
+        model: 'stations',
         key: 'id',
       },
       onDelete: 'CASCADE',

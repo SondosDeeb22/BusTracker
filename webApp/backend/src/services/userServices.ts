@@ -6,14 +6,6 @@
 //import models
 import userModel from "../models/userModel";
 
-//import Enums
-import {status } from '../enums/stationEnum';
-
-import {loginToken} from '../enums/tokenNameEnum';
-
-//import interfaces
-import { JWTdata } from "../interfaces/helper&middlewareInterface";
-
 // import helpers
 import { UserHelper } from "../helpers/userHelper";
 const userhelper = new UserHelper();
@@ -24,13 +16,8 @@ const busService = new BusService();
 import authHleper from '../helpers/authHelpher';
 const authHelper = new authHleper();
 
-import { Op } from 'sequelize';
 
-import { sendResponse } from "../exceptions/messageTemplate";
-import BusScheduleModel from '../models/busScheduleModel';
-import RouteModel from '../models/routeModel';
-
-import { ForbiddenError, InternalError, NotFoundError, UnauthorizedError, ValidationError } from '../errors';
+import {  ValidationError } from '../errors';
 
 //===================================================================================================
 
